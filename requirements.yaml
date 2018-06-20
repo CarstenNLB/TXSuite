@@ -1,0 +1,13 @@
+---
+# Components in groupvars should be staged with only 2 stages:
+# master and prod
+
+# groupvars:
+#  all:
+#    -
+#      src: https://git.f-i-ts.de/ize1e22/my-central-configuration.git
+#      version: master
+roles:
+  ansible-roles:
+    src: https://git.f-i-ts.de/devops/ansible-roles.git
+    version: component-poc

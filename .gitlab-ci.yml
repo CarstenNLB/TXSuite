@@ -1,0 +1,43 @@
+---
+image: registry.cloud.fits/fits/ansible:2.5-dev
+variables:
+  ignore_validation_errors: "True"
+  ansible_components_loglevel: DEBUG
+  ansible_debug: 1
+  #ars_change_required_in_environment: "prod,tuy"
+  ansible_lint_excludes: "ANSIBLE0010,ANSIBLE0016"
+  shellcheck_excludes: "SC2086,SC1009,SC1091,SC2006,SC2162,SC2016,SC2004,SC1090,SC2012,SC2155"
+  DEFAULT_SELINUX_SPECIAL_FS: cifs
+stages:
+  - deploy
+nw_txsuite-deploy-TABS:
+  stage: deploy
+  only:
+    - TABS
+  script:
+    - site.yaml
+  variables:
+    ansible_verbosity: "2"
+  environment:
+    name: TABS
+nw_txsuite-deploy-PREP:
+  stage: deploy
+  only:
+    - PREP
+  script:
+    - site.yaml
+  variables:
+    ansible_verbosity: "2"
+  environment:
+    name: PREP
+nw_txsuite-deploy-PROD:
+  stage: deploy
+  only:
+    - PROD
+  script:
+    - site.yaml
+  variables:
+    ansible_verbosity: "2"
+  environment:
+    name: PROD
+...

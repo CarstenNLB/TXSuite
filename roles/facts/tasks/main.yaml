@@ -1,0 +1,8 @@
+- name: set Facts for this Stagge
+  set_fact:
+    targetservername: "{{ setting[productstage].servername }}"
+    targetusername: "{{ setting[productstage].username }}"
+    targetdomain: "{{ setting[productstage].domain }}"
+    targetpassword: "{{password[productstage]}}"
+  no_log: true
+...

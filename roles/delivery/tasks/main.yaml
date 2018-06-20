@@ -1,0 +1,80 @@
+---
+- name: Install cifs-utils
+  yum:
+    name: cifs-utils
+    state: present
+
+- name: Create all Folders {{MountFolder}} {{targetDomain}} {{targetservname}}
+  file:
+    state: directory
+    path: "{{ item }}"
+    mode: "0777"
+  with_items:
+    - "{{MountFolder}}"
+    - "{{MountFolder}}/{{targetdomain}}"
+    - "{{MountFolder}}/{{targetdomain}}/{{targetservername}}"
+
+- name: Write a line
+  lineinfile:
+    state: present
+    path: "/appdata/git/Mount_Logging.log"
+    line: "{{ansible_date_time.date}} {{ansible_date_time.time}} \
+           Mount Server {{targetservername}} on {{TargetFolder}}"
+    create: yes
+
+- name: Mount Server {{targetservername}} to {{MountFolder}}
+  mount:
+    path: "{{MountFolder}}/{{targetdomain}}/{{targetservername}}"
+    src: "//{{targetservername}}/GitLab"
+    fstype: cifs
+    state: mounted
+    opts: "file_mode=0777,dir_mode=0777,noperm,domain={{targetdomain}},\
+           username={{targetusername}},password={{targetpassword}}"
+  no_log: true
+
+- name: Create {{TargetFolder}} Folder
+  file:
+    state: directory
+    path: "{{item}}"
+    mode: "0777"
+  with_items:
+    - "{{TargetFolder}}"
+
+- name: Compresse the Copy Files
+  become: false
+  local_action:
+    module: archive
+    path: "{{playbook_dir}}/Delivery/*"
+    dest: "/tmp/pack.tgz"
+
+- name: Copy Tar to /appdata/
+  become: true
+  copy:
+    src: /tmp/pack.tgz
+    dest: "{{TargetFolder}}/pack.tgz"
+
+    #- name: Move to mount Share
+    #command: mv /appdata/git/pack.tgz {{TargetFolder}}/pack.tgz
+    #changed_when: true
+
+- name: unarchiv
+  unarchive:
+    src: "{{TargetFolder}}/pack.tgz"
+    dest: "{{TargetFolder}}"
+    remote_src: yes
+    mode: "0777"
+
+- name: Remove tar File from Server
+  file:
+    path: "{{TargetFolder}}/pack.tgz"
+    state: absent
+
+- name: UnMount {{MountFolder}}
+  mount:
+    path: "{{MountFolder}}/{{targetdomain}}/{{targetservername}}"
+    src: "//{{targetservername}}/GitLab"
+    fstype: cifs
+    state: unmounted
+    opts: "domain={{targetdomain}},username={{targetdomain}},password={{password}}"
+  no_log: true
+...
