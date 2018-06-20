@@ -1,0 +1,15 @@
+---
+setting:
+   TABS:
+      servername: nlbtxsappvt01
+      domain: nlb-entw
+      username: SVCNLGITLABARTIFACTS
+   PREP:
+      servername: nlbhpqappva01
+      domain: nlb-prod
+      username: SVCNPGITLABARTIFACTS
+   PROD:
+      servername: nlbtxsappvp01
+      domain: nlb-prod
+      username: SVCNPGITLABARTIFACTS
+...

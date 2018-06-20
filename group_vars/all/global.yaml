@@ -1,0 +1,5 @@
+---
+
+MountFolder: /appdata/mount
+TargetFolder: "{{MountFolder}}/{{targetdomain}}/{{targetservername}}/nw_txsuite"
+...

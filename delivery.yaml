@@ -1,0 +1,7 @@
+---
+- hosts: nw-txs-server
+  become: true
+  roles:
+    - facts
+    - delivery
+...
