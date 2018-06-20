@@ -1,5 +1,5 @@
 ---
-image: registry.cloud.fits/fits/ansible:2.5-dev
+image: registry.cloud.fits/fits/ansible:2.5
 variables:
   ignore_validation_errors: "True"
   ansible_components_loglevel: DEBUG
