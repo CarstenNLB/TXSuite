@@ -11,6 +11,7 @@ variables:
 stages:
   - deploy
 nw_txsuite-deploy-TABS:
+  when: manual
   stage: deploy
   only:
     - TABS
@@ -21,6 +22,7 @@ nw_txsuite-deploy-TABS:
   environment:
     name: TABS
 nw_txsuite-deploy-PREP:
+  when: manual
   stage: deploy
   only:
     - PREP
@@ -31,6 +33,7 @@ nw_txsuite-deploy-PREP:
   environment:
     name: PREP
 nw_txsuite-deploy-PROD:
+  when: manual
   stage: deploy
   only:
     - PROD
