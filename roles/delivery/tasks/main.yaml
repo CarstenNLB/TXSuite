@@ -30,7 +30,7 @@
     state: mounted
     opts: "file_mode=0777,dir_mode=0777,noperm,domain={{targetdomain}},\
            username={{targetusername}},password={{targetpassword}}"
-  no_log: true
+  #no_log: true
 
 - name: Create {{TargetFolder}} Folder
   file:
