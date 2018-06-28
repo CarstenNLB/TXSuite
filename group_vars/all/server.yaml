@@ -5,7 +5,7 @@ setting:
       domain: nlb-entw
       username: SVCNLGITLABARTIFACTS
    PREP:
-      servername: nlbhpqappva01
+      servername: nlbtxsappva01
       domain: nlb-prod
       username: SVCNPGITLABARTIFACTS
    PROD:
