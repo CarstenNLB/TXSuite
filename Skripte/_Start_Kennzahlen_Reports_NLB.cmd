@@ -783,17 +783,6 @@ zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherun
 zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_SchiPfe.xlsm
 zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_FluPfe.xlsm
 
-REM *************************************************************************************************************************************************************************
-REM diese sind damit komplett 
-REM zusätzlich die Beleihungswerte
-REM *************************************************************************************************************************************************************************
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
-
-start txsjobserver -execute=report.BelWertFlug
-start txsjobserver -execute=report.BelWertSchiff
-
-powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
-
 rem nun die restlichen Dateien - dies sind die mit daypointer - nach ReportTXS_009_%date:~6,4%%date:~3,2%%date:~0,2%.zip
 cd F:\TXS_009_REPORTS\TXS
 
