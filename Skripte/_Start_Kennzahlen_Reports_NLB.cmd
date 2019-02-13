@@ -1,21 +1,26 @@
+REM Exit für SSM wieder rausgenommen per 01.10.2018
 REM *************************************************************************************************************************************************************************
 REM TXS Reporterstellung 
 REM SU 201612
 REM SU 201701
+REM SU 201809 Anpassungen und neue Reports
+REM SU 201809 Anpassungen für SSM
+REM SU 201812 Grenzwerte direkt nach den Kennzahlen
+REM SU 201812 Verlagerung weiterer Reports ins Barwertsystem
 REM Barwert: geteilt in parallelisierte Blöcke, maximal fünf gleichzeitige Reportläufe und Umbenennung in die Fachbereichsvorgaben, dann Umwandlung .xslm in .xlsx
 REM          Liquivorschauen als .xslm 
 REM andere: geteilt in parallelisierte Blöcke, keine Umwandlung
 REM Die TXS-Reporterstellung für TSY wurde ins Barwertsystem ausgelagert 
 REM *************************************************************************************************************************************************************************
 
+REM *************************************************************************************************************************************************************************
+REM Aufräumen
+REM *************************************************************************************************************************************************************************
+
 REM basedate ermitteln
 FOR /F "TOKENS=1" %%i IN (F:\TXS_009_PROD\PARAM\dp.txt) do (SET mybasedate=%%i)
 
 set protokolldir=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\Protokolle
-
-REM *************************************************************************************************************************************************************************
-REM Aufräumen
-REM *************************************************************************************************************************************************************************
 
 F:
 REM auch ggf. Überbleibsel von vorherigen Versuchen am selben Tag
@@ -188,20 +193,93 @@ del /q F:\TXS_009_REPORTS\TXS\P_5\*.*
 REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
+REM Kennzahlen für Cockpit SU 20120103
+REM SU 20170124 diese müssen *vor* den Grenzwertreports ermittelt werden 
+REM SU 2080903 neue Stelle weiter vorne
+REM *************************************************************************************************************************************************************************
+
+REM zum Ausführen wieder in das TXS-Verzeichnis
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+
+start txsjobserver.exe -execute="kennzahlen.Kennzahlen PfandBG" -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_kzp.log -errlog=%protokolldir%\errlog_prod_kzp.log
+
+start txsjobserver.exe -execute="kennzahlen.Kennzahlen Schiffe" -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_kzs.log -errlog=%protokolldir%\errlog_prod_kzs.log
+
+start txsjobserver.exe -execute="kennzahlen.Kennzahlen Flugzeuge" -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_kzf.log -errlog=%protokolldir%\errlog_prod_kzf.log
+
+powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
+
+REM *************************************************************************************************************************************************************************
+REM vier Reports Grenzwerte
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+
+start txsjobserver -execute=report.Grenzwerte_SchiPfe
+start txsjobserver -execute=report.Grenzwerte_FluPfe
+
+powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
+
+start txsjobserver -execute=report.Grenzwerte_OEPG
+start txsjobserver -execute=report.Grenzwerte_HyPfe_OEPfe
+
+powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
+
+REM in das Reportverzeichnis
+cd F:\TXS_009_REPORTS\TXS
+
+ren Grenzwerte*FluPfe* Grenzwerte_FluPfe.xlsm
+ren Grenzwerte*HyPfe_OEPfe* Grenzwerte_HyPfe_OEPfe.xlsm
+ren Grenzwerte*OEPG* Grenzwerte_OEPG.xlsm
+ren Grenzwerte*SchiPfe* Grenzwerte_SchiPfe.xlsm
+
+copy Grenzwerte_FluPfe.xlsm Grenzwerte_FluPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
+copy Grenzwerte_HyPfe_OEPfe.xlsm Grenzwerte_HyPfe_OEPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
+copy Grenzwerte_OEPG.xlsm Grenzwerte_OEPG_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
+copy Grenzwerte_SchiPfe.xlsm Grenzwerte_SchiPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
+
+REM *************************************************************************************************************************************************************************
+REM Ab hier kann im Produktionssystem gearbeitet werden
+REM *************************************************************************************************************************************************************************
+powershell F:\TXS_009_PROD\PROGRAMM\LB\nlbprodready_mail.ps1
+
+REM *************************************************************************************************************************************************************************
+REM Start Vorgezogene Belieferung an cmc/abacus wg. SSM
+REM *************************************************************************************************************************************************************************
+
+rem ----------------------------------------------------------
+REM Spiegelung ins Barwertsystem SU 20130503
+call F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\_Start_SPIEGELUNG_NLB.cmd
+rem ----------------------------------------------------------
+
+rem ----------------------------------------------------------
+rem Einzelbarwertreporting auf dem Barwertsystem ausführen
+call F:\TXS_009_REPORTS\CMC\_start_cmc_nlb.bat
+rem ----------------------------------------------------------
+
+rem ----------------------------------------------------------
+rem Auswertungen für ABACUS auf dem Barwertsystem ausführen
+call F:\TXS_009_REPORTS\ABA\_start_aba_nlb.bat
+rem ----------------------------------------------------------
+
+REM *************************************************************************************************************************************************************************
+REM Ende Vorgezogene Belieferung an cmc/abacus wg. SSM
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
 REM normal mit LZB 0 0 0 400  
 REM *************************************************************************************************************************************************************************
 
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_1.ini -execute=szenarioreport.Hypotheken_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_hypo_000400.log -errlog=%protokolldir%\errlog_prod_hypo_000400.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_1.ini -execute=szenarioreport.Hypotheken_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_hypo_000400.log -errlog=%protokolldir%\errlog_prod_hypo_000400.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_2.ini -execute=szenarioreport.Kommunal_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_komm_000400.log -errlog=%protokolldir%\errlog_prod_komm_000400.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_2.ini -execute=szenarioreport.Kommunal_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_komm_000400.log -errlog=%protokolldir%\errlog_prod_komm_000400.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_3.ini -execute=szenarioreport.Schiff_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_schf_000400.log -errlog=%protokolldir%\errlog_prod_schf_000400.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_3.ini -execute=szenarioreport.Schiff_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_schf_000400.log -errlog=%protokolldir%\errlog_prod_schf_000400.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_4.ini -execute=szenarioreport.Flugzeug_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_flug_000400.log -errlog=%protokolldir%\errlog_prod_flug_000400.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_4.ini -execute=szenarioreport.Flugzeug_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_flug_000400.log -errlog=%protokolldir%\errlog_prod_flug_000400.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_5.ini -execute=szenarioreport.OEPG_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_oepg_000400.log -errlog=%protokolldir%\errlog_prod_oepg_000400.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_5.ini -execute=szenarioreport.OEPG_000400 -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_oepg_000400.log -errlog=%protokolldir%\errlog_prod_oepg_000400.log
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
 
@@ -249,17 +327,17 @@ REM ****************************************************************************
 REM Gattungsklassische Deckung
 REM *************************************************************************************************************************************************************************
 
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_1.ini -execute=szenarioreport.Hypotheken_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Hypotheken_Gattungsklassische_Deckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_1.ini -execute=szenarioreport.Hypotheken_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Hypotheken_Gattungsklassische_Deckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_2.ini -execute=szenarioreport.Kommunal_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Kommunal_Gattungsklassische_Deckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_2.ini -execute=szenarioreport.Kommunal_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Kommunal_Gattungsklassische_Deckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_3.ini -execute=szenarioreport.Schiff_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Schiff_Gattungsklassische_Deckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_3.ini -execute=szenarioreport.Schiff_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Schiff_Gattungsklassische_Deckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_4.ini -execute=szenarioreport.Flugzeug_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Flugzeug_Gattungsklassische_Deckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_4.ini -execute=szenarioreport.Flugzeug_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_Flugzeug_Gattungsklassische_Deckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_5.ini -execute=szenarioreport.OEPG_Kommunal_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\OEPG_Kommunal_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_OEPG_Kommunal_Gattungsklassische_Deckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_5.ini -execute=szenarioreport.OEPG_Kommunal_Gattungsklassische_Deckung -basedate=%mybasedate% -applog=%protokolldir%\OEPG_Kommunal_Gattungsklassische_Deckung.log -errlog=%protokolldir%\err_OEPG_Kommunal_Gattungsklassische_Deckung.log
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
 
@@ -307,17 +385,17 @@ REM ****************************************************************************
 REM Sichernde Überdeckung
 REM *************************************************************************************************************************************************************************
 
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_1.ini -execute=szenarioreport.Hypotheken_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Hypotheken_Sichernde_Ueberdeckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_1.ini -execute=szenarioreport.Hypotheken_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Hypotheken_Sichernde_Ueberdeckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_2.ini -execute=szenarioreport.Kommunal_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Kommunal_Sichernde_Ueberdeckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_2.ini -execute=szenarioreport.Kommunal_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Kommunal_Sichernde_Ueberdeckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_3.ini -execute=szenarioreport.Schiff_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Schiff_Sichernde_Ueberdeckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_3.ini -execute=szenarioreport.Schiff_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Schiff_Sichernde_Ueberdeckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_4.ini -execute=szenarioreport.Flugzeug_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Flugzeug_Sichernde_Ueberdeckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_4.ini -execute=szenarioreport.Flugzeug_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_Flugzeug_Sichernde_Ueberdeckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_5.ini -execute=szenarioreport.OEPG_Kommunal_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\OEPG_Kommunal_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_OEPG_Kommunal_Sichernde_Ueberdeckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_5.ini -execute=szenarioreport.OEPG_Kommunal_Sichernde_Ueberdeckung -basedate=%mybasedate% -applog=%protokolldir%\OEPG_Kommunal_Sichernde_Ueberdeckung.log -errlog=%protokolldir%\err_OEPG_Kommunal_Sichernde_Ueberdeckung.log
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
 
@@ -365,15 +443,15 @@ REM ****************************************************************************
 REM Weitere Deckung I
 REM *************************************************************************************************************************************************************************
 
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_1.ini -execute=szenarioreport.Hypotheken_Weitere_Deckung_I -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Weitere_Deckung_I.log -errlog=%protokolldir%\err_Hypotheken_Weitere_Deckung_I.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_1.ini -execute=szenarioreport.Hypotheken_Weitere_Deckung_I -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Weitere_Deckung_I.log -errlog=%protokolldir%\err_Hypotheken_Weitere_Deckung_I.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_2.ini -execute=szenarioreport.Kommunal_Weitere_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Weitere_Deckung.log -errlog=%protokolldir%\err_Kommunal_Weitere_Deckung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_2.ini -execute=szenarioreport.Kommunal_Weitere_Deckung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Weitere_Deckung.log -errlog=%protokolldir%\err_Kommunal_Weitere_Deckung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_3.ini -execute=szenarioreport.Schiff_Weitere_Deckung_I -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Weitere_Deckung_I.log -errlog=%protokolldir%\err_Schiff_Weitere_Deckung_I.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_3.ini -execute=szenarioreport.Schiff_Weitere_Deckung_I -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Weitere_Deckung_I.log -errlog=%protokolldir%\err_Schiff_Weitere_Deckung_I.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_4.ini -execute=szenarioreport.Flugzeug_Weitere_Deckung_I -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Weitere_Deckung_I.log -errlog=%protokolldir%\err_Flugzeug_Weitere_Deckung_I.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_4.ini -execute=szenarioreport.Flugzeug_Weitere_Deckung_I -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Weitere_Deckung_I.log -errlog=%protokolldir%\err_Flugzeug_Weitere_Deckung_I.log
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
 
@@ -413,13 +491,13 @@ REM ****************************************************************************
 REM Weitere Deckung II
 REM *************************************************************************************************************************************************************************
 
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_1.ini -execute=szenarioreport.Hypotheken_Weitere_Deckung_II -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Weitere_Deckung_II.log -errlog=%protokolldir%\err_Hypotheken_Weitere_Deckung_II.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_1.ini -execute=szenarioreport.Hypotheken_Weitere_Deckung_II -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Weitere_Deckung_II.log -errlog=%protokolldir%\err_Hypotheken_Weitere_Deckung_II.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_3.ini -execute=szenarioreport.Schiff_Weitere_Deckung_II -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Weitere_Deckung_II.log -errlog=%protokolldir%\err_Schiff_Weitere_Deckung_II.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_3.ini -execute=szenarioreport.Schiff_Weitere_Deckung_II -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Weitere_Deckung_II.log -errlog=%protokolldir%\err_Schiff_Weitere_Deckung_II.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_4.ini -execute=szenarioreport.Flugzeug_Weitere_Deckung_II -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Weitere_Deckung_II.log -errlog=%protokolldir%\err_Flugzeug_Weitere_Deckung_II.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_4.ini -execute=szenarioreport.Flugzeug_Weitere_Deckung_II -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Weitere_Deckung_II.log -errlog=%protokolldir%\err_Flugzeug_Weitere_Deckung_II.log
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
  
@@ -451,15 +529,15 @@ REM ****************************************************************************
 REM Liquiditätssicherung
 REM *************************************************************************************************************************************************************************
 
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_1.ini -execute=szenarioreport.Hypotheken_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Hypotheken_Liquiditaetssicherung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_1.ini -execute=szenarioreport.Hypotheken_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Hypotheken_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Hypotheken_Liquiditaetssicherung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_2.ini -execute=szenarioreport.Kommunal_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Kommunal_Liquiditaetssicherung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_2.ini -execute=szenarioreport.Kommunal_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Kommunal_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Kommunal_Liquiditaetssicherung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_3.ini -execute=szenarioreport.Schiff_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Schiff_Liquiditaetssicherung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_3.ini -execute=szenarioreport.Schiff_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Schiff_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Schiff_Liquiditaetssicherung.log
 
-start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\TXS_p_4.ini -execute=szenarioreport.Flugzeug_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Flugzeug_Liquiditaetssicherung.log
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_4.ini -execute=szenarioreport.Flugzeug_Liquiditaetssicherung -basedate=%mybasedate% -applog=%protokolldir%\Flugzeug_Liquiditaetssicherung.log -errlog=%protokolldir%\err_Flugzeug_Liquiditaetssicherung.log
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
  
@@ -506,7 +584,7 @@ copy F:\TXS_009_REPORTS\TXS\P_TEMP\Liqui*.* F:\TXS_009_REPORTS\TXS\
 REM *************************************************************************************************************************************************************************
 REM vier Reports Ausnutzung Limite
 REM *************************************************************************************************************************************************************************
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
 start txsjobserver -execute=report.AusLimP13
 
@@ -534,50 +612,41 @@ copy Ausnutzung_Limitierung_22_5.xlsm Ausnutzung_Limitierung_22_5_%date:~6,4%%da
 copy Ausnutzung_Limitierung_26b_4.xlsm Ausnutzung_Limitierung_26b_4_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
 
 REM *************************************************************************************************************************************************************************
-REM Kennzahlen für Cockpit SU 20120103
-REM SU 20170124 diese müssen *vor* den Grenzwertreports ermittelt werden 
+REM Sichernde Übersicherung Liquiditätssicherung
+REM neu per 201809
 REM *************************************************************************************************************************************************************************
 
-REM zum Ausführen wieder in das TXS-Verzeichnis
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
-start txsjobserver.exe -execute="kennzahlen.Kennzahlen PfandBG" -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_kzp.log -errlog=%protokolldir%\errlog_prod_kzp.log
-
-start txsjobserver.exe -execute="kennzahlen.Kennzahlen Schiffe" -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_kzs.log -errlog=%protokolldir%\errlog_prod_kzs.log
-
-start txsjobserver.exe -execute="kennzahlen.Kennzahlen Flugzeuge" -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_kzf.log -errlog=%protokolldir%\errlog_prod_kzf.log
+start txsjobserver.exe -execute=report.SiUeLi_HyPfe_OEPfe
+start txsjobserver.exe -execute=report.SiUeLi_OEPG
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
 
-REM *************************************************************************************************************************************************************************
-
-REM *************************************************************************************************************************************************************************
-REM vier Reports Grenzwerte
-REM *************************************************************************************************************************************************************************
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
-
-start txsjobserver -execute=report.Grenzwerte_SchiPfe
-start txsjobserver -execute=report.Grenzwerte_FluPfe
+start txsjobserver -execute=report.SiUeLi_SchiPfe 
+start txsjobserver.exe -execute=report.SiUeLi_FluPfe 
 
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
-
-start txsjobserver -execute=report.Grenzwerte_OEPG
-start txsjobserver -execute=report.Grenzwerte_HyPfe_OEPfe
-
-powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
-
-REM in das Reportverzeichnis
+ 
+REM *************************************************************************************************************************************************************************
 cd F:\TXS_009_REPORTS\TXS
+ren Sichernde_Ueberdeckung_Liquiditaetssicherung_HyPfe_OEPfe*.xlsm Sichernde_Ueberdeckung_Liquiditaetssicherung_HyPfe_OEPfe.xlsm
+REM *************************************************************************************************************************************************************************
+ 
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS
+ren Sichernde_Ueberdeckung_Liquiditaetssicherung_OPEG*.xlsm Sichernde_Ueberdeckung_Liquiditaetssicherung_OEPG.xlsm
+REM *************************************************************************************************************************************************************************
 
-ren Grenzwerte*FluPfe* Grenzwerte_FluPfe.xlsm
-ren Grenzwerte*HyPfe_OEPfe* Grenzwerte_HyPfe_OEPfe.xlsm
-ren Grenzwerte*OEPG* Grenzwerte_OEPG.xlsm
-ren Grenzwerte*SchiPfe* Grenzwerte_SchiPfe.xlsm
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS
+ren Sichernde_Ueberdeckung_Liquiditaetssicherung_SchiPfe*.xlsm Sichernde_Ueberdeckung_Liquiditaetssicherung_SchiPfe.xlsm
+REM *************************************************************************************************************************************************************************
 
-copy Grenzwerte_FluPfe.xlsm Grenzwerte_FluPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
-copy Grenzwerte_HyPfe_OEPfe.xlsm Grenzwerte_HyPfe_OEPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
-copy Grenzwerte_OEPG.xlsm Grenzwerte_OEPG_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
-copy Grenzwerte_SchiPfe.xlsm Grenzwerte_SchiPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS
+ren Sichernde_Ueberdeckung_Liquiditaetssicherung_FluPfe*.xlsm Sichernde_Ueberdeckung_Liquiditaetssicherung_FluPfe.xlsm
+REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
 REM verpacken aller reports aus F:\TXS_009_REPORTS\TXS
@@ -586,6 +655,9 @@ REM ****************************************************************************
 REM *************************************************************************************************************************************************************************
 REM zunächst die Dateien ohne daypointer nach ReportTXS_009_taeglich.zip
 REM *************************************************************************************************************************************************************************
+
+REM in das Reportverzeichnis
+cd F:\TXS_009_REPORTS\TXS
 
 zip -m -9 ReportTXS_009_taeglich.zip *zins.xl*
 zip -m -9 ReportTXS_009_taeglich.zip *brief.xl*
@@ -603,11 +675,17 @@ zip -m -9 ReportTXS_009_taeglich.zip Ausnutzung_Limitierung_20_2a.xlsm
 zip -m -9 ReportTXS_009_taeglich.zip Ausnutzung_Limitierung_22_5.xlsm
 zip -m -9 ReportTXS_009_taeglich.zip Ausnutzung_Limitierung_26b_4.xlsm
 
+REM Sichernde Übersicherung Liquiditätssicherung
+zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_HyPfe_OEPfe.xlsm
+zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_OEPG.xlsm
+zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_SchiPfe.xlsm
+zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_FluPfe.xlsm
+
 REM *************************************************************************************************************************************************************************
 REM diese sind damit komplett 
 REM zusätzlich die Beleihungswerte
 REM *************************************************************************************************************************************************************************
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
 start txsjobserver -execute=report.BelWertFlug
 start txsjobserver -execute=report.BelWertSchiff
@@ -621,5 +699,5 @@ zip -m -9 ReportTXS_009_%date:~6,4%%date:~3,2%%date:~0,2%.zip *.xl*
 
 rem PROST bedienen
 FOR /F "tokens=1-4 delims= " %%A in (F:\TXS_009_PROD\STATUS\LB\Prost_Kennzahlen_Reports.txt) do (
-  java -jar F:\PROST\Abschluss.jar de.nordlbit.prost.FilePing.Abschluss F:\PROST\prost.ini BetriebTXS@nordlb.de F:\PROST\Mail_Fachbereich.txt %%A %%B %%C %%D
+   java -jar F:\PROST\Abschluss.jar de.nordlbit.prost.FilePing.Abschluss F:\PROST\prost.ini BetriebTXS@nordlb.de F:\PROST\Mail_Fachbereich.txt %%A %%B %%C %%D
 )
