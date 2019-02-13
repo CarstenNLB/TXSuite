@@ -1,20 +1,20 @@
-REM Exit f¸r SSM wieder rausgenommen per 01.10.2018
+REM Exit f√ºr SSM wieder rausgenommen per 01.10.2018
 REM *************************************************************************************************************************************************************************
 REM TXS Reporterstellung 
 REM SU 201612
 REM SU 201701
 REM SU 201809 Anpassungen und neue Reports
-REM SU 201809 Anpassungen f¸r SSM
+REM SU 201809 Anpassungen f√ºr SSM
 REM SU 201812 Grenzwerte direkt nach den Kennzahlen
 REM SU 201812 Verlagerung weiterer Reports ins Barwertsystem
-REM Barwert: geteilt in parallelisierte Blˆcke, maximal f¸nf gleichzeitige Reportl‰ufe und Umbenennung in die Fachbereichsvorgaben, dann Umwandlung .xslm in .xlsx
+REM Barwert: geteilt in parallelisierte Bl√∂cke, maximal f√ºnf gleichzeitige Reportl√§ufe und Umbenennung in die Fachbereichsvorgaben, dann Umwandlung .xslm in .xlsx
 REM          Liquivorschauen als .xslm 
-REM andere: geteilt in parallelisierte Blˆcke, keine Umwandlung
-REM Die TXS-Reporterstellung f¸r TSY wurde ins Barwertsystem ausgelagert 
+REM andere: geteilt in parallelisierte Bl√∂cke, keine Umwandlung
+REM Die TXS-Reporterstellung f√ºr TSY wurde ins Barwertsystem ausgelagert 
 REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
-REM Aufr‰umen
+REM Aufr√§umen
 REM *************************************************************************************************************************************************************************
 
 REM basedate ermitteln
@@ -23,7 +23,7 @@ FOR /F "TOKENS=1" %%i IN (F:\TXS_009_PROD\PARAM\dp.txt) do (SET mybasedate=%%i)
 set protokolldir=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\Protokolle
 
 F:
-REM auch ggf. ‹berbleibsel von vorherigen Versuchen am selben Tag
+REM auch ggf. √úberbleibsel von vorherigen Versuchen am selben Tag
 del /q F:\TXS_009_REPORTS\TXS\ReportTXS_009_%date:~6,4%%date:~3,2%%date:~0,2%.zip
 del /q F:\TXS_009_REPORTS\TXS\ReportTXS_009_taeglich.zip
 
@@ -193,12 +193,12 @@ del /q F:\TXS_009_REPORTS\TXS\P_5\*.*
 REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
-REM Kennzahlen f¸r Cockpit SU 20120103
-REM SU 20170124 diese m¸ssen *vor* den Grenzwertreports ermittelt werden 
-REM SU 2080903 neue Stelle weiter vorne
+REM Kennzahlen f√ºr Cockpit SU 20120103
+REM SU 20170124 diese m√ºssen *vor* den Grenzwertreports ermittelt werden 
+REM SU 20180903 neue Stelle weiter vorne
 REM *************************************************************************************************************************************************************************
 
-REM zum Ausf¸hren wieder in das TXS-Verzeichnis
+REM zum Ausf√ºhren wieder in das TXS-Verzeichnis
 cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
 
 start txsjobserver.exe -execute="kennzahlen.Kennzahlen PfandBG" -basedate=%mybasedate% -applog=%protokolldir%\applog_prod_kzp.log -errlog=%protokolldir%\errlog_prod_kzp.log
@@ -210,9 +210,37 @@ start txsjobserver.exe -execute="kennzahlen.Kennzahlen Flugzeuge" -basedate=%myb
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
 
 REM *************************************************************************************************************************************************************************
+REM Ab hier kann im Produktionssystem gearbeitet werden
+REM *************************************************************************************************************************************************************************
+powershell F:\TXS_009_PROD\PROGRAMM\LB\nlbprodready_mail.ps1
+
+REM *************************************************************************************************************************************************************************
+REM Start Vorgezogene Belieferung an cmc/abacus wg. SSM
+REM *************************************************************************************************************************************************************************
+
+rem ----------------------------------------------------------
+REM Spiegelung ins Barwertsystem SU 20130503
+call F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\_Start_SPIEGELUNG_NLB.cmd
+rem ----------------------------------------------------------
+
+rem ----------------------------------------------------------
+rem Einzelbarwertreporting auf dem Barwertsystem ausf√ºhren
+call F:\TXS_009_REPORTS\CMC\_start_cmc_nlb.bat
+rem ----------------------------------------------------------
+
+rem ----------------------------------------------------------
+rem Auswertungen f√ºr ABACUS auf dem Barwertsystem ausf√ºhren
+call F:\TXS_009_REPORTS\ABA\_start_aba_nlb.bat
+rem ----------------------------------------------------------
+
+REM *************************************************************************************************************************************************************************
+REM Ende Vorgezogene Belieferung an cmc/abacus wg. SSM
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
 REM vier Reports Grenzwerte
 REM *************************************************************************************************************************************************************************
-cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
 start txsjobserver -execute=report.Grenzwerte_SchiPfe
 start txsjobserver -execute=report.Grenzwerte_FluPfe
@@ -237,33 +265,6 @@ copy Grenzwerte_HyPfe_OEPfe.xlsm Grenzwerte_HyPfe_OEPfe_%date:~6,4%%date:~3,2%%d
 copy Grenzwerte_OEPG.xlsm Grenzwerte_OEPG_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
 copy Grenzwerte_SchiPfe.xlsm Grenzwerte_SchiPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
 
-REM *************************************************************************************************************************************************************************
-REM Ab hier kann im Produktionssystem gearbeitet werden
-REM *************************************************************************************************************************************************************************
-powershell F:\TXS_009_PROD\PROGRAMM\LB\nlbprodready_mail.ps1
-
-REM *************************************************************************************************************************************************************************
-REM Start Vorgezogene Belieferung an cmc/abacus wg. SSM
-REM *************************************************************************************************************************************************************************
-
-rem ----------------------------------------------------------
-REM Spiegelung ins Barwertsystem SU 20130503
-call F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\_Start_SPIEGELUNG_NLB.cmd
-rem ----------------------------------------------------------
-
-rem ----------------------------------------------------------
-rem Einzelbarwertreporting auf dem Barwertsystem ausf¸hren
-call F:\TXS_009_REPORTS\CMC\_start_cmc_nlb.bat
-rem ----------------------------------------------------------
-
-rem ----------------------------------------------------------
-rem Auswertungen f¸r ABACUS auf dem Barwertsystem ausf¸hren
-call F:\TXS_009_REPORTS\ABA\_start_aba_nlb.bat
-rem ----------------------------------------------------------
-
-REM *************************************************************************************************************************************************************************
-REM Ende Vorgezogene Belieferung an cmc/abacus wg. SSM
-REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
 REM normal mit LZB 0 0 0 400  
@@ -382,7 +383,7 @@ del /q F:\TXS_009_REPORTS\TXS\P_5\*.*
 REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
-REM Sichernde ‹berdeckung
+REM Sichernde √úberdeckung
 REM *************************************************************************************************************************************************************************
 
 cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
@@ -526,7 +527,7 @@ del /q F:\TXS_009_REPORTS\TXS\P_3\*.*
 REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
-REM Liquidit‰tssicherung
+REM Liquidit√§tssicherung
 REM *************************************************************************************************************************************************************************
 
 cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
@@ -612,7 +613,7 @@ copy Ausnutzung_Limitierung_22_5.xlsm Ausnutzung_Limitierung_22_5_%date:~6,4%%da
 copy Ausnutzung_Limitierung_26b_4.xlsm Ausnutzung_Limitierung_26b_4_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
 
 REM *************************************************************************************************************************************************************************
-REM Sichernde ‹bersicherung Liquidit‰tssicherung
+REM Sichernde √úbersicherung Liquidit√§tssicherung
 REM neu per 201809
 REM *************************************************************************************************************************************************************************
 
@@ -653,7 +654,7 @@ REM verpacken aller reports aus F:\TXS_009_REPORTS\TXS
 REM *************************************************************************************************************************************************************************
 
 REM *************************************************************************************************************************************************************************
-REM zun‰chst die Dateien ohne daypointer nach ReportTXS_009_taeglich.zip
+REM zun√§chst die Dateien ohne daypointer nach ReportTXS_009_taeglich.zip
 REM *************************************************************************************************************************************************************************
 
 REM in das Reportverzeichnis
@@ -675,7 +676,7 @@ zip -m -9 ReportTXS_009_taeglich.zip Ausnutzung_Limitierung_20_2a.xlsm
 zip -m -9 ReportTXS_009_taeglich.zip Ausnutzung_Limitierung_22_5.xlsm
 zip -m -9 ReportTXS_009_taeglich.zip Ausnutzung_Limitierung_26b_4.xlsm
 
-REM Sichernde ‹bersicherung Liquidit‰tssicherung
+REM Sichernde √úbersicherung Liquidit√§tssicherung
 zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_HyPfe_OEPfe.xlsm
 zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_OEPG.xlsm
 zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherung_SchiPfe.xlsm
@@ -683,7 +684,7 @@ zip -m -9 ReportTXS_009_taeglich.zip Sichernde_Ueberdeckung_Liquiditaetssicherun
 
 REM *************************************************************************************************************************************************************************
 REM diese sind damit komplett 
-REM zus‰tzlich die Beleihungswerte
+REM zus√§tzlich die Beleihungswerte
 REM *************************************************************************************************************************************************************************
 cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
 
@@ -699,5 +700,5 @@ zip -m -9 ReportTXS_009_%date:~6,4%%date:~3,2%%date:~0,2%.zip *.xl*
 
 rem PROST bedienen
 FOR /F "tokens=1-4 delims= " %%A in (F:\TXS_009_PROD\STATUS\LB\Prost_Kennzahlen_Reports.txt) do (
-   java -jar F:\PROST\Abschluss.jar de.nordlbit.prost.FilePing.Abschluss F:\PROST\prost.ini BetriebTXS@nordlb.de F:\PROST\Mail_Fachbereich.txt %%A %%B %%C %%D
+   java -jar F:\PROST\Abschluss.jar de.nordlbit.prost.FilePing.Abschluss F:\PROST\prost.ini txs-m-nlb@nordlb.de BetriebTXS@nordlb.de F:\PROST\Mail_Fachbereich.txt %%A %%B %%C %%D
 )
