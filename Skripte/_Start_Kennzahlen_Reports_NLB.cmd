@@ -7,6 +7,8 @@ REM SU 201809 Anpassungen und neue Reports
 REM SU 201809 Anpassungen für SSM
 REM SU 201812 Grenzwerte direkt nach den Kennzahlen
 REM SU 201812 Verlagerung weiterer Reports ins Barwertsystem
+REM SU 201901 FRC-Reports aufgenommen
+REM 
 REM Barwert: geteilt in parallelisierte Blöcke, maximal fünf gleichzeitige Reportläufe und Umbenennung in die Fachbereichsvorgaben, dann Umwandlung .xslm in .xlsx
 REM          Liquivorschauen als .xslm 
 REM andere: geteilt in parallelisierte Blöcke, keine Umwandlung
@@ -210,11 +212,6 @@ start txsjobserver.exe -execute="kennzahlen.Kennzahlen Flugzeuge" -basedate=%myb
 powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
 
 REM *************************************************************************************************************************************************************************
-REM Ab hier kann im Produktionssystem gearbeitet werden
-REM *************************************************************************************************************************************************************************
-powershell F:\TXS_009_PROD\PROGRAMM\LB\nlbprodready_mail.ps1
-
-REM *************************************************************************************************************************************************************************
 REM Start Vorgezogene Belieferung an cmc/abacus wg. SSM
 REM *************************************************************************************************************************************************************************
 
@@ -222,6 +219,11 @@ rem ----------------------------------------------------------
 REM Spiegelung ins Barwertsystem SU 20130503
 call F:\TXS_009_PROD\PROGRAMM\TXS\TXS_PROD\_Start_SPIEGELUNG_NLB.cmd
 rem ----------------------------------------------------------
+
+REM *************************************************************************************************************************************************************************
+REM Ab hier kann im Produktionssystem gearbeitet werden
+REM *************************************************************************************************************************************************************************
+powershell F:\TXS_009_PROD\PROGRAMM\LB\nlbprodready_mail.ps1
 
 rem ----------------------------------------------------------
 rem Einzelbarwertreporting auf dem Barwertsystem ausführen
@@ -265,6 +267,99 @@ copy Grenzwerte_HyPfe_OEPfe.xlsm Grenzwerte_HyPfe_OEPfe_%date:~6,4%%date:~3,2%%d
 copy Grenzwerte_OEPG.xlsm Grenzwerte_OEPG_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
 copy Grenzwerte_SchiPfe.xlsm Grenzwerte_SchiPfe_%date:~6,4%%date:~3,2%%date:~0,2%.xlsm
 
+REM *************************************************************************************************************************************************************************
+REM jetzt der Teil 24M, drei reports für FRC mit Versand hier, fünf reports für QM PF  
+REM *************************************************************************************************************************************************************************
+
+cd F:\TXS_009_REPORTS\FRC
+del /q F:\TXS_009_REPORTS\FRC\*.*
+
+cd F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW
+
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_1.ini -execute=szenarioreport.Hypotheken_klassisch_24M -basedate=%mybasedate% -applog=%protokolldir%\applog_Hypotheken_klassisch_24M.log -errlog=%protokolldir%\errlog_Hypotheken_klassisch_24M.log
+
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_2.ini -execute=szenarioreport.Kommunal_klassisch_24M -basedate=%mybasedate% -applog=%protokolldir%\applog_Kommunal_klassisch_24M.log -errlog=%protokolldir%\errlog_Kommunal_klassisch_24M.log
+
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_3.ini -execute=szenarioreport.Kommunal_weitere_24M -basedate=%mybasedate% -applog=%protokolldir%\applog_Kommunal_weitere_24M.log -errlog=%protokolldir%\errlog_Kommunal_weitere_24M.log
+
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_4.ini -execute=szenarioreport.Flugzeug_klassisch_24M -basedate=%mybasedate% -applog=%protokolldir%\applog_Flugzeug_klassisch_24M.log -errlog=%protokolldir%\errlog_Flugzeug_klassisch_24M.log
+
+start txsjobserver.exe -env=F:\TXS_009_PROD\PROGRAMM\TXS\TXS_BARW\TXS_barw_p_5.ini -execute=szenarioreport.Schiff_klassisch_24M -basedate=%mybasedate% -applog=%protokolldir%\applog_Schiff_klassisch_24M.log -errlog=%protokolldir%\errlog_Schiff_klassisch_24M.log
+
+powershell F:\TXS_009_PROD\PROGRAMM\LB\warten_auf_process_ende_txsjobserver.ps1 >> %protokolldir%\process_ende.log
+
+REM *************************************************************************************************************************************************************************
+REM Umbenennen der Reports (geht so nur, wenn ein file pro Verzeichnis vorhanden ist), für FRC und QM PF
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS\P_1
+ren Cashflow*.xlsm %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Hypothekenpfandbrief_Gattungsklassische_Deckung.xlsm
+copy %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Hypothekenpfandbrief_Gattungsklassische_Deckung.xlsm F:\TXS_009_REPORTS\FRC
+
+ren %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Hypothekenpfandbrief_Gattungsklassische_Deckung.xlsm Cashflow_Hypothekenpfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm
+copy Cashflow_Hypothekenpfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm F:\TXS_009_REPORTS\TXS\P_TEMP
+
+del /q F:\TXS_009_REPORTS\TXS\P_1\*.*
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS\P_2
+
+ren Cashflow*.xlsm %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Oeffentlicher_Pfandbrief_Gattungsklassische_Deckung.xlsm
+copy %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Oeffentlicher_Pfandbrief_Gattungsklassische_Deckung.xlsm F:\TXS_009_REPORTS\FRC
+
+ren %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Oeffentlicher_Pfandbrief_Gattungsklassische_Deckung.xlsm Cashflow_Oeffentlicher_Pfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm
+copy Cashflow_Oeffentlicher_Pfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm F:\TXS_009_REPORTS\TXS\P_TEMP
+
+del /q F:\TXS_009_REPORTS\TXS\P_2\*.*
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS\P_3
+
+ren Cashflow*.xlsm %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Oeffentlicher_Pfandbrief_Weitere_Deckung.xlsm
+copy %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Oeffentlicher_Pfandbrief_Weitere_Deckung.xlsm F:\TXS_009_REPORTS\FRC
+
+ren %mybasedate:~0,4%%mybasedate:~5,2%%mybasedate:~8,2%_Cashflows_Oeffentlicher_Pfandbrief_Weitere_Deckung.xlsm Cashflow_Oeffentlicher_Pfandbrief_Weitere_Deckung_Marktzins_taeglich.xlsm
+copy Cashflow_Oeffentlicher_Pfandbrief_Weitere_Deckung_Marktzins_taeglich.xlsm F:\TXS_009_REPORTS\TXS\P_TEMP
+
+del /q F:\TXS_009_REPORTS\TXS\P_3\*.*
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS\P_4
+ren Cashflow*.xlsm Cashflow_Flugzeugpfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm
+copy Cashflow_Flugzeugpfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm F:\TXS_009_REPORTS\TXS\P_TEMP
+
+del /q F:\TXS_009_REPORTS\TXS\P_4\*.*
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
+cd F:\TXS_009_REPORTS\TXS\P_5
+ren Cashflow*.xlsm Cashflow_Schiffspfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm
+copy Cashflow_Schiffspfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsm F:\TXS_009_REPORTS\TXS\P_TEMP
+
+del /q F:\TXS_009_REPORTS\TXS\P_5\*.*
+REM *************************************************************************************************************************************************************************
+
+REM *************************************************************************************************************************************************************************
+REM Kopieren der drei FRC-Reports  
+REM *************************************************************************************************************************************************************************
+
+net use * /delete /y
+
+net use J: \\kbk.NordLB.local\programme\frcrc\FRCRC_RTSY_Liquidity\LST\TXS_Reports Edrpwd100 /user:kbk\txstrv01
+
+copy F:\TXS_009_REPORTS\FRC\*.* J:\
+
+net use J: /delete /y
+
+REM *************************************************************************************************************************************************************************
+REM Erledigtmeldung  
+REM *************************************************************************************************************************************************************************
+
+powershell F:\TXS_009_PROD\PROGRAMM\LB\nlbFRCrepready_mail.ps1
 
 REM *************************************************************************************************************************************************************************
 REM normal mit LZB 0 0 0 400  
@@ -659,6 +754,12 @@ REM ****************************************************************************
 
 REM in das Reportverzeichnis
 cd F:\TXS_009_REPORTS\TXS
+
+zip -m -9 ReportTXS_009_taeglich.zip Cashflow_Hypothekenpfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsx 
+zip -m -9 ReportTXS_009_taeglich.zip Cashflow_Oeffentlicher_Pfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsx
+zip -m -9 ReportTXS_009_taeglich.zip Cashflow_Oeffentlicher_Pfandbrief_Weitere_Deckung_Marktzins_taeglich.xlsx 
+zip -m -9 ReportTXS_009_taeglich.zip Cashflow_Flugzeugpfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsx
+zip -m -9 ReportTXS_009_taeglich.zip Cashflow_Schiffspfandbrief_Gattungsklassische_Deckung_Marktzins_taeglich.xlsx
 
 zip -m -9 ReportTXS_009_taeglich.zip *zins.xl*
 zip -m -9 ReportTXS_009_taeglich.zip *brief.xl*
