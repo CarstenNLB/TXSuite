@@ -7,11 +7,11 @@ Applikationsmanager:<BR>
 Stephan Pape, stephan.pape@nordlb.de, +49-511-361-5874<BR>
 
 Stellvertretender Applikationsmanager:<BR> 
-N.N.
+Carsten Tepper, carsten_a.tepper@nordlb.de, +49-511-361-6725<BR>
 
 Betrieb (RTB):<BR>
 Stefan Unnasch, cs.stefan.unnasch@nordlb.de, +49-511-361-6741<BR>
-Artur Dusdal, artur.dusdal@nordlb.de<BR>
+Artur Dusdal, artur.dusdal@nordlb.de, +49-511-361-9987<BR>
 
 Entwickler:<BR>
 Carsten Tepper, carsten_a.tepper@nordlb.de, +49-511-361-6725<BR>
