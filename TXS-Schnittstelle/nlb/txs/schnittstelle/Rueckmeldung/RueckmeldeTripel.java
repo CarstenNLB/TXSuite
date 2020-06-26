@@ -7,8 +7,8 @@
 package nlb.txs.schnittstelle.Rueckmeldung;
 
 /**
+ * Die Klasse enthaelt die Daten eines SAP CMS Rueckmeldeobjekt bzw. -zeile.
  * @author tepperc
- *
  */
 public class RueckmeldeTripel 
 {
@@ -49,43 +49,46 @@ public class RueckmeldeTripel
     
     /**
      * Konstruktor
-     * @param pvOriginator
-     * @param pvGeschaeftswertID 
-     * @param pvSicherheitenID 
-     * @param pvObjID 
-     * @param pvGeschaeftswertStatus 
-     * @param pvSicherheitenStatus 
-     * @param pvObjektStatus 
+     * @param pvOriginator Originator
+     * @param pvGeschaeftswertID ID des Geschaeftswerts
+     * @param pvSicherheitenID  ID der Sicherheit
+     * @param pvObjID ID des Objekts
+     * @param pvGeschaeftswertStatus Status des Geschaeftswerts
+     * @param pvSicherheitenStatus Status der Sicherheit
+     * @param pvObjektStatus Status des Objekts
      */
     public RueckmeldeTripel(String pvOriginator, String pvGeschaeftswertID, String pvSicherheitenID, String pvObjID, String pvGeschaeftswertStatus, String pvSicherheitenStatus, String pvObjektStatus)
     {
-    	this.ivOriginator = pvOriginator;
+      this.ivOriginator = pvOriginator;
     	this.ivGeschaeftswertID = pvGeschaeftswertID;
-        this.ivSicherheitenID = pvSicherheitenID;
-        this.ivObjektID = pvObjID;
-        this.ivGeschaeftswertStatus = pvGeschaeftswertStatus;
-        this.ivSicherheitenStatus = pvSicherheitenStatus;
-        this.ivObjektStatus = pvObjektStatus;
+    	this.ivSicherheitenID = pvSicherheitenID;
+    	this.ivObjektID = pvObjID;
+    	this.ivGeschaeftswertStatus = pvGeschaeftswertStatus;
+    	this.ivSicherheitenStatus = pvSicherheitenStatus;
+    	this.ivObjektStatus = pvObjektStatus;
     }
 
     /**
-	 * @return the ivOriginator
-	 */
-	public String getOriginator() 
+     * Liefert den Originator
+	   * @return Originator
+	   */
+	  public String getOriginator()
 	{
 		return ivOriginator;
 	}
 
-	/**
-	 * @param pvOriginator the ivOriginator to set
-	 */
-	public void setOriginator(String pvOriginator) 
+	  /**
+     * Setzt den Originator
+	   * @param pvOriginator den zu setzenden Originator
+	   */
+	  public void setOriginator(String pvOriginator)
 	{
 		this.ivOriginator = pvOriginator;
 	}
 
-	/**
-     * @return the geschaeftswertID
+	  /**
+     * Liefert die ID des Geschaeftswerts
+     * @return ID des Geschaeftswerts
      */
     public String getGeschaeftswertID() 
     {
@@ -93,7 +96,8 @@ public class RueckmeldeTripel
     }
 
     /**
-     * @param pvGeschaeftswertID the geschaeftswertID to set
+     * Setzt die ID die Geschaeftswerts
+     * @param pvGeschaeftswertID die zu setzende ID des Geschaeftswerts
      */
     public void setGeschaeftswertID(String pvGeschaeftswertID) 
     {
@@ -101,7 +105,8 @@ public class RueckmeldeTripel
     }
 
     /**
-     * @return the sicherheitenID
+     * Liefert die ID der Sicherheit
+     * @return ID der Sicherheit
      */
     public String getSicherheitenID() 
     {
@@ -109,7 +114,8 @@ public class RueckmeldeTripel
     }
 
     /**
-     * @param pvSicherheitenID the sicherheitenID to set
+     * Setzt die ID der Sicherheit
+     * @param pvSicherheitenID die zu setzende ID der Sicherheit
      */
     public void setSicherheitenID(String pvSicherheitenID) 
     {
@@ -117,7 +123,8 @@ public class RueckmeldeTripel
     }
 
     /**
-     * @return the objektID
+     * Liefert die ID des Objekts
+     * @return ID des Objekts
      */
     public String getObjektID() 
     {
@@ -125,7 +132,8 @@ public class RueckmeldeTripel
     }
 
     /**
-     * @param pvObjektID the objektID to set
+     * Setzt die ID des Objekts
+     * @param pvObjektID die zu setzende ID des Objekts
      */
     public void setObjektID(String pvObjektID) 
     {
@@ -133,42 +141,48 @@ public class RueckmeldeTripel
     }
 
     /**
-     * @return the geschaeftswertStatus
+     * Liefert den Status des Geschaeftswert
+     * @return Status des Geschaeftswert
      */
     public String getGeschaeftswertStatus() {
         return this.ivGeschaeftswertStatus;
     }
 
     /**
-     * @param pvGeschaeftswertStatus the geschaeftswertStatus to set
+     * Setzt den Status des Geschaeftswerts
+     * @param pvGeschaeftswertStatus den zu setzenden Status des Geschaeftswerts
      */
     public void setGeschaeftswertStatus(String pvGeschaeftswertStatus) {
         this.ivGeschaeftswertStatus = pvGeschaeftswertStatus;
     }
 
     /**
-     * @return the sicherheitenStatus
+     * Liefert den Status der Sicherheit
+     * @return Status der Sicherheit
      */
     public String getSicherheitenStatus() {
         return this.ivSicherheitenStatus;
     }
 
     /**
-     * @param pvSicherheitenStatus the sicherheitenStatus to set
+     * Setzt den Status der Sicherheit
+     * @param pvSicherheitenStatus den zu setztenden Status der Sicherheit
      */
     public void setSicherheitStatus(String pvSicherheitenStatus) {
         this.ivSicherheitenStatus = pvSicherheitenStatus;
     }
 
     /**
-     * @return the objektStatus
+     * Liefert den Status des Objekts
+     * @return Status des Objekts
      */
     public String getObjektStatus() {
         return this.ivObjektStatus;
     }
 
     /**
-     * @param pvObjektStatus the objektStatus to set
+     * Setzt den Status des Objekts
+     * @param pvObjektStatus den zu setzenden Status des  Objekts
      */
     public void setObjektStatus(String pvObjektStatus) {
         this.ivObjektStatus = pvObjektStatus;

@@ -4,22 +4,19 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.HashSet;
-
-import org.apache.log4j.Logger;
-
 import nlb.txs.schnittstelle.Kunde.KundennummernOutput;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
-import nlb.txs.schnittstelle.RefiRegister.RefiZusatz;
-import nlb.txs.schnittstelle.SAPCMS.SAPCMS_Neu;
+import nlb.txs.schnittstelle.Sicherheiten.Sicherheiten2Pfandbrief;
+import nlb.txs.schnittstelle.Sicherheiten.SicherheitenDaten;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.IniReader;
 import nlb.txs.schnittstelle.Utilities.MappingKunde;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
+import org.apache.log4j.Logger;
 
 public class LoanIQ2RefiRegisterVerarbeitung 
 {
@@ -52,24 +49,29 @@ public class LoanIQ2RefiRegisterVerarbeitung
     private String ivLoanIQ2RefiRegisterOutputDatei;
     
     /**
-     * Import-Verzeichnis der SAPCMS-Datei
+     * Import-Verzeichnis der Sicherheiten-Datei
      */
     private String ivImportVerzeichnisSAPCMS;
     
     /**
-     * Dateiname der SAPCMS-Datei
+     * Dateiname der Sicherheiten-Datei
      */
     private String ivSapcmsDatei;
 
     /**
-     * Sicherheiten aus SAPCMS
+     * Sicherheiten-Daten
      */
-    private SAPCMS_Neu ivSapcms;
+    private SicherheitenDaten ivSicherheitenDaten;
 
     /**
      * Dateiname der Liste der Kontonummern
      */
     private String ivFilterDatei;
+
+    /**
+     * Dateiname der Liste der Kontonummern fuer BB
+     */
+    //private String ivFilterDateiBB;
 
     /**
      * KundeRequest-Datei
@@ -87,14 +89,19 @@ public class LoanIQ2RefiRegisterVerarbeitung
     private Vorlaufsatz ivVorlaufsatz;
        
     /**
-     * Ein DarlehenLoanIQBlock
+     * Ein DarlehenBlock
      */
-    private DarlehenLoanIQBlock ivDarlehenLoanIQBlock;
+    private DarlehenBlock ivDarlehenBlock;
     
     /** 
-     * Liste der Kontonummern die verarbeitet werden
+     * Liste der zu verarbeitenden Kontonummern
      */
     private HashSet<String> ivListeKontonummern;
+    
+    /**
+     * Liste der zu verarbeiteneden Kontonummern fuer BB
+     */
+    //private HashSet<String> ivListeKontonummernBB;
     
     /**
      * Zaehler fuer die Anzahl der Vorlaufsaetze
@@ -122,7 +129,8 @@ public class LoanIQ2RefiRegisterVerarbeitung
     private OutputDarlehenXML ivOutputDarlehenXML;
 	    
     // Zaehlvariablen
-    ////private int ivAnzahlAF = 0;
+    //private int ivAnzahlAF = 0;
+    //private int ivAnzahlB = 0;
     private int ivAnzahlK = 0;
     private int ivAnzahlH = 0;
     private int ivAnzahlF = 0;
@@ -130,14 +138,14 @@ public class LoanIQ2RefiRegisterVerarbeitung
     private int ivAnzahlO = 0;
 	
     /**
-     * Liste der Refi-Zusaetze
+     * Liste der RefiDeepSea-Zusaetze
      */
-    private HashMap<String, RefiZusatz> ivListeRefiZusatz;
+    //private HashMap<String, RefiDeepSeaZusatz> ivListeRefiDeepSeaZusatz;
     
     /**
      * RefiRegister Aktiv
      */
-    private RefiRegisterAktiv ivRefiRegisterAktiv;
+    //private RefiRegisterAktiv ivRefiRegisterAktiv;
     
     /**
      * RefiRegister Passiv
@@ -207,6 +215,14 @@ public class LoanIQ2RefiRegisterVerarbeitung
             	LOGGER_LOANIQ2RefiRegister.error("Kein Filter-Dateiname in der ini-Datei...");
             	System.exit(1);
             }
+
+            //ivFilterDateiBB = pvReader.getPropertyString("LoanIQ2RefiRegister", "Filter-Datei-BB", "Fehler");
+            //if (ivFilterDateiBB.equals("Fehler"))
+            //{
+            //	LOGGER_LOANIQ2RefiRegister.error("Kein Filter-Dateiname fuer BB in der ini-Datei...");
+            //	System.exit(1);
+            //}
+
             
             ivKundeRequestDatei = pvReader.getPropertyString("LoanIQ2RefiRegister", "KundeRequestDatei", "Fehler");
             if (ivKundeRequestDatei.equals("Fehler"))
@@ -218,14 +234,21 @@ public class LoanIQ2RefiRegisterVerarbeitung
             ivListeKontonummern = new HashSet<String>();
             // Dummy-Kontonummer damit die Liste nicht leer wird
             ivListeKontonummern.add("99999999999");
-
-            ivListeRefiZusatz = new HashMap<String, RefiZusatz>();
             
-            // RefiZusatz einlesen - CT 18.02.2016 herausgenommen - Nur bei der initialen Lieferung notwendig
-            //ivListeRefiZusatz = readRefiZusatz(ivExportVerzeichnis + "\\RefiListe_Pfandobjekt.csv");
+            //ivListeKontonummernBB = new HashSet<String>();
+            // Dummy-Kontonummer damit die Liste nicht leer wird
+            //ivListeKontonummernBB.add("99999999999");
+
+            //ivListeRefiDeepSeaZusatz = new HashMap<String, RefiDeepSeaZusatz>();
+            
+            // RefiDeepSeaZusatz einlesen - CT 26.03.2019
+            //ivListeRefiDeepSeaZusatz = readRefiDeepSeaZusatz(ivExportVerzeichnis + "\\BB_20190401.csv");
             
             // Liste der Kontonummern einlesen
-            readListeKontonummern(ivExportVerzeichnis + "\\" + ivFilterDatei);
+            readListeKontonummern(ivListeKontonummern, ivExportVerzeichnis + "\\" + ivFilterDatei);
+            
+            // Liste der Kontonummern fuer BB einlesen
+            //readListeKontonummern(ivListeKontonummernBB, ivExportVerzeichnis + "\\" + ivFilterDateiBB);
             
             // Verarbeitung starten
             startVerarbeitung();
@@ -243,18 +266,18 @@ public class LoanIQ2RefiRegisterVerarbeitung
         ivZaehlerFinanzgeschaefteNetto = 0;
         ivZaehlerFinanzgeschaefteFremd = 0;
     	                
-        // SAP CMS-Daten einlesen
-        ivSapcms = new SAPCMS_Neu(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, LOGGER_LOANIQ2RefiRegister);
+        // Sicherheiten-Daten einlesen
+        ivSicherheitenDaten = new SicherheitenDaten(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, SicherheitenDaten.SAPCMS, LOGGER_LOANIQ2RefiRegister);
         
         // Darlehen XML-Datei im TXS-Format
-        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivLoanIQ2RefiRegisterOutputDatei);
+        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivLoanIQ2RefiRegisterOutputDatei, LOGGER_LOANIQ2RefiRegister);
         ivOutputDarlehenXML.openXML();
         ivOutputDarlehenXML.printXMLStart();
         ivOutputDarlehenXML.printTXSImportDatenStart();
         
         // RefiRegister-Passiv
-        ivRefiRegisterPassiv = new RefiRegisterPassiv(ivSapcms, ivOutputDarlehenXML, LOGGER_LOANIQ2RefiRegister);
-        ivRefiRegisterAktiv = new RefiRegisterAktiv(ivSapcms, ivOutputDarlehenXML, LOGGER_LOANIQ2RefiRegister);
+        ivRefiRegisterPassiv = new RefiRegisterPassiv(ivSicherheitenDaten, ivOutputDarlehenXML, LOGGER_LOANIQ2RefiRegister);
+        //ivRefiRegisterAktiv = new RefiRegisterAktiv(ivSicherheitenDaten, ivOutputDarlehenXML, LOGGER_LOANIQ2RefiRegister);
         
         // LoanIQ-Daten einlesen und verarbeiten
         readLoanIQ(ivImportVerzeichnis + "\\" + ivLoanIQInputDatei);
@@ -283,8 +306,9 @@ public class LoanIQ2RefiRegisterVerarbeitung
     private void readLoanIQ(String pvDateiname)
     {
         String lvZeile = null;
-        ivVorlaufsatz = new Vorlaufsatz();
-        ivDarlehenLoanIQBlock = new DarlehenLoanIQBlock();
+        ivVorlaufsatz = new Vorlaufsatz(LOGGER_LOANIQ2RefiRegister);
+        //TODO ivSicherheitenDaten.getSicherheiten2Pfandbrief() -> Sicherheiten2RefiRegister?
+        ivDarlehenBlock = new DarlehenBlock(ivVorlaufsatz, ivSicherheitenDaten.getSicherheiten2RefiRegister(), LOGGER_LOANIQ2RefiRegister);
               
         // Oeffnen der Dateien
         FileInputStream lvFis = null;
@@ -321,14 +345,18 @@ public class LoanIQ2RefiRegisterVerarbeitung
                 else
                 {
                     //System.out.println("lvZeile: " + lvZeile);
-                    if (!ivDarlehenLoanIQBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ2RefiRegister)) // Parsen der Felder
+                    if (!ivDarlehenBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ2RefiRegister)) // Parsen der Felder
                     {        
-                    	// Unterschiedliche Kontonummer -> Darlehen verarbeiten                    	
-                    	verarbeiteDarlehenPassiv();
+                    	// Unterschiedliche Kontonummer -> Darlehen verarbeiten    
+                    	if (ivListeKontonummern.contains(ivDarlehenBlock.getKontonummer()))
+                    	{
+                    		verarbeiteDarlehenPassiv();
+                    	}
+
                         // Neuen LoanIQ-Block anlegen
-                        ivDarlehenLoanIQBlock = new DarlehenLoanIQBlock();
+                        ivDarlehenBlock = new DarlehenBlock(ivVorlaufsatz, new Sicherheiten2Pfandbrief(ivSicherheitenDaten, LOGGER_LOANIQ2RefiRegister), LOGGER_LOANIQ2RefiRegister);
                         // Zeile mit neuer Kontonummer muss noch verarbeitet werden
-                        if (ivDarlehenLoanIQBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ2RefiRegister)) // Einlesen der Felder
+                        if (ivDarlehenBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ2RefiRegister)) // Einlesen der Felder
                         {
                         	if (lvZeile.charAt(56) == 'B') ivZaehlerFinanzgeschaefteBrutto++;
                         	if (lvZeile.charAt(56) == 'N') ivZaehlerFinanzgeschaefteNetto++;
@@ -344,8 +372,11 @@ public class LoanIQ2RefiRegisterVerarbeitung
                 }
             }
             // Letzten Kredit auch verarbeiten - CT 13.09.2017
-            verarbeiteDarlehenPassiv();
-        }
+        	if (ivListeKontonummern.contains(ivDarlehenBlock.getKontonummer()))
+        	{
+        		verarbeiteDarlehenPassiv();
+        	}
+         }
         catch (Exception e)
         {
             LOGGER_LOANIQ2RefiRegister.error("Fehler beim Verarbeiten einer Zeile!");
@@ -366,37 +397,38 @@ public class LoanIQ2RefiRegisterVerarbeitung
      * Liest die RefiZusatz-Datei ein
      * @param pvDateiname
      */
-    private HashMap<String, RefiZusatz> readRefiZusatz(String pvDateiname)
+    /*
+    private HashMap<String, RefiDeepSeaZusatz> readRefiDeepSeaZusatz(String pvDateiname)
     {
-    	LOGGER_LOANIQ2RefiRegister.info("Start - readRefiZusatz");
+    	LOGGER_LOANIQ2RefiRegister.info("Start - readRefiDeepSeaZusatz");
         String lvZeile = null;
-        int lvZaehlerRefiZusatz = 0;
-        HashMap<String, RefiZusatz> lvListeRefiZusatz = new HashMap<String, RefiZusatz>();
+        int lvZaehlerRefiDeepSeaZusatz = 0;
+        HashMap<String, RefiDeepSeaZusatz> lvListeRefiDeepSeaZusatz = new HashMap<String, RefiDeepSeaZusatz>();
                       
         // Oeffnen der Dateien
         FileInputStream lvFis = null;
-        File lvFileRefiZusatz = new File(pvDateiname);
+        File lvFileRefiDeepSeaZusatz = new File(pvDateiname);
         try
         {
-            lvFis = new FileInputStream(lvFileRefiZusatz);
+            lvFis = new FileInputStream(lvFileRefiDeepSeaZusatz);
         }
         catch (Exception e)
         {
-        	LOGGER_LOANIQ2RefiRegister.error("Konnte RefiZusatz-Datei nicht oeffnen!");
+        	LOGGER_LOANIQ2RefiRegister.error("Konnte RefiDeepSeaZusatz-Datei nicht oeffnen!");
             return null;
         }
     
         BufferedReader lvIn = new BufferedReader(new InputStreamReader(lvFis));
              
-        RefiZusatz lvRefiZusatz = null;
+        RefiDeepSeaZusatz lvRefiDeepSeaZusatz = null;
         try
         {
             while ((lvZeile = lvIn.readLine()) != null)  // Lesen RefiZusatz-Datei
             {
-                lvRefiZusatz = new RefiZusatz();
-                lvRefiZusatz.parseRefiZusatz(lvZeile, lvZaehlerRefiZusatz);
-                lvListeRefiZusatz.put(lvRefiZusatz.getPassivkontonummer() + lvRefiZusatz.getSicherheitenID(), lvRefiZusatz);
-                lvZaehlerRefiZusatz++;
+                lvRefiDeepSeaZusatz = new RefiDeepSeaZusatz();
+                lvRefiDeepSeaZusatz.parseRefiDeepSeaZusatz(lvZeile, lvZaehlerRefiDeepSeaZusatz);
+                lvListeRefiDeepSeaZusatz.put(lvRefiDeepSeaZusatz.getKontonummer() + "_" + lvRefiDeepSeaZusatz.getSicherheitenID(), lvRefiDeepSeaZusatz);
+                lvZaehlerRefiDeepSeaZusatz++;
             }
         }
         catch (Exception e)
@@ -405,8 +437,8 @@ public class LoanIQ2RefiRegisterVerarbeitung
             e.printStackTrace();
         }
         
-        LOGGER_LOANIQ2RefiRegister.info("Anzahl ivListeRefiZusatz: " + lvListeRefiZusatz.size());
-        LOGGER_LOANIQ2RefiRegister.info("Anzahl gelesener Zeilen in der RefiZusatz-Datei: " + lvZaehlerRefiZusatz);
+        LOGGER_LOANIQ2RefiRegister.info("Anzahl ivListeRefiDeepSeaZusatz: " + lvListeRefiDeepSeaZusatz.size());
+        LOGGER_LOANIQ2RefiRegister.info("Anzahl gelesener Zeilen in der RefiDeepSeaZusatz-Datei: " + lvZaehlerRefiDeepSeaZusatz);
         
         try
         {
@@ -417,14 +449,15 @@ public class LoanIQ2RefiRegisterVerarbeitung
         	LOGGER_LOANIQ2RefiRegister.error("Konnte RefiZusatz-Datei nicht schliessen!");
         }   
         
-        return lvListeRefiZusatz;
-     }
+        return lvListeRefiDeepSeaZusatz;
+     } */
     
     /**
      * Liest die Liste der Kontonummern ein
-     * @param pvDateiname
+     * @param pvListeKontonummern Liste der Kontonummern
+     * @param pvDateiname Dateiname der Kontonummernliste
      */
-    private void readListeKontonummern(String pvDateiname)
+    private void readListeKontonummern(HashSet<String> pvListeKontonummern, String pvDateiname)
     {
         LOGGER_LOANIQ2RefiRegister.info("Start - readListeKontonummern");
         LOGGER_LOANIQ2RefiRegister.info("Datei: " + pvDateiname);
@@ -439,7 +472,7 @@ public class LoanIQ2RefiRegisterVerarbeitung
         }
         catch (Exception e)
         {
-            LOGGER_LOANIQ2RefiRegister.error("Konnte die ListeKontonummern-Datei nicht oeffnen!");
+            LOGGER_LOANIQ2RefiRegister.error("Konnte die Kontonummernliste-Datei '" + pvDateiname +"' nicht oeffnen!");
             return;
         }
     
@@ -450,7 +483,7 @@ public class LoanIQ2RefiRegisterVerarbeitung
             while ((lvZeile = lvIn.readLine()) != null)  // Lesen der ListeKontonummern-Datei
             {
                 LOGGER_LOANIQ2RefiRegister.info("Verarbeite Kontonummer: " + lvZeile);
-                ivListeKontonummern.add(lvZeile);
+                pvListeKontonummern.add(lvZeile);
             }
         }
         catch (Exception e)
@@ -459,7 +492,7 @@ public class LoanIQ2RefiRegisterVerarbeitung
             e.printStackTrace();
         }
         
-        LOGGER_LOANIQ2RefiRegister.info("Anzahl ivListeKontonummern: " + ivListeKontonummern.size());
+        LOGGER_LOANIQ2RefiRegister.info("Anzahl von Kontonummern in der Liste: " + pvListeKontonummern.size());
         
         try
         {
@@ -467,13 +500,13 @@ public class LoanIQ2RefiRegisterVerarbeitung
         }
         catch (Exception e)
         {
-            LOGGER_LOANIQ2RefiRegister.error("Konnte die ListeKontonummern-Datei nicht schliessen!");
+            LOGGER_LOANIQ2RefiRegister.error("Konnte die Kontonummernliste-Datei '" + pvDateiname + "' nicht schliessen!");
         }     
      }
 
     /**
-     * Liefert eine Statistik als String
-     * @return 
+     * Liefert Statistik Informationen als String
+     * @return String mit Statistik Informationen
      */
     private String getStatistik()
     {
@@ -484,8 +517,10 @@ public class LoanIQ2RefiRegisterVerarbeitung
         lvOut.append(ivZaehlerFinanzgeschaefteBrutto + " Brutto-Finanzgeschaefte gelesen..." + StringKonverter.lineSeparator);
         lvOut.append(ivZaehlerFinanzgeschaefteNetto + " Netto-Finanzgeschaefte gelesen..." + StringKonverter.lineSeparator);
         lvOut.append(ivZaehlerFinanzgeschaefteFremd + " Fremd-Finanzgeschaefte gelesen..." + StringKonverter.lineSeparator);
-        lvOut.append(ivListeRefiZusatz.size() + " RefiZusatz gelesen..." + StringKonverter.lineSeparator);
-        ////lvOut.append(ivAnzahlAF + " mit Ausplatzierungsmerkmal AF" + StringKonverter.lineSeparator);
+        //if (ivListeRefiDeepSeaZusatz != null)
+        //{
+        //   lvOut.append(ivListeRefiDeepSeaZusatz.size() + " RefiDeepSeaZusatz gelesen..." + StringKonverter.lineSeparator);
+        //}
         lvOut.append(ivAnzahlK + " mit Ausplatzierungsmerkmal Kx" + StringKonverter.lineSeparator);
         lvOut.append(ivAnzahlH + " mit Ausplatzierungsmerkmal Hx" + StringKonverter.lineSeparator);
         lvOut.append(ivAnzahlF + " mit Ausplatzierungsmerkmal Fx" + StringKonverter.lineSeparator);
@@ -496,26 +531,25 @@ public class LoanIQ2RefiRegisterVerarbeitung
     }
 
     /**
-     * Verarbeite den DarlehenLoanIQBlock
+     * Verarbeite den DarlehenBlock in "passiver" Weise
      */
     private void verarbeiteDarlehenPassiv()
     {  
         // LoanIQ2RefiRegister Verarbeitung
-    	if (ivListeKontonummern.contains(ivDarlehenLoanIQBlock.getKontonummer()))
-    	{
-    		LOGGER_LOANIQ2RefiRegister.info("Verarbeite Kontonummer: " + ivDarlehenLoanIQBlock.getKontonummer());
+    	////if (ivListeKontonummern.contains(ivDarlehenBlock.getKontonummer()))
+    	////{
+    		LOGGER_LOANIQ2RefiRegister.info("Verarbeite Kontonummer: " + ivDarlehenBlock.getKontonummer());
     		
-			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("K")) ivAnzahlK++;
-			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("H")) ivAnzahlH++;
-			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("F")) ivAnzahlF++;
-			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("S")) ivAnzahlS++;
-			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("O")) ivAnzahlO++;
+			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("K")) ivAnzahlK++;
+			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("H")) ivAnzahlH++;
+			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("F")) ivAnzahlF++;
+			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("S")) ivAnzahlS++;
+			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("O")) ivAnzahlO++;
 
-    		if (ivDarlehenLoanIQBlock.getListeDarlehenLoanIQFremd().size() > 0)
+    		if (ivDarlehenBlock.getListeDarlehenFremd().size() > 0)
     		{
-    			for (DarlehenLoanIQ lvDarlehen:ivDarlehenLoanIQBlock.getListeDarlehenLoanIQFremd())
+    			for (Darlehen lvDarlehen: ivDarlehenBlock.getListeDarlehenFremd())
     			{
-    				//System.out.println(lvDarlehen.toString());
     				// Konsortialnummer in die KundeRequest-Datei schreiben
     				if (!lvDarlehen.getKonsortialfuehrer().isEmpty())
     				{
@@ -528,7 +562,7 @@ public class LoanIQ2RefiRegisterVerarbeitung
     				}
   
     				// TXS-Transaktionen mit Darlehensinformationen fuellen
-    				ivRefiRegisterPassiv.importDarlehen2Transaktion(lvDarlehen, ivVorlaufsatz, ivListeRefiZusatz);
+    				ivRefiRegisterPassiv.importDarlehen2Transaktion(lvDarlehen, ivVorlaufsatz); //, ivListeRefiDeepSeaZusatz);
     			}
 
     		}
@@ -536,19 +570,7 @@ public class LoanIQ2RefiRegisterVerarbeitung
     		{
     			LOGGER_LOANIQ2RefiRegister.info("Keine Fremdanteile...");
     			return;
-    		}    		
-    	}
-
-    	// Asset Fond - Ausplatzierungsmerkmal 'AF'
-    	/* CT 20.03.2018 - Spaeter wieder reinnehmen
-        if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().equals("AF"))
-        {
-    		LOGGER_LOANIQ2RefiRegister.info("Verarbeite Kontonummer mit Ausplatzierungsmerkmal 'AF': " + ivDarlehenLoanIQBlock.getKontonummer());
-    		
-    		ivAnzahlAF++;
-    		
-    		ivRefiRegisterAktiv.importDarlehen2Transaktion(ivDarlehenLoanIQBlock, ivVorlaufsatz);
-            
-        } */
-    } 
+    		}
+    	////}
+    }
 }

@@ -38,23 +38,26 @@ public class TXSSicherheitZuSicherheit implements TXSTransaktion
     private String ivRang;
 
     /**
-     * @param pvArt
-     * @param pvKey
-     * @param pvOrg
-     * @param pvQuelle
-     * @param pvRang
+     * Konstruktor
      */
     public TXSSicherheitZuSicherheit() 
     {
-        super();
-        this.ivArt = new String();
-        this.ivKey = new String();
-        this.ivOrg = new String();
-        this.ivQuelle = new String();
-        this.ivRang = new String();
+      initTXSSicherheitZuSicherheit();
     }
 
-    /**
+   /**
+    * Initialisiert die Instanzvariablen mit leeren Strings
+    */
+   public void initTXSSicherheitZuSicherheit()
+   {
+     this.ivArt = new String();
+     this.ivKey = new String();
+     this.ivOrg = new String();
+     this.ivQuelle = new String();
+     this.ivRang = new String();
+   }
+
+   /**
      * @return the art
      */
     public String getArt() {

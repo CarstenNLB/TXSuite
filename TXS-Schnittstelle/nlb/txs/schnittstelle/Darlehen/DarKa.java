@@ -27,7 +27,7 @@ public class DarKa
         {
             System.out.println("Starten:");
             System.out.println("Darlehen <ini-Datei>");
-            System.exit(0);
+            System.exit(1);
         }
         else
         {
@@ -39,7 +39,7 @@ public class DarKa
             catch (Exception exp)
             {
                 System.out.println("Fehler beim Laden der ini-Datei...");
-                System.exit(0);
+                System.exit(1);
             }
             
             String lvLoggingXML = lvReader.getPropertyString("Darlehen", "log4jconfig", "Fehler");

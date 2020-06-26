@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 
 /**
- * Diese Klasse zerlegt die "große" Darlehensdatei in registerbezogene Dateien (Hypotheken, Kommunal, Schiffe, Flugzeuge, Deckungspooling,...).
+ * Diese Klasse zerlegt die "groï¿½e" Darlehensdatei in registerbezogene Dateien (Hypotheken, Kommunal, Schiffe, Flugzeuge, Deckungspooling,...).
  * Ebenfalls werden die Kunden- und Buergennummern in KundeRequest-Dateien geschrieben.
  * @author Carsten Tepper
  */
@@ -55,10 +55,15 @@ public class DarlehenFiltern
     private KundennummernOutput ivKundennummernOutputRefiRegister;
     
     /**
-     * Ausgabedatei der Kundennummern von LettreDeGage-Geschäften
+     * Ausgabedatei der Kundennummern von LettreDeGage-Geschï¿½ften
      */
     private KundennummernOutput ivKundennummernOutputLettreDeGage;
-    
+
+    /**
+     * Ausgabedatei der Kundennummern von KEV
+     */
+    private KundennummernOutput ivKundennummernOutputKEV;
+
     /**
      * Liste von Kundennummern der PfandBG-Geschaefte
      */
@@ -78,7 +83,12 @@ public class DarlehenFiltern
      * Liste von Kundennummern der LettreDeGage-Geschaefte
      */
     private KundeListe ivLettreDeGageKnrListe;
-    
+
+    /**
+     * Liste von Kundennummern der KEV-Geschaefte
+     */
+    private KundeListe ivKEVKnrListe;
+
     // FileInput- und FileOutputStreams
     private FileInputStream ivFis = null;
     private FileOutputStream ivFos = null;
@@ -89,6 +99,7 @@ public class DarlehenFiltern
     private FileOutputStream ivDurchleitungskrediteAktivFos = null;
     private FileOutputStream ivDurchleitungskreditePassivFos = null;
     private FileOutputStream ivOEPGFos = null;
+    private FileOutputStream ivKEVFos = null;
     private FileOutputStream ivAusplatzierungsmerkmalFos = null;
     private FileOutputStream ivKonsortialgeschaefteFos = null;
     private FileOutputStream ivAktivkontenDatenFos = null;
@@ -149,7 +160,12 @@ public class DarlehenFiltern
      * DarlehenDeepSea in einer Liste von Strings
      */
     private ListeObjekte ivListeDarlehenDeepSea;
-    
+
+    /**
+     * DarlehenKEV in einer Liste von Strings
+     */
+    private ListeObjekte ivListeKEVObjekte;
+
     /**
      * Zaehlervariablen fuer die Statistik
      */
@@ -161,6 +177,8 @@ public class DarlehenFiltern
     private int ivAnzahlKundennrRefiRegister;
     // Anzahl Kundennummern LettreDeGage
     private int ivAnzahlKundennrLettreDeGage;
+    // Anzahl Kundennummern KEV
+    private int ivAnzahlKundennrKEV;
     // Anzahl Kredite mit Deckungskennzeichen 'A'
     private int ivAnzahlAltfaelle;
     // Anzahl Kredite PfandBG
@@ -179,7 +197,9 @@ public class DarlehenFiltern
     private int ivAnzahlDurchleitungskrediteAktiv;
     // Anzahl Durchleitungskredite Passiv
     private int ivAnzahlDurchleitungskreditePassiv;
-    
+    // Anzahl Kredite KEV
+    private int ivAnzahlKEV;
+
     /**
      * Liste von RefiRegisterFilterElemente
      */
@@ -291,6 +311,13 @@ public class DarlehenFiltern
                     System.exit(1);
                 }
 
+                String lvDarlehenKEV = lvReader.getPropertyString("DarlehenFiltern", "DarlehenKEV", "Fehler");
+                if (lvDarlehenKEV.equals("Fehler"))
+                {
+                    LOGGER.error("Kein DarlehenKEV-Dateiname in der ini-Datei...");
+                    System.exit(1);
+                }
+
                 String lvDurchleitungskrediteAktiv = lvReader.getPropertyString("DarlehenFiltern", "DurchleitungskrediteAktiv", "Fehler");
                 if (lvDurchleitungskrediteAktiv.equals("Fehler"))
                 {
@@ -353,7 +380,14 @@ public class DarlehenFiltern
                     LOGGER.error("Kein KundeRequest-Dateiname fuer LettreDeGage-Geschaefte in der ini-Datei...");
                     System.exit(1);
                 }
-                
+
+                String lvKundeKEVOutput = lvReader.getPropertyString("DarlehenFiltern", "RequestKEVDatei", "Fehler");
+                if (lvKundeKEVOutput.equals("Fehler"))
+                {
+                    LOGGER.error("Kein KundeRequest-Dateiname fuer KEV-Geschaefte in der ini-Datei...");
+                    System.exit(1);
+                }
+
                 String lvAusplatzierungsmerkmalDatei = lvReader.getPropertyString("DarlehenFiltern", "AusplatzierungsmerkmalDatei", "Fehler");
                 if (lvAusplatzierungsmerkmalDatei.equals("Fehler"))
                 {
@@ -387,10 +421,10 @@ public class DarlehenFiltern
                 //}
                 
                 new DarlehenFiltern(lvInstitut, lvImportVerzeichnis, lvExportVerzeichnis, lvDarlehenInput, lvDarlehenKonsortial,
-                                    lvDarlehenDPP, lvDarlehenSchiffe, lvDarlehenFlugzeuge, lvDarlehenOEPG, lvDarlehenOutput,
+                                    lvDarlehenDPP, lvDarlehenSchiffe, lvDarlehenFlugzeuge, lvDarlehenOEPG, lvDarlehenKEV, lvDarlehenOutput,
                                     lvDurchleitungskrediteAktiv, lvDurchleitungskreditePassiv, 
                                     lvDarlehenDeepSea, lvDarlehenLettreDeGage, lvObjektZWOutput, 
-                                    lvKundeOutput, lvKundeDlkOutput, lvKundeKonsortialOutput, lvKundeLettreDeGageOutput, lvAusplatzierungsmerkmalDatei,
+                                    lvKundeOutput, lvKundeDlkOutput, lvKundeKonsortialOutput, lvKundeLettreDeGageOutput, lvKundeKEVOutput, lvAusplatzierungsmerkmalDatei,
                                     lvKonsortialgeschaefteDatei, lvAktivkontenDatenDatei, LOGGER);
             }
         }
@@ -407,7 +441,8 @@ public class DarlehenFiltern
      * @param pvDarlehenDPP 
      * @param pvDarlehenSchiffe 
      * @param pvDarlehenFlugzeuge 
-     * @param pvDarlehenOEPG 
+     * @param pvDarlehenOEPG
+     * @param pvDarlehenKEV
      * @param pvDarlehenOutput
      * @param pvDurchleitungskrediteAktiv 
      * @param pvDurchleitungskreditePassiv 
@@ -415,18 +450,20 @@ public class DarlehenFiltern
      * @param pvDarlehenLettreDeGage
      * @param pvObjektZWOutput
      * @param pvKundeOutput
-     * @param pvKundeDlkOutput 
+     * @param pvKundeDlkOutput
      * @param pvKundeKonsortialOutput
+     * @param pvKundeLettreDeGageOutput
+     * @param pvKundeKEVOutput
      * @param pvAusplatzierungsmerkmalDatei
      * @param pvKonsortialgeschaefteDatei
      * @param pvAktivkontenDatenDatei
      * @param logger 
      */
     public DarlehenFiltern(String pvInstitut, String pvImportVerzeichnis, String pvExportVerzeichnis, String pvDarlehenInput, String pvDarlehenKonsortial,
-                           String pvDarlehenDPP, String pvDarlehenSchiffe, String pvDarlehenFlugzeuge, String pvDarlehenOEPG, String pvDarlehenOutput,
+                           String pvDarlehenDPP, String pvDarlehenSchiffe, String pvDarlehenFlugzeuge, String pvDarlehenOEPG, String pvDarlehenKEV, String pvDarlehenOutput,
                            String pvDurchleitungskrediteAktiv, String pvDurchleitungskreditePassiv, 
                            String pvDarlehenDeepSea, String pvDarlehenLettreDeGage, String pvObjektZWOutput, 
-                           String pvKundeOutput, String pvKundeDlkOutput, String pvKundeKonsortialOutput, String pvKundeLettreDeGageOutput,
+                           String pvKundeOutput, String pvKundeDlkOutput, String pvKundeKonsortialOutput, String pvKundeLettreDeGageOutput, String pvKundeKEVOutput,
                            String pvAusplatzierungsmerkmalDatei, String pvKonsortialgeschaefteDatei, String pvAktivkontenDatenDatei, Logger logger) 
     {   
         ivListeRefiRegisterFilterElemente = new HashMap<String, RefiRegisterFilterElement>();
@@ -445,6 +482,7 @@ public class DarlehenFiltern
         ivAnzahlLettreDeGage = 0;
         ivAnzahlDurchleitungskrediteAktiv = 0;
         ivAnzahlDurchleitungskreditePassiv = 0;
+        ivAnzahlKEV = 0;
         
         // Alle Listen initialisieren
         ivListeObjekte = new ListeObjekte();
@@ -457,6 +495,7 @@ public class DarlehenFiltern
         ivListeDurchleitungskreditePassiv = new ListeObjekte();
         ivListeDarlehenDeepSea = new ListeObjekte();
         ivListeDarlehenLettreDeGage = new ListeObjekte();
+        ivListeKEVObjekte = new ListeObjekte();
         
         File lvInputFileDarlehen = new File(pvImportVerzeichnis + "\\" + pvDarlehenInput);
         File lvOutputFileDarlehen = new File(pvExportVerzeichnis + "\\" + pvDarlehenOutput);
@@ -472,10 +511,11 @@ public class DarlehenFiltern
         File lvOutputAusplatzierungsmerkmal = new File(pvExportVerzeichnis + "\\" + pvAusplatzierungsmerkmalDatei);
         File lvOutputKonsortialgeschaefte = new File(pvExportVerzeichnis + "\\" + pvKonsortialgeschaefteDatei);
         File lvOutputAktivkontenDaten = new File(pvExportVerzeichnis + "\\" + pvAktivkontenDatenDatei);
+        File lvOutputFileKEV = new File(pvExportVerzeichnis + "\\" + pvDarlehenKEV);
         
         // Wenn eine Datei nicht geoeffnet werden konnte, dann erfolgt ein Programmabbruch
         if (!openStreams(lvInputFileDarlehen, lvOutputFileDarlehen, lvOutputKonsortialFileDarlehen, lvOutputDPPFileDarlehen,
-                         lvOutputSchiffeFileDarlehen, lvOutputFlugzeugeFileDarlehen, lvOutputOEPGFileDarlehen, lvOutputDurchleitungskrediteAktiv,
+                         lvOutputSchiffeFileDarlehen, lvOutputFlugzeugeFileDarlehen, lvOutputOEPGFileDarlehen, lvOutputFileKEV, lvOutputDurchleitungskrediteAktiv,
                          lvOutputDurchleitungskreditePassiv, lvOutputLettreDeGage, lvOutputDeepSea, lvOutputAusplatzierungsmerkmal, lvOutputKonsortialgeschaefte,
                          lvOutputAktivkontenDaten))
         {
@@ -484,7 +524,7 @@ public class DarlehenFiltern
         
         ivOozw = new OutputObjektZuweisungsbetrag(pvExportVerzeichnis + "\\" + pvObjektZWOutput);
         
-        readDarlehen(pvInstitut, pvExportVerzeichnis, pvKundeOutput, pvKundeDlkOutput, pvKundeKonsortialOutput, pvKundeLettreDeGageOutput);
+        readDarlehen(pvInstitut, pvExportVerzeichnis, pvKundeOutput, pvKundeDlkOutput, pvKundeKonsortialOutput, pvKundeLettreDeGageOutput, pvKundeKEVOutput);
 
         zerlegeDarlehen(lvInputFileDarlehen);
         
@@ -511,6 +551,7 @@ public class DarlehenFiltern
      * @param pvOutputSchiffeFileDarlehen
      * @param pvOutputFlugzeugeFileDarlehen
      * @param pvOutputOEPGFileDarlehen
+     * @param pvOutputFileKEV
      * @param pvOutputDurchleitungskrediteAktiv
      * @param pvOutputDurchleitungskreditePassiv
      * @param pvOutputLettreDeGage
@@ -521,7 +562,7 @@ public class DarlehenFiltern
      * @return
      */
     private boolean openStreams(File pvInputFileDarlehen, File pvOutputFileDarlehen, File pvOutputKonsortialFileDarlehen, File pvOutputDPPFileDarlehen,
-    		                    File pvOutputSchiffeFileDarlehen, File pvOutputFlugzeugeFileDarlehen, File pvOutputOEPGFileDarlehen, File pvOutputDurchleitungskrediteAktiv,
+    		                    File pvOutputSchiffeFileDarlehen, File pvOutputFlugzeugeFileDarlehen, File pvOutputOEPGFileDarlehen, File pvOutputFileKEV, File pvOutputDurchleitungskrediteAktiv,
     		                    File pvOutputDurchleitungskreditePassiv, File pvOutputLettreDeGage, File pvOutputDeepSea, File pvOutputAusplatzierungsmerkmal, File pvOutputKonsortialgeschaefte,
     		                    File pvOutputAktivkontenDaten)
     {
@@ -624,6 +665,16 @@ public class DarlehenFiltern
         catch (Exception e)
         {
             LOGGER.error("Konnte Ausgabe-Datei '" + pvOutputOEPGFileDarlehen.getAbsolutePath() + "' nicht oeffnen!");
+            lvOeffnenOkay = false;
+        }
+
+        try
+        {
+            ivKEVFos = new FileOutputStream(pvOutputFileKEV);
+        }
+        catch (Exception e)
+        {
+            LOGGER.error("Konnte Ausgabe-Datei '" + pvOutputFileKEV.getAbsolutePath() + "' nicht oeffnen!");
             lvOeffnenOkay = false;
         }
 
@@ -759,6 +810,15 @@ public class DarlehenFiltern
 
         try
         {
+            ivKEVFos.close();
+        }
+        catch (IOException e)
+        {
+            LOGGER.error("Konnte Ausgabe-Datei 'DarlehenKEV.txt' nicht schliessen!");
+        }
+
+        try
+        {
           ivDurchleitungskrediteAktivFos.close();
         }
         catch (IOException e)
@@ -797,12 +857,13 @@ public class DarlehenFiltern
     /**
      * @param pvInstitut 
      * @param pvExportVerzeichnis
-     * @param pvInputFileDarlehen
      * @param pvKundeOutput 
      * @param pvKundeDlkOutput
      * @param pvKundeKonsortialOutput
+     * @param pvKundeLettreDeGageOutput
+     * @param pvKundeKEVOutput
      */
-    private void readDarlehen(String pvInstitut, String pvExportVerzeichnis, String pvKundeOutput, String pvKundeDlkOutput, String pvKundeKonsortialOutput, String pvKundeLettreDeGageOutput)
+    private void readDarlehen(String pvInstitut, String pvExportVerzeichnis, String pvKundeOutput, String pvKundeDlkOutput, String pvKundeKonsortialOutput, String pvKundeLettreDeGageOutput, String pvKundeKEVOutput)
     {
         String lvZeile = null;
         boolean lvInDeckung = false;
@@ -872,7 +933,13 @@ public class DarlehenFiltern
                    // KundeRequest-Datei LettreDeGage oeffnen und Vorlaufsatz in die Datei schreiben
                    ivKundennummernOutputLettreDeGage = new KundennummernOutput(pvExportVerzeichnis + "\\" + pvKundeLettreDeGageOutput, LOGGER);
                    ivKundennummernOutputLettreDeGage.open();
-                   ivKundennummernOutputLettreDeGage.printVorlaufsatz(pvInstitut, "LettreDeGage");                   
+                   ivKundennummernOutputLettreDeGage.printVorlaufsatz(pvInstitut, "LettreDeGage");
+
+                   ivKEVKnrListe = new KundeListe();
+                   // KundeRequest-Datei LettreDeGage oeffnen und Vorlaufsatz in die Datei schreiben
+                   ivKundennummernOutputKEV = new KundennummernOutput(pvExportVerzeichnis + "\\" + pvKundeKEVOutput, LOGGER);
+                   ivKundennummernOutputKEV.open();
+                   ivKundennummernOutputKEV.printVorlaufsatz(pvInstitut, "KEV");
                }
                else
                {
@@ -1016,6 +1083,7 @@ public class DarlehenFiltern
                    ivDurchleitungskreditePassivFos.write((lvZeile + StringKonverter.lineSeparator).getBytes());
                    ivDarlehenDeepSeaFos.write((lvZeile + StringKonverter.lineSeparator).getBytes());
                    ivDarlehenLettreDeGageFos.write((lvZeile + StringKonverter.lineSeparator).getBytes());
+                   ivKEVFos.write((lvZeile + StringKonverter.lineSeparator).getBytes());
                }
                else
                {
@@ -1133,7 +1201,26 @@ public class DarlehenFiltern
                        }
                    }
 
-                   // DurchleitungskrediteAktiv rausschreiben
+                     // KEV rausschreiben
+                     if (ivListeKEVObjekte.getObjekt(lvZeile.substring(0,21)) != null)
+                     {
+                         // OBJ- und BAUFI-Segmente auf jeden Fall ausgeben
+                         if (lvZeile.substring(33, 36).equals("OBJ") || lvZeile.substring(33, 38).equals("BAUFI"))
+                         {
+                             ivKEVFos.write((lvZeile + StringKonverter.lineSeparator).getBytes());
+                             //lvZeileCounter++;
+                         }
+                         else
+                         {
+                             if (!lvZeile.substring(22, 32).equals("0000000000"))
+                             {
+                                 ivKEVFos.write((lvZeile + StringKonverter.lineSeparator).getBytes());
+                                 //lvZeileCounter++;
+                             }
+                         }
+                     }
+
+                     // DurchleitungskrediteAktiv rausschreiben
                    if (ivListeDurchleitungskrediteAktiv.getObjekt(lvZeile.substring(0,21)) != null) 
                    {
                        // OBJ- und BAUFI-Segmente auf jeden Fall ausgeben
@@ -1312,7 +1399,7 @@ public class DarlehenFiltern
             	}
             		
             	// Nicht relevante Ausplatzierungsmerkmale in eine Datei schreiben
-            	if (pvZeile.charAt(604) == 'A' || //pvZeile.charAt(604) == 'B' || 
+            	if (//pvZeile.charAt(604) == 'A' || //pvZeile.charAt(604) == 'B' ||
             		pvZeile.charAt(604) == 'C' ||
             		pvZeile.charAt(604) == 'D' || pvZeile.charAt(604) == 'E' || //pvZeile.charAt(604) == 'G' ||
                     pvZeile.charAt(604) == 'P' || pvZeile.charAt(604) == 'R' || pvZeile.charAt(604) == 'W' ||
@@ -1464,7 +1551,24 @@ public class DarlehenFiltern
                              ivAnzahlKundennrLettreDeGage++;
                          }
             	}
-           }
+
+                // Darlehen KEV filtern
+                if (pvZeile.charAt(604) == 'A')
+                {
+                    ivAnzahlKEV++;
+                    ivListeKEVObjekte.addObjekt(pvZeile.substring(0,21));
+                    LOGGER.info("Darlehen - KEV;" + pvZeile.substring(0,32) + ";" + pvZeile.substring(604,606) + ";");
+                    // Kundennummer KEV fuer SPOT-Request rausschreiben
+                    if (!ivKEVKnrListe.containsKunde(pvZeile.substring(0,10)))
+                    {
+                        ivKEVKnrListe.addKunde(pvZeile.substring(0,10));
+                        ivKundennummernOutputKEV.printKundennummer(pvZeile.substring(0,10));
+                        LOGGER.info("KEV - Kundennummer: " + pvZeile.substring(0,10));
+                        ivAnzahlKundennrKEV++;
+                    }
+                }
+
+            }
         }
     }
     
@@ -1525,9 +1629,11 @@ public class DarlehenFiltern
         LOGGER.info("Anzahl Durchleitungskredite Passiv: " + ivAnzahlDurchleitungskreditePassiv);
         LOGGER.info("Anzahl Darlehen DeepSea: " + ivAnzahlDeepSea);
         LOGGER.info("Anzahl Darlehen LettreDeGage: " + ivAnzahlLettreDeGage);
+        LOGGER.info("Anzahl Darlehen KEV: " + ivAnzahlKEV);
         LOGGER.info("Anzahl Kundennummern Pfandbrief: " + ivAnzahlKundennrPfandbrief);
         LOGGER.info("Anzahl Buergennummern Pfandbrief: " + ivAnzahlBuergennrPfandbrief);
         LOGGER.info("Anzahl Kundennummern Konsortial: " + ivAnzahlKundennrRefiRegister);
         LOGGER.info("Anzahl Kundennummern LettreDeGage: " + ivAnzahlKundennrLettreDeGage);
+        LOGGER.info("Anzahl Kundennummern KEV: " + ivAnzahlKundennrKEV);
     }
 }

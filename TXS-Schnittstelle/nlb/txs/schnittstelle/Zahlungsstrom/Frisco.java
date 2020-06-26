@@ -37,13 +37,14 @@ import org.jdom2.output.XMLOutputter;
 /**
  * @author Stefan Unnasch
  *
- * Dieses Programm verarbeitet XML-Zahlungströme aus der Anwendung FRSICO (via hostprogramm CEDRCF01),
+ * Dieses Programm verarbeitet XML-Zahlungstrï¿½me aus der Anwendung FRSICO (via hostprogramm CEDRCF01),
  * fasst diese ggf. zusammen und gibt eine 
- * XML-Datei im XML-Format für die Anwendung TXS aus 
+ * XML-Datei im XML-Format fï¿½r die Anwendung TXS aus 
  *
  * Als Werkzeug zur XML-Verarbeitung wird jdom benutzt
  *
  */
+@Deprecated
 public class Frisco {
 
     private static Logger LOGGER = LogManager.getLogger("TXSFriscoLogger");
@@ -235,20 +236,20 @@ public class Frisco {
           }
           catch( java.lang.StringIndexOutOfBoundsException e)
           {
-            //  System.out.println("Dateiname kürzer als A1PBAT.NT.I009.LMTXS.KSXML");   
+            //  System.out.println("Dateiname kï¿½rzer als A1PBAT.NT.I009.LMTXS.KSXML");   
           }
         }
         
-        LOGGER.info("Datei mit höchstem daypointer " + lvNeuedatei);
+        LOGGER.info("Datei mit hï¿½chstem daypointer " + lvNeuedatei);
         
-        // logdatei zur eingabe öffnen
+        // logdatei zur eingabe ï¿½ffnen
         try
         {
           lvStreamlogein = new FileInputStream(lvLogdatei); 
         }
         catch (Exception e)
         {
-          LOGGER.error("Konnte logdatei " + lvEingabeverzeichnis + lvLogdateiname + " nicht öffnen");
+          LOGGER.error("Konnte logdatei " + lvEingabeverzeichnis + lvLogdateiname + " nicht ï¿½ffnen");
         }
        
         int lvDateischoninlog = 0;
@@ -269,7 +270,7 @@ public class Frisco {
         }
         catch (Exception e)
         {
-            LOGGER.error("Ärger mit dem bufferedreader");
+            LOGGER.error("ï¿½rger mit dem bufferedreader");
         }
         
         if (1 == lvDateischoninlog)
@@ -409,7 +410,7 @@ public class Frisco {
           BigDecimal lvZbetragbd = new BigDecimal(0.00);
           BigDecimal lvBufferbd = new BigDecimal(0.00);
           
-          // Schleife über das document - erst alle aktiven Papiere
+          // Schleife ï¿½ber das document - erst alle aktiven Papiere
           for (int i=0; i< lvKontolist.size(); i++)
           {
               lvNode = (Element) lvKontolist.get(i);
@@ -454,7 +455,7 @@ public class Frisco {
               }
               else if ("31".equals(lvStammelem.getAttributeValue("anw")))
               {
-                lvElement_fg.setAttribute("quelle","DARLEHEN");     // Fremdwährungsdarlehen  
+                lvElement_fg.setAttribute("quelle","DARLEHEN");     // Fremdwï¿½hrungsdarlehen  
                 
                 lvKey = lvStammelem.getAttributeValue("nr");
               }
@@ -467,7 +468,7 @@ public class Frisco {
                   
               lvElement_fg.setAttribute("key", lvKey);
            
-              // fg anhängen
+              // fg anhï¿½ngen
               lvMyrootelement.addContent(lvElement_fg);
           
           //    List<Element> ablauflist = new ArrayList();
@@ -482,7 +483,7 @@ public class Frisco {
               
               int merker = 0;
               
-              // jetzt Test auf ein auf zwei hostzeilen gesplittetes Konto, nächstes Element holen
+              // jetzt Test auf ein auf zwei hostzeilen gesplittetes Konto, nï¿½chstes Element holen
               // beim letzten Satz keinen weiteren lesen...
               if (i<lvKontolist.size()-1)
               {
@@ -506,7 +507,7 @@ public class Frisco {
                   
                   for (int p=0; p<lvListsizezweizeiler; p++)
                   {
-                      Element lvMyelem = (Element) lvAblauflistzweizeiler.get(0); // detach sorgt für das vorrücken
+                      Element lvMyelem = (Element) lvAblauflistzweizeiler.get(0); // detach sorgt fï¿½r das vorrï¿½cken
                      
                       lvMyelem.detach();
                        
@@ -514,14 +515,14 @@ public class Frisco {
                       
                   //    System.out.println("add " + p + " " + myelem.getAttributeValue("dat"));
                   }    
-                 // Treffer: großen Kontenzähler einen vorrücken
+                 // Treffer: groï¿½en Kontenzï¿½hler einen vorrï¿½cken
                     i++;
                   
                  // merker = 1;
                  }
               }
               
-              // Einmal über alle Ablaufelemente
+              // Einmal ï¿½ber alle Ablaufelemente
               for (int j=0; j<lvAblauflist.size(); j++)
               {
                  // Ablaufelement holen
@@ -535,10 +536,10 @@ public class Frisco {
                  lvZbetragbd = BigDecimal.ZERO;
                  
                  if ( ("11".equals(lvAblaufelem.getAttributeValue("art"))) ||   // tilgung
-                      ("12".equals(lvAblaufelem.getAttributeValue("art"))) ||   // außerplanmäßige Tilgung
+                      ("12".equals(lvAblaufelem.getAttributeValue("art"))) ||   // auï¿½erplanmï¿½ï¿½ige Tilgung
                       ("13".equals(lvAblaufelem.getAttributeValue("art"))) ||   // RK bei Zinsanpassung
                       ("15".equals(lvAblaufelem.getAttributeValue("art"))) ||   // Abgelaufene ZAP
-                      ("17".equals(lvAblaufelem.getAttributeValue("art")))    ) // RK zum Kündigungstermin
+                      ("17".equals(lvAblaufelem.getAttributeValue("art")))    ) // RK zum Kï¿½ndigungstermin
                  {
                    lvTbetragbd = BigDecimal.valueOf(Double.parseDouble(lvAblaufelem.getAttributeValue("betr")));
                  }
@@ -565,10 +566,10 @@ public class Frisco {
                      {
                          // Zins oder Tilgung aufaddieren
                          if ( ("11".equals(lvAblaufart2)) ||   // tilgung
-                              ("12".equals(lvAblaufart2)) ||   // außerplanmäßige Tilgung
+                              ("12".equals(lvAblaufart2)) ||   // auï¿½erplanmï¿½ï¿½ige Tilgung
                               ("13".equals(lvAblaufart2)) ||   // RK bei Zinsanpassung
                               ("15".equals(lvAblaufart2)) ||   // Abgelaufene ZAP
-                              ("17".equals(lvAblaufart2))    ) // RK zum Kündigungstermin
+                              ("17".equals(lvAblaufart2))    ) // RK zum Kï¿½ndigungstermin
                          {
                              
                              if (1==merker)
@@ -607,10 +608,10 @@ public class Frisco {
                          
                          // gefundenes element entfernen, damit es nicht nochmal gefunden wird
                          lvAblauflist.remove(k);
-                         // der rest der Liste rückt nach unten, daher zähler wieder auf das nächste
+                         // der rest der Liste rï¿½ckt nach unten, daher zï¿½hler wieder auf das nï¿½chste
                          k--;
                      }
-                 } // for über die Ablaufelemente gleichen Datums
+                 } // for ï¿½ber die Ablaufelemente gleichen Datums
                  
                  // alles gefunden, Ausgabe aufbauen
                  Element lvElement_cfdaten = new Element("cfdaten");
@@ -628,16 +629,16 @@ public class Frisco {
                
                                                   
                  lvElement_cfdaten_last.setAttribute("whrg",lvAblaufelem.getAttributeValue("iso"));
-                         // letzte cfdaten anhängen
+                         // letzte cfdaten anhï¿½ngen
                  lvElement_fg.addContent(lvElement_cfdaten_last);
-              } // for über die Ablaufelemente
+              } // for ï¿½ber die Ablaufelemente
               
               lvStammlist.clear();
               
               lvAblauflist.clear();
               
             } // if aktive
-          } // for über die aktiven
+          } // for ï¿½ber die aktiven
             
           lvKontolist.clear();
           
@@ -646,7 +647,7 @@ public class Frisco {
           System.out.println("Used Memory aktuell:"
                   + (lvRuntime.totalMemory() - lvRuntime.freeMemory()) / lvMb);
        
-          // Schleife über die kleinere Liste mit den passiven
+          // Schleife ï¿½ber die kleinere Liste mit den passiven
           for (int m=0; m< lvKontolistP.size(); m++)
           {
               lvNode = (Element) lvKontolistP.get(m);
@@ -674,12 +675,12 @@ public class Frisco {
               // fg (hier) aufbauen
               lvElement_fg.setAttribute("org", lvBLZ);
        
-              // Andere Behandlung für BLB, dort ist die ISIN nie gefüllt und
+              // Andere Behandlung fï¿½r BLB, dort ist die ISIN nie gefï¿½llt und
               // wir aus DE plus Kontonummer erzeugt
               lvKey = lvStammelem.getAttributeValue("isin");
               
               // SU 20130812 weitere Spezialbehandlung BLB, die Namenspapiere werden mit ISIN geliefert
-              // aber *zunächst* so nicht an TXS weitergegeben, daher auf leer
+              // aber *zunï¿½chst* so nicht an TXS weitergegeben, daher auf leer
               if (lvInstitut.equals("BLB"))
               {        
                   lvKey ="";    
@@ -696,7 +697,7 @@ public class Frisco {
               }
               else if ("31".equals(lvStammelem.getAttributeValue("anw")))
               {
-                lvElement_fg.setAttribute("quelle","DARLEHENWP");     // Fremdwährungsdarlehen  
+                lvElement_fg.setAttribute("quelle","DARLEHENWP");     // Fremdwï¿½hrungsdarlehen  
               }
               else if ("98".equals(lvStammelem.getAttributeValue("anw")))
               {
@@ -707,7 +708,7 @@ public class Frisco {
                   
               lvElement_fg.setAttribute("key", lvKey);
            
-              // fg anhängen
+              // fg anhï¿½ngen
               lvMyrootelement.addContent(lvElement_fg);
               
               // Ablaufliste holen
@@ -719,7 +720,7 @@ public class Frisco {
               lvIsin1 = lvStammelem.getAttributeValue("isin");
               
               // SU 20130812 weitere Spezialbehandlung BLB, die Namenspapiere werden mit ISIN geliefert
-              // aber *zunächst* so nicht an TXS weitergegeben, daher auf leer
+              // aber *zunï¿½chst* so nicht an TXS weitergegeben, daher auf leer
               if (lvInstitut.equals("BLB"))
               {        
                   lvIsin1 ="";    
@@ -736,7 +737,7 @@ public class Frisco {
                 lvIsin2 = lvStammelem2.getAttributeValue("isin");
                 
                 // SU 20130812 weitere Spezialbehandlung BLB, die Namenspapiere werden mit ISIN geliefert
-                // aber *zunächst* so nicht an TXS weitergegeben, daher auf leer
+                // aber *zunï¿½chst* so nicht an TXS weitergegeben, daher auf leer
                 if (lvInstitut.equals("BLB"))
                 {        
                     lvIsin2 ="";    
@@ -747,7 +748,7 @@ public class Frisco {
                 {
                   System.out.println(lvIsin1 + " " + lvStammelem.getAttributeValue("nr") + " " + lvStammelem2.getAttributeValue("nr"));                      
                  
-                  // anhängen !!
+                  // anhï¿½ngen !!
                   List<Element> lvAblauflistplus = new ArrayList<Element>();
                   
                   lvAblauflistplus = lvNode2.getChildren("elem");
@@ -756,7 +757,7 @@ public class Frisco {
                   
                   for (int p=0; p<lvListsize; p++)
                   {
-                      Element lvMyelem = (Element) lvAblauflistplus.get(0); // detach sorgt für das vorrücken
+                      Element lvMyelem = (Element) lvAblauflistplus.get(0); // detach sorgt fï¿½r das vorrï¿½cken
                      
                       lvMyelem.detach();
                        
@@ -767,7 +768,7 @@ public class Frisco {
                   
                   // aus der Liste
                   lvKontolistP.remove(n);
-                  // zähler nachrücken
+                  // zï¿½hler nachrï¿½cken
                   n--;
                 }
               }
@@ -775,7 +776,7 @@ public class Frisco {
               lvDatum1 = "00000000";
               lvDatum2 = "00000000";
               
-              // Einmal über alle Ablaufelemente
+              // Einmal ï¿½ber alle Ablaufelemente
               for (int j=0; j<lvAblauflist.size(); j++)
               {
                  // Ablaufelement holen
@@ -788,10 +789,10 @@ public class Frisco {
                  lvZbetragbd = BigDecimal.ZERO;
                  
                  if ( ("11".equals(lvAblaufelem.getAttributeValue("art"))) ||   // tilgung
-                      ("12".equals(lvAblaufelem.getAttributeValue("art"))) ||   // außerplanmäßige Tilgung
+                      ("12".equals(lvAblaufelem.getAttributeValue("art"))) ||   // auï¿½erplanmï¿½ï¿½ige Tilgung
                       ("13".equals(lvAblaufelem.getAttributeValue("art"))) ||   // RK bei Zinsanpassung
                       ("15".equals(lvAblaufelem.getAttributeValue("art"))) ||   // Abgelaufene ZAP
-                      ("17".equals(lvAblaufelem.getAttributeValue("art")))    ) // RK zum Kündigungstermin
+                      ("17".equals(lvAblaufelem.getAttributeValue("art")))    ) // RK zum Kï¿½ndigungstermin
                  {
                    lvTbetragbd = BigDecimal.valueOf(Double.parseDouble(lvAblaufelem.getAttributeValue("betr")));
                  }
@@ -814,10 +815,10 @@ public class Frisco {
                      {
                          // Zins oder Tilgung aufaddieren
                          if ( ("11".equals(lvAblaufelem2.getAttributeValue("art"))) ||   // tilgung
-                              ("12".equals(lvAblaufelem2.getAttributeValue("art"))) ||   // außerplanmäßige Tilgung
+                              ("12".equals(lvAblaufelem2.getAttributeValue("art"))) ||   // auï¿½erplanmï¿½ï¿½ige Tilgung
                               ("13".equals(lvAblaufelem2.getAttributeValue("art"))) ||   // RK bei Zinsanpassung
                               ("15".equals(lvAblaufelem2.getAttributeValue("art"))) ||   // Abgelaufene ZAP
-                              ("17".equals(lvAblaufelem2.getAttributeValue("art")))    ) // RK zum Kündigungstermin
+                              ("17".equals(lvAblaufelem2.getAttributeValue("art")))    ) // RK zum Kï¿½ndigungstermin
                          {
                             lvBufferbd = BigDecimal.valueOf(Double.parseDouble(lvAblaufelem2.getAttributeValue("betr")));  
                             lvTbetragbd = lvTbetragbd.add(lvBufferbd);  
@@ -835,10 +836,10 @@ public class Frisco {
                          
                          // gefundenes element entfernen, damit es nicht nochmal gefunden wird
                          lvAblauflist.remove(k);
-                         // zähler nachrücken
+                         // zï¿½hler nachrï¿½cken
                          k--;
                      }
-                 } // for über die Ablaufelemente gleichen Datums
+                 } // for ï¿½ber die Ablaufelemente gleichen Datums
                  
                  // alles gefunden, Ausgabe aufbauen
                  Element lvElement_cfdaten = new Element("cfdaten");
@@ -860,22 +861,22 @@ public class Frisco {
                  lvTbetragbd = lvTbetragbd.abs();
                  lvZbetragbd = lvZbetragbd.abs();
                  
-                 // KEINE TILGUNGEN FÜR PASSIVE 20121219   
+                 // KEINE TILGUNGEN Fï¿½R PASSIVE 20121219   
                //element_cfdaten_last.setAttribute("tbetrag",tbetragbd.toString()); 
                  lvElement_cfdaten_last.setAttribute("tbetrag","0");
                  
                  lvElement_cfdaten_last.setAttribute("zbetrag",lvZbetragbd.toString());  
                                                   
                  lvElement_cfdaten_last.setAttribute("whrg",lvAblaufelem.getAttributeValue("iso"));
-                 // letzte cfdaten anhängen
+                 // letzte cfdaten anhï¿½ngen
                  lvElement_fg.addContent(lvElement_cfdaten_last);
-              } // for über die Ablaufelemente
+              } // for ï¿½ber die Ablaufelemente
               
               lvStammlist.clear();
               
               lvAblauflist.clear();
               
-          } // for über die passiven
+          } // for ï¿½ber die passiven
           
           lvKontolistP.clear();
         }  
@@ -964,7 +965,7 @@ public class Frisco {
         }
         catch (Exception e)
         {
-          LOGGER.error("Konnte logdatei " + lvEingabeverzeichnis + lvLogdateiname + " nicht öffnen");
+          LOGGER.error("Konnte logdatei " + lvEingabeverzeichnis + lvLogdateiname + " nicht ï¿½ffnen");
         }
            
            //Getting the runtime reference from system

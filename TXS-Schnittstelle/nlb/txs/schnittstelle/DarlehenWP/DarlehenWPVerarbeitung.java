@@ -35,6 +35,7 @@ import org.jdom2.output.XMLOutputter;
  * @author tepperc
  *
  */
+@Deprecated
 public class DarlehenWPVerarbeitung 
 {
     private static Logger LOGGER = LogManager.getLogger("TXSDarlWPPFBGLogger");
@@ -185,7 +186,7 @@ public class DarlehenWPVerarbeitung
             }
             else
             {
-                // Schiffe, OEPG_Flugzeuge einhängen
+                // Schiffe, OEPG_Flugzeuge einhï¿½ngen
                 lvFileout = lvFileout.replace("DarlWP_", "DarlWP" + lvFileoutErgaenzung);
                     
                 LOGGER.info("DARLWPXMLAUS=" + lvFileout);   
@@ -426,7 +427,7 @@ public class DarlehenWPVerarbeitung
             
         List<Element> lvList = lvRootNode.getChildren("DarlehenWP");
            
-        // Schleife über das document
+        // Schleife ï¿½ber das document
         for (int i=0; i< lvList.size(); i++)
         {
             Element lvNode = (Element) lvList.get(i);
@@ -440,7 +441,7 @@ public class DarlehenWPVerarbeitung
               //int lvLiefern = 1; 
               
               /*
-              // spezielle Aussteuerung für Bremen KFW (noch zu KOMMENTIEREN!!!!)
+              // spezielle Aussteuerung fï¿½r Bremen KFW (noch zu KOMMENTIEREN!!!!)
               if (  ((lvTxsprojekt.startsWith("BLB")))        && 
                    (   
                  //   ("0000001022".equals(lvNode.getChildText("Kundennummer")) ||   
@@ -458,8 +459,8 @@ public class DarlehenWPVerarbeitung
               Element lvElement_fg = new Element("fg");
               lvElement_fg.setNamespace(lvMyNamespace);
            
-              // Sonderbehandlung Bremen, dort ist in Darlehen die ISIN nicht gefüllt
-              // bei Änderungen hier Zahlungsstrom.frisco.java mit ändern
+              // Sonderbehandlung Bremen, dort ist in Darlehen die ISIN nicht gefï¿½llt
+              // bei ï¿½nderungen hier Zahlungsstrom.frisco.java mit ï¿½ndern
               
               lvKey = lvNode.getChildText("ISIN").trim();
               
@@ -489,11 +490,11 @@ public class DarlehenWPVerarbeitung
               lvElement_fg.setAttribute("quelle", pvQuellsystem);
               
               // SU 20140424
-              // ACHTUNG ! Sonderlösung zum Aussteuern von passiven rollover-Geschäften 
+              // ACHTUNG ! Sonderlï¿½sung zum Aussteuern von passiven rollover-Geschï¿½ften 
               // ACHTUNG ! Dieses if taucht zweimal auf -Suche nach "SU 20140424"
               // Diese werden nicht in die Quellsystemdatei geschrieben, damit die Zahlungsstromverarbeitung
-              // die entsprechenden Konten überliest
-              // über die Schönheit der if-Abfrage kann man streiten :/
+              // die entsprechenden Konten ï¿½berliest
+              // ï¿½ber die Schï¿½nheit der if-Abfrage kann man streiten :/
               // zum Ausbau das klammernde if entfernen
               // Stand 20140424: NLB: 20 Konten
               //                 BLB:  6 Konten
@@ -572,7 +573,7 @@ public class DarlehenWPVerarbeitung
               }
               //LOGGER.info(lvNode.getChildText("Kontonummer"));
               
-              // fg anhängen
+              // fg anhï¿½ngen
               lvMyrootelement.addContent(lvElement_fg);
               
               // wpposdaten aufbauen
@@ -614,11 +615,11 @@ public class DarlehenWPVerarbeitung
                     LOGGER.info("ISIN mehrfach " + lvKey + " " + lvNode.getChildText("Kontonummer") + " " + lvNode2.getChildText("Kontonummer"));                    
           
                     // SU 20140424
-                    // ACHTUNG ! Sonderlösung zum Aussteuern von passiven rollover-Geschäften 
+                    // ACHTUNG ! Sonderlï¿½sung zum Aussteuern von passiven rollover-Geschï¿½ften 
                     // ACHTUNG ! Dieses if taucht zweimal auf -Suche nach "SU 20140424"
                     // Diese werden nicht in die Quellsystemdatei geschrieben, damit die Zahlungsstromverarbeitung
-                    // die entsprechenden Konten überliest
-                    // über die Schönheit der if-Abfrage kann man streiten :/
+                    // die entsprechenden Konten ï¿½berliest
+                    // ï¿½ber die Schï¿½nheit der if-Abfrage kann man streiten :/
                     // zum Ausbau das klammernde if entfernen
                     // Stand 20140424: NLB: 20 Konten
                     //                 BLB:  6 Konten
@@ -691,7 +692,7 @@ public class DarlehenWPVerarbeitung
                   }
                   // aus der Liste
                   lvList.remove(j);
-                  // zähler nachruecken
+                  // zï¿½hler nachruecken
                   j--;
                 }
               }

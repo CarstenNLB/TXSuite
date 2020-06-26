@@ -28,9 +28,17 @@ public class TXSSicherheit implements TXSTransaktion
     private String ivQuelle;
 
     /**
-     * Konstruktor - Initialisiert die Variablen mit leeren Strings
+     * Konstruktor
      */
     public TXSSicherheit() 
+    {
+        initTXSSicherheit();
+    }
+
+    /**
+     * Initialisiert die Variablen mit leeren Strings
+     */
+    public void initTXSSicherheit()
     {
         this.ivKey = new String();
         this.ivOrg = new String();

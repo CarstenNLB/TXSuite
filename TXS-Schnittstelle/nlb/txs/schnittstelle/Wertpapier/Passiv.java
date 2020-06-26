@@ -16,8 +16,9 @@ import org.jdom2.Element;
 /**
  * @author Stefan Unnasch
  *
- * Erzeugt die TXS Transaktionen für passive Finanzgeschaefte aus MAVIS
+ * Erzeugt die TXS Transaktionen fï¿½r passive Finanzgeschaefte aus MAVIS
  */
+@Deprecated
 public class Passiv {
         
     /**  
@@ -56,8 +57,8 @@ public class Passiv {
        // Kommt aus GD942 oder GD952
        lvEl_fgdaten.setAttribute("kuendr",lvNodeSA01.getChildText("Kuendigungsrecht"));
       
-       // Anpassungen wegen der Umläufe zu ÖPG/Schiffen/Flugzeugen
-       // diese zunächst aussteuern
+       // Anpassungen wegen der Umlï¿½ufe zu ï¿½PG/Schiffen/Flugzeugen
+       // diese zunï¿½chst aussteuern
        String lvmeinTyp = lvNodeSA04.getChildText("WPArt");
        
        // Umstellung vom Deckungsschluessel auf das Ausplatzierungsmerkmal - CT 16.06.2016
@@ -75,7 +76,7 @@ public class Passiv {
        else if (("F0".equals(lvNodeSA01.getChildText("AusplazMM"))) ||
                 ("F1".equals(lvNodeSA01.getChildText("AusplazMM"))))  
        {
-           // zunächst nur eine direkte Zuordnung
+           // zunï¿½chst nur eine direkte Zuordnung
            lvmeinTyp="010401";
        }
       
@@ -111,7 +112,7 @@ public class Passiv {
      * Fuellen der TXS Transaktion konddaten, enthaelt Daten zur Globalurkunde
      * @param pvPassiv 
      * @param pvKey 
-     * @return Element zum einhängen in die XML-Ausgabe
+     * @return Element zum einhï¿½ngen in die XML-Ausgabe
      */
     public Element gudaten_passiv(Element pvPassiv, Element pvKey)
     {
@@ -148,12 +149,12 @@ public class Passiv {
         
         lvEl_gudaten.setAttribute("gukey",pvKey.getChildText("Produkt")+"_1");
         
-        // Änderung 20120306
-        // spezial für zeros mit Rückzahlungskurs > 100% 
+        // ï¿½nderung 20120306
+        // spezial fï¿½r zeros mit Rï¿½ckzahlungskurs > 100% 
         if (Double.parseDouble(lvNodeSA01.getChildText("Rueckzahlungskurs").replace(",", ".")) > 100) 
         {
          // ivLOGGER.info("Spezialfall zero" + pvKey.getChildText("Produkt"));
-         // ivLOGGER.info("Rückzahlungskurs (>100)=" + lvNodeSA01.getChildText("Rueckzahlungskurs"));
+         // ivLOGGER.info("Rï¿½ckzahlungskurs (>100)=" + lvNodeSA01.getChildText("Rueckzahlungskurs"));
          // ivLOGGER.info("biszu=" + lvNodeSA04.getChildText("Nominalbetrag"));
             
           lvEl_gudaten.setAttribute("biszu", lvNodeSA04.getChildText("Nominalbetrag").replace(",", "."));
@@ -320,7 +321,7 @@ public class Passiv {
        
        lvEl_konddaten.setAttribute("fixtagemod",lvNodeSA01.getChildText("FixingtageMOD"));
        
-       // Anpassungen an TXS 4.03 wegen geänderter Barwertberechnungen dort an variablen Papieren
+       // Anpassungen an TXS 4.03 wegen geï¿½nderter Barwertberechnungen dort an variablen Papieren
        if ("010202".equals(lvNodeSA04.getChildText("WPArt")))
        {
            //System.out.println("Sonderfall 010202 ");
@@ -340,7 +341,7 @@ public class Passiv {
            lvEl_konddaten.setAttribute("kupbasodd", ValueMapping.changeKuponbasis(lvNodeSA01.getChildText("KuponbasisODD")));
        }
        
-       // spezial für zeros ?!?!
+       // spezial fï¿½r zeros ?!?!
        if ("0".equals(lvNodeSA01.getChildText("Zinstermin"))) 
        {
          lvEl_konddaten.setAttribute("zinsdat", DatumUtilities.FormatDatum(lvNodeSA01.getChildText("Zinsbeginn")));

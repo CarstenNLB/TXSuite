@@ -15,13 +15,14 @@ import java.util.HashMap;
 public class ListeObjekte extends HashMap<String, Boolean>
 {
     /**
-     * 
+     * UID
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * @param pvId 
-     * @return 
+     * Liefert den Boolean-Wert (True), wenn die ID des Objekts in der Liste enthalten ist. Ansonsten wird der Boolean-Wert (False) geliefert.
+     * @param pvId ID des Objekts
+     * @return Boolean-Wert (True) -> ID des Objekts vorhanden; Boolean-Wert (False) -> ID des Objekts nicht vorhanden
      * 
      */
     public Boolean getObjekt(String pvId)
@@ -30,8 +31,8 @@ public class ListeObjekte extends HashMap<String, Boolean>
     }
 
     /**
-     * @param pvId 
-     * 
+     * Fuegt eine ID eines Objekts hinzu
+     * @param pvId ID des Objekts
      */
     public void addObjekt(String pvId) 
     {

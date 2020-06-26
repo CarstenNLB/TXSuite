@@ -34,7 +34,7 @@ public class TXSVerzeichnisPfandobjekt implements TXSTransaktion
     private String ivOrg;
     
     /**
-     * Bestandsführendes System des Pfandobjekts.
+     * Bestandsfï¿½hrendes System des Pfandobjekts.
      * z.B. SAP
      * Pflicht
      */
@@ -44,6 +44,14 @@ public class TXSVerzeichnisPfandobjekt implements TXSTransaktion
      * Konstruktor
      */
     public TXSVerzeichnisPfandobjekt()
+    {
+        initTXSVerzeichnisPfandobjekt();
+    }
+
+    /**
+     * Initialisierung der Instanzvariablen mit leeren Strings
+     */
+    public void initTXSVerzeichnisPfandobjekt()
     {
         ivObjnr = new String();
         ivOrg = new String();

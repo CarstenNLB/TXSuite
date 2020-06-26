@@ -12,6 +12,7 @@ import nlb.txs.schnittstelle.Utilities.StringKonverter;
  * @author tepperc
  *
  */
+@Deprecated
 public class OSPInstitutKundenStatistik 
 {
     /**
@@ -24,10 +25,10 @@ public class OSPInstitutKundenStatistik
      */
     private int ivAnzahlKonten;
     
-    // Delta zum Vortag - Soll später in die Anlieferung eingebaut werden
+    // Delta zum Vortag - Soll spï¿½ter in die Anlieferung eingebaut werden
     //  <DeltaVTag>
-    //   <AnzKd>1</AnzKd> ---> ??? Info vorhanden zu Neu/Geändert/Gelöscht? wenn ja
-    //   <AnzKto>2</AnzKto> ---> ??? Info vorhanden zu Neu/Geändert/Gelöscht? wenn ja
+    //   <AnzKd>1</AnzKd> ---> ??? Info vorhanden zu Neu/Geï¿½ndert/Gelï¿½scht? wenn ja
+    //   <AnzKto>2</AnzKto> ---> ??? Info vorhanden zu Neu/Geï¿½ndert/Gelï¿½scht? wenn ja
     //  --- dann
     //  <AnzNeuKd>1</AnzNeuKd>
     //  <AnzNeuKto>2</AnzNeuKto>

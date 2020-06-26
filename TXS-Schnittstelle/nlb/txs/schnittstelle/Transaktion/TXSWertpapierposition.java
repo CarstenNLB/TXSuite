@@ -6,9 +6,11 @@
 
 package nlb.txs.schnittstelle.Transaktion;
 
+import java.math.BigDecimal;
 import nlb.txs.schnittstelle.LoanIQ.DarlehenPassiv.Daten.LoanIQPassivDaten;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
+import org.apache.log4j.Logger;
 
 /**
  * @author tepperc
@@ -17,7 +19,7 @@ import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
 public class TXSWertpapierposition implements TXSTransaktion
 {
     /**
-     * Abweichende Fälligkeit (Sonderfälligkeit)
+     * Abweichende Fï¿½lligkeit (Sonderfï¿½lligkeit)
      * Optional
      */
     private String ivAbwfall;
@@ -41,7 +43,7 @@ public class TXSWertpapierposition implements TXSTransaktion
     private String ivRest;
     
     /**
-     * "Saldo. Ein Originator liefert normalerweise durchgängig 
+     * "Saldo. Ein Originator liefert normalerweise durchgï¿½ngig 
      * Restkapitalien (Soll) oder Restkapitalien (Ist).
      * z.B. ""100000.00"""
      * Optional
@@ -49,7 +51,7 @@ public class TXSWertpapierposition implements TXSTransaktion
     private String ivRkapi;
     
     /**
-     * "Saldo. Ein Originator liefert normalerweise durchgängig 
+     * "Saldo. Ein Originator liefert normalerweise durchgï¿½ngig 
      * Restkapitalien (Soll) oder Restkapitalien (Ist)
      * z.B. ""100000.00"""
      * Optional
@@ -57,15 +59,15 @@ public class TXSWertpapierposition implements TXSTransaktion
     private String ivRkaps;
     
     /**
-     * "Währung der gemeldeten Beträge dieser Transaktion.
-     * (Definition gemäß ISO-Standard)"
+     * "Wï¿½hrung der gemeldeten Betrï¿½ge dieser Transaktion.
+     * (Definition gemï¿½ï¿½ ISO-Standard)"
      * Pflicht nur bei Angabe von Betragswerten
      */
     private String ivWhrg;
 
     /**
-     * "Eindeutiger Schlüssel (in allen Systemen verwendet).
-     * Jede WP-Position muss einen eigenen, eindeutigen Schlüssel besitzen. Es darf hier nicht der Schlüssel des zugehörigen Wertpapiers angegeben werden.
+     * "Eindeutiger Schlï¿½ssel (in allen Systemen verwendet).
+     * Jede WP-Position muss einen eigenen, eindeutigen Schlï¿½ssel besitzen. Es darf hier nicht der Schlï¿½ssel des zugehï¿½rigen Wertpapiers angegeben werden.
      * z.B.: 1234567890 "
      * Pflicht
      */
@@ -248,7 +250,7 @@ public class TXSWertpapierposition implements TXSTransaktion
     }
     
     /**
-     * Liefert die TXSWertpapierposition als String
+     * Liefert die TXSWertpapierposition als StringBuffer
      * @return 
      */
     public StringBuffer printTXSTransaktionDaten()
@@ -293,10 +295,11 @@ public class TXSWertpapierposition implements TXSTransaktion
     
     /**
      * Importiert die PassivDaten aus LoanIQ
-     * @param pvPassiv Daten
-     * @param pvInstitutsnummer  
+     * @param pvPassivDaten Daten
+     * @param pvInstitutsnummer
+     * @param pvLogger
      */
-    public boolean importLoanIQPassiv(LoanIQPassivDaten pvPassivDaten, String pvInstitutsnummer)
+    public boolean importLoanIQPassiv(LoanIQPassivDaten pvPassivDaten, String pvInstitutsnummer, Logger pvLogger)
     {       
       String lvKey = pvPassivDaten.getAktenzeichen();
       if (pvInstitutsnummer.startsWith("004")) // BLB
@@ -320,7 +323,7 @@ public class TXSWertpapierposition implements TXSTransaktion
 
       if (("F".equals(lvKzro)) || ("V".equals(lvKzro)))  
       {
-          this.setAbwfall(DatumUtilities.changeDate(pvPassivDaten.getTilgungsbeginn()));
+          this.setAbwfall(DatumUtilities.changeDate(pvPassivDaten.getLaufzeitende()));
       }    
       else
       {    
@@ -330,15 +333,26 @@ public class TXSWertpapierposition implements TXSTransaktion
           }    
           else
           {
-              this.setAbwfall(DatumUtilities.changeDate(pvPassivDaten.getTilgungsbeginn()));
+              this.setAbwfall(DatumUtilities.changeDate(pvPassivDaten.getLaufzeitende()));
           }
       }
       
-      // Bei Zeros wird das Restkapital nicht mehr geliefert. - CT 10.01.2018
+      // Bei Zeros wird das Restkapital berechnet. (Nennbetrag - LeftAmortize) - CT 08.10.2018
+      ////CT 23.01.2019
       if (!pvPassivDaten.getMerkmalZinssatz().equals("ZERO"))
       {
-    	  this.setRkapi(pvPassivDaten.getRestkapital());
+      	  this.setRkapi(pvPassivDaten.getRestkapital());
       }
+      else
+      {
+      	  BigDecimal lvNennbetrag = new BigDecimal(pvPassivDaten.getNennbetrag());
+      	  BigDecimal lvLeftAmortize = new BigDecimal(pvPassivDaten.getLeftAmortize());
+      	  BigDecimal lvRestkapital = lvNennbetrag.subtract(lvLeftAmortize);
+      	  this.setRkapi(lvRestkapital.toPlainString());
+      	  pvLogger.info("Zero " + pvPassivDaten.getAktenzeichen() + ":" + pvPassivDaten.getKontonummer() + " -> Slice-Restkapital = " + lvRestkapital.toPlainString());
+      	  pvLogger.info("Zero-Restkapital;" + pvPassivDaten.getAktenzeichen() + ";" + pvPassivDaten.getKontonummer() + ";" + lvNennbetrag.toPlainString() + ";" + lvLeftAmortize.toPlainString() + ";" + lvRestkapital.toPlainString());
+      }
+      ////CT 23.01.2019
       
       return true;
     }
@@ -357,4 +371,20 @@ public class TXSWertpapierposition implements TXSTransaktion
     	
     	return true;
     }
+
+    /**
+     * Importiert die Wertpapier-Informationen fuer KEV
+     * @param pvBestandsdaten
+     */
+    public boolean importKEVWertpapier(Bestandsdaten pvBestandsdaten)
+    {
+        this.wpposkey = pvBestandsdaten.getProdukt() + "_0";
+        this.ivLfdnr = "0";
+        this.ivWhrg = pvBestandsdaten.getNominalbetragWaehrung();
+        this.ivNbetrag = pvBestandsdaten.getNominalbetrag();
+        this.ivRkapi = pvBestandsdaten.getNominalbetrag();
+
+        return true;
+    }
+
 }

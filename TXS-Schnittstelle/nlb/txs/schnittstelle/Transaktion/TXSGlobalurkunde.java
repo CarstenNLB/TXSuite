@@ -61,9 +61,17 @@ public class TXSGlobalurkunde implements TXSTransaktion
     private String ivWhrg;
 
     /**
-     *
+     * Konstruktor
      */
     public TXSGlobalurkunde() 
+    {
+        initTXSGlobalurkunde();
+    }
+
+    /**
+     * Initialisiert die Instanzvariablen mit leeren Strings
+     */
+    public void initTXSGlobalurkunde()
     {
         this.ivBiszu = new String();
         this.ivBiszudat = new String();
@@ -289,5 +297,39 @@ public class TXSGlobalurkunde implements TXSTransaktion
     	
     	return true;
     }
+    /**
+     * Importiert die Wertpapier-Informationen fuer KEV
+     * @param pvBestandsdaten
+     * @param pvGD630A
+     * @param pvGD660
+     */
+    public boolean importKEVWertpapier(Bestandsdaten pvBestandsdaten, String pvGD630A, String pvGD660)
+    {
+        this.ivGukey = pvBestandsdaten.getProdukt() + "_1";
+
+        String lvmyregtyp = pvBestandsdaten.getWertpapierart().substring(3,4);
+
+        if ("S0".equals(pvBestandsdaten.getAusplatzierungsmerkmal()) || "S1".equals(pvBestandsdaten.getAusplatzierungsmerkmal()))
+        {
+            lvmyregtyp = "4";
+        }
+        else if ("F0".equals(pvBestandsdaten.getAusplatzierungsmerkmal()) || "F1".equals(pvBestandsdaten.getAusplatzierungsmerkmal()))
+        {
+            lvmyregtyp = "5";
+        }
+
+        this.ivRegtyp = lvmyregtyp;
+
+        //this.ivBiszu = pvBestandsdaten.getNominalbetrag();
+        this.ivBiszu = pvGD630A;
+
+        this.ivValuta = pvBestandsdaten.getNominalbetrag();
+        this.ivWhrg = pvBestandsdaten.getNominalbetragWaehrung();
+        this.ivNr = "1";
+        this.ivBiszudat = pvGD660;
+
+        return true;
+    }
+
 
 }

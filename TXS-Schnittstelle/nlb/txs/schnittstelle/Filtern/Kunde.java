@@ -10,16 +10,17 @@ package nlb.txs.schnittstelle.Filtern;
  * @author tepperc
  *
  */
-public class Kunde 
+@Deprecated
+public class Kunde
 {
     /**
-     *   
+     * Kundennummer
      */
     private String ivKundennummer;
         
     /**
-     * 
-     * @param pvNr
+     * Konstruktor
+     * @param pvNr Kundennummer
      */
     public Kunde(String pvNr)
     {
@@ -27,8 +28,8 @@ public class Kunde
     }
     
     /**
-     * Liefert eine Kundennummer
-     * @return 
+     * Liefert die Kundennummer
+     * @return Kundennummer
      */
     public String getKundennummer()
     {
@@ -36,7 +37,7 @@ public class Kunde
     }
     
     /**
-     * Setzt die Kontonummer
+     * Setzt die Kundennummer
      * @param pvNr 
      */
     public void setKundennummer(String pvNr)

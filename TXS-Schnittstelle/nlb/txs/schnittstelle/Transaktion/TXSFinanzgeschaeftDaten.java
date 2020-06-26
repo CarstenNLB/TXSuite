@@ -8,20 +8,20 @@ package nlb.txs.schnittstelle.Transaktion;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import org.apache.log4j.Logger;
-
-import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
-import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
+import nlb.txs.schnittstelle.Darlehen.DarlehenVerarbeiten;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.DarlehenPassiv.Daten.LoanIQPassivDaten;
+import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
+import nlb.txs.schnittstelle.Termingeld.Daten.Termingeld;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.MappingMIDAS;
+import nlb.txs.schnittstelle.Utilities.String2XML;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
 import nlb.txs.schnittstelle.Wertpapier.Gattungsdaten.Gattung;
+import org.apache.log4j.Logger;
 
 /**
  * @author tepperc
@@ -33,481 +33,481 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
      * Ausgezahlter Betrag
      */
     private String ivAbetrag;
-    
+
     /**
      * Abweichende Faelligkeit
      */
     private String ivAbwfaell;
-    
+
     /**
      * Abzahlungsbeginn (verzoegerter)
      */
     private String ivAbzbeg;
-    
+
     /**
      * Aktiv/Passiv
      */
     private String ivAktivpassiv;
-    
+
     /**
      * Auszahlungskurs
      */
     private String ivAkurs;
-    
+
     /**
      * Ausgleichsforderung - noch nicht verwendet
      */
     //private String ivAusglford;
-    
+
     /**
      * Auszahlungsstatus
      */
     private String ivAusstat;
-    
+
     /**
      * Auszahlungsdatum
      */
     private String ivAuszdat;
-     
+
     /**
      * Auszahlungsverpflichtung
      */
     private String ivAverpfl;
-    
+
     /**
      * Aktenzeichen
      */
     private String ivAz;
-    
+
     /**
      * Bankname
      */
     private String ivBank;
-    
+
     /**
      * Kennzeichen Bankgebaeudekredit
      */
     private String ivBankgeb;
-    
+
     /**
      * Kontobetreuer
      */
     private String ivBetreuer;
-    
+
     /**
      * BIC
      */
     private String ivBic;
-    
+
     /**
      * BLZ
      */
     private String ivBlz;
-    
+
     /**
      * Boersennotiert
      */
     private String ivBoersnot;
-    
+
     /**
      * Besondere Schuldform
      */
     private String ivBsform;
-    
+
     /**
      * DSCR - nicht verwendet
      */
     //private String ivDscr;
-    
+
     /**
      * Durchlaufender Kredit
      */
     private String ivDurchl;
-    
+
     /**
      * Effektive Stuecke
      */
     private String ivEffstk;
-    
+
     /**
      * Einzelwertberichtigung
      */
     private String ivEwb;
-    
+
     /**
      * Extern verbrieft
      */
     private String ivExtx;
-    
+
     /**
      * Externer Key fuer externe Verbriefung
      */
     private String ivExtxkey;
-    
+
     /**
      * Finanzierungsart
      */
     private String ivFinart;
-       
+
     /**
      * Foerderkredit
      */
     private String ivFoerdkredit;
-    
+
     /**
      * Freie Spitze bei Cut Off externe Verbriefung
      */
     private String ivFreicutex;
-    
+
     /**
      * Freie Spitze
      */
     private String ivFspitz;
-    
+
     /**
      * Feiertage mischen
      */
     private String ivFtagmisch;
-    
+
     /**
      * Gedeckte Schuldverschreibung - nicht verwendet
      */
     //private String ivGedschv;
-    
+
     /**
      * GS1-Privilegierung
      */
     private String ivGs1priv;
-    
+
     /**
      * Haircut Level
      */
     private String ivHcut;
-    
+
     /**
      * IBAN
      */
     private String ivIban;
-    
+
     /**
      * ICR - nicht verwendet
      */
     //private String ivIcr;
-    
+
     /**
      * ISIN
      */
     private String ivIsin;
-    
+
     /**
      * Kapitalaustasch
      */
     private String ivKaptausch;
-    
+
     /**
      * Kapitalaustausch zur Laufzeit
      */
     private String ivKaptauschlfz;
-    
+
     /**
      * Geschaeftskategorie
      */
     private String ivKat;
-    
+
     /**
      * Kaufdatum
      */
     private String ivKaufdat;
-    
+
     /**
      * Konkursvorrecht gesichert - nicht verwendet
      */
     //private String ivKonvorges;
-    
+
     /**
      * Betrag Konsortialfinanzierung
      */
     private String ivKonsfin;
-  
+
     /**
      * Name des Konsortialfuehrers
      */
     private String ivKonsfuehrer;
-    
+
     /**
      * Kennzeichen Konsortialkredit
      */
     private String ivKonskredit;
-    
+
 
     /**
      * Konsortial Anteilsart
      */
     private String ivKonsantart;
-    
+
     /**
      * Konsortialquote
      */
     private String ivKonsquo;
-    
+
     /**
      * Kontonummer
      */
     private String ivKonto;
-    
+
     /**
      * Kuendigungsfrist
      */
     private String ivKuendfrist;
-    
+
     /**
      * Kuendigungsrecht
      */
     private String ivKuendr;
-    
+
     /**
      * Liquiditaetskategorie
      */
     private String ivLiqkat;
-    
+
     /**
      * Aktueller LTV
      */
     private String ivLtv;
-    
+
     /**
      * Max LTV
      */
     private String ivMaxltv;
-    
+
     /**
      * Aktueller LTV Moodys - nicht verwendet
      */
     //private String ivMltv;
-    
+
     /**
      * Nennbetrag
      */
     private String ivNbetrag;
-    
+
     /**
      * Pfandbriefrelevanz
      */
     private String ivPfbrfrel;
-    
+
     /**
      * Privatplatzierung
      */
     //private String ivPplatz;
-    
+
     /**
      * Produktart
      */
     private String ivProdart;
-    
+
     /**
      * Rahmenvertrag Abschlussdatum
      */
     private String ivRahmenvdat;
-    
+
     /**
      * Rahmenvertragsnummer
      */
     private String ivRahmenvnr;
-    
+
     /**
      * Rahmenvertrag Counterpart
      */
     private String ivRahmenvpart;
-    
+
     /**
      * Rating Fitch langfristig
      */
     private String ivRatfitch;
-    
+
     /**
      * Rating Fitch kurzfristig
      */
     private String ivRatfitchk;
-    
+
     /**
      * Internes Rating
      */
     private String ivRatint;
-    
+
     /**
      * Rating Moodys langfristig
      */
     private String ivRatmoody;
-    
+
     /**
      * Rating Moodys kurzfristig
      */
     private String ivRatmoodyk;
-    
+
     /**
      * Rating S_P langfristig
      */
     private String ivRatsp;
-    
+
     /**
      * Rating S_P kurzfristig
      */
     private String ivRatspk;
-    
+
     /**
      * Kreditreferat
      */
     private String ivReferat;
-    
+
     /**
      * Darlehen als Refinanzierungsmittel fuer andere Banken
      */
     private String ivRefikred;
-    
+
     /**
      * Related Loans
      */
     private String ivRelloan;
-    
+
     /**
      * Repo-Flag
      */
     private String ivRepo;
-    
+
     /**
      * Risiokogewicht
      */
     private String ivRgew;
-    
+
     /**
      * Risikogruppe
      */
     private String ivRgruppe;
-    
+
     /**
      * Risikoabschlag
      */
     private String ivRisikoab;
-    
+
     /**
      * Restkapital bei Cut Off externe Verbriefung
      */
     private String ivRkapcutex;
-    
+
     /**
      * Restkapital (Ist)
      */
     private String ivRkapi;
-    
+
     /**
      * Restkapital (Soll)
      */
     private String ivRkaps;
-    
+
     /**
      * Servicer
      */
     //private String ivSvcr;
-    
+
     /**
      * Simulationsgeschaeft
      */
     private String ivSimu;
-    
+
     /**
      * Kommentar
      */
     private String ivText;
-    
+
     /**
      * Tilgungsmodell
      */
     private String ivTilgmod;
-    
+
     /**
      * Tageskurs
      */
     private String ivTkurs;
-    
+
     /**
      * Kredittyp
      */
     private String ivTyp;
-    
+
     /**
      * Ursprungslaufzeit in Monaten
      */
     private String ivUrlfzmon;
-    
+
     /**
      * Urspruenglicher LTV bei Auszahlung
      */
     private String ivUrltv;
-    
+
     /**
      * Anfaenglicher Tilgungssatz
      */
     private String ivUrtilgsatz;
-     
+
     /**
      * Vermittelt durch
      */
     private String ivVermd;
-    
+
     /**
      * Kreditversicherung
      */
     private String ivVers;
-    
+
     /**
      * Verwaesserungsabschlag
      */
     private String ivVerwab;
-    
+
     /**
      * Verwahrnummer
      */
     private String ivVerwnr;
-    
+
     /**
      * Vorauszahlungen
      */
     private String ivVorausz;
-    
+
     /**
      * Vertragswaehrung
      */
     private String ivVwhrg;
-    
+
     /**
      * Betragswaehrung
      */
     private String ivWhrg;
-     
+
     /**
      * Weitere strukturierte Elemente - nicht verwendet
      */
     //private String ivWselem;
-    
+
     /**
      * Zusagedatum
      */
     private String ivZusdat;
-    
+
     /**
      * Zusaetzliche Sicherheiten vorhanden - nicht verwendet
      */
     //private String ivZusshvorh;
-    
+
     /**
      * Zweck des Kredites
      */
     private String ivZweck;
-    
+
     // Neu hinzugefuegte Felder - 29.09.2011
     /**
-     * Deckungsschlüssel
+     * Deckungsschluessel
      */
     private String ivDeckschl;
 
@@ -516,82 +516,88 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
      * Ausplatzierungsmerkmal
      */
     private String ivAuspl;
-    
+
     /**
-     * Produktschlüssel
+     * Produktschluessel
      */
     private String ivProdschl;
     // Neu hinzugefuegte Felder - 29.09.2011
-        
+
     /**
-     * Kennzeichen auf Rollover-Darlehen 
+     * Kennzeichen auf Rollover-Darlehen
      */
     private String ivRoll;
-    
+
     // Hinzugefuegte Felder - 15.11.2012
     /**
      * Konto-Einrichtung
      */
     private String ivKein;
-    
+
     /**
-     * 
+     *
      */
     private String ivBoe;
-    
+
     /**
-     * 
+     *
      */
     private String ivVoe;
-    
+
     /**
-     * 
+     *
      */
     private String ivPoe;
     // Hinzugefuegte Felder - 15.11.2012
-    
+
     // Hinzugefuegte Felder fuer Wertpapiere
     /**
-     * 
+     *
      */
     private String ivDepotnummer;
-    
+
     /**
-     * 
+     *
      */
     private String ivMAVPROD;
-    
+
     /**
-     * 
+     *
      */
     private String ivGd160;
-    
+
     /**
-     * 
+     *
      */
     private String ivGd260;
-    
+
     /**
-     * 
+     *
      */
     private String ivGd776;
-    
+
     /**
-     * 
+     *
      */
     private String ivGd776B;
-    
+
     /**
-     * 
+     *
      */
     private String ivGibnot;
-    
+
     /**
-     * 
+     *
      */
     private String ivPfandbriefoepg;
     // Hinzugefuegte Felder fuer Wertpapiere
-    
+
+    // Hinzugefuegt 12.08.2019
+    /**
+     * Anwendungsnummer
+     */
+    private String ivAnwendungsnummer;
+
     /**
      * Konstruktor
      */
@@ -599,7 +605,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     {
         initTXSFinanzgeschaeftDaten();
     }
-    
+
     /**
      * Initialisierung der Felder mit leeren Strings
      */
@@ -709,6 +715,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         this.ivGd776B = new String();
         this.ivGibnot = new String();
         this.ivPfandbriefoepg = new String();
+        this.ivAnwendungsnummer = new String();
     }
 
     /**
@@ -1214,10 +1221,10 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     public void setKonskredit(String pvKonskredit) {
         this.ivKonskredit = pvKonskredit;
     }
-    
+
     /**
-     * @return 
-     * 
+     * @return
+     *
      */
     public String getKonsfin()
     {
@@ -1225,13 +1232,13 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     }
 
     /**
-     * @param pvKonsfin 
+     * @param pvKonsfin
      */
     public void setKonsfin(String pvKonsfin)
     {
-       this.ivKonsfin = pvKonsfin; 
+       this.ivKonsfin = pvKonsfin;
     }
-    
+
     /**
      * @return the konsantart
      */
@@ -1963,15 +1970,15 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     /**
      * @return the kein
      */
-    public String getKein() 
+    public String getKein()
     {
         return this.ivKein;
     }
 
     /**
-     * @param pvKein 
+     * @param pvKein
      */
-    public void setKein(String pvKein) 
+    public void setKein(String pvKein)
     {
         this.ivKein = pvKein;
     }
@@ -1979,16 +1986,15 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     /**
      * @return the boe
      */
-    public String getBoe() 
+    public String getBoe()
     {
         return this.ivBoe;
     }
 
     /**
-     * @param pvBoe 
-     * @param pvBewilligendeOE the bewilligendeOE to set
+     * @param pvBoe
      */
-    public void setBoe(String pvBoe) 
+    public void setBoe(String pvBoe)
     {
         this.ivBoe = pvBoe;
     }
@@ -1996,13 +2002,13 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     /**
      * @return the voe
      */
-    public String getVoe() 
+    public String getVoe()
     {
         return this.ivVoe;
     }
 
     /**
-     * @param pvVoe 
+     * @param pvVoe
      */
     public void setVoe(String pvVoe) {
         this.ivVoe = pvVoe;
@@ -2016,63 +2022,81 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     }
 
     /**
-     * @param pvPoe 
+     * @param pvPoe
      */
-    public void setPoe(String pvPoe) 
+    public void setPoe(String pvPoe)
     {
         this.ivPoe = pvPoe;
     }
 
     /**
+     * Liefert die Anwendungsnummer
+     * @return Die Anwendungsnummer
+     */
+    public String getAnwendungsnummer()
+    {
+      return this.ivAnwendungsnummer;
+    }
+
+    /**
+     * Setzt die Anwendungsnummer
+     * @param pvAnwNr
+     */
+    public void setAnwendungsnummer(String pvAnwNr)
+    {
+        this.ivAnwendungsnummer = pvAnwNr;
+    }
+
+    /**
      * Liefert den Start der TXSFinanzgeschaeftDaten als String
-     * @return 
+     * @return
      */
     public StringBuffer printTXSTransaktionStart()
     {
         return new StringBuffer("    <txsi:fgdaten ");
      }
-        
+
     /**
      * TXSFinanzgeschaeftDaten in die XML-Datei schreiben
-     * @return 
+     * @return
      */
     public StringBuffer printTXSTransaktionDaten()
     {
         StringBuffer lvHelpXML = new StringBuffer();
         if (this.ivAbetrag.length() > 0)
         	lvHelpXML.append("abetrag=\"" + this.ivAbetrag + "\" ");
-        
-        if (this.ivAktivpassiv.length() > 0)       
-        	lvHelpXML.append("aktivpassiv=\"" + this.ivAktivpassiv + "\" "); 
-        
+
+        if (this.ivAktivpassiv.length() > 0)
+        	lvHelpXML.append("aktivpassiv=\"" + this.ivAktivpassiv + "\" ");
+
         if (this.ivAuszdat.length() > 0)
         	lvHelpXML.append("auszdat=\"" + this.ivAuszdat + "\" ");
-          
+
         if (this.ivAusstat.length() > 0)
         	lvHelpXML.append("ausstat=\"" + this.ivAusstat + "\" ");
-   
+
         if (this.ivAverpfl.length() > 0)
         	lvHelpXML.append("averpfl=\"" + this.ivAverpfl + "\" ");
 
         if (this.ivAz.length() > 0)
         	lvHelpXML.append("az=\"" + this.ivAz + "\" ");
-        
+
         if (this.ivDepotnummer.length() > 0)
-        	lvHelpXML.append("depotnummer=\"" + this.ivDepotnummer + "\" ");        	
-        
+        	lvHelpXML.append("depotnummer=\"" + this.ivDepotnummer + "\" ");
+
         if (this.ivIsin.length() > 0)
         {
         	lvHelpXML.append("isin=\"" + this.ivIsin + "\" ");
         }
-        
+
         if (this.ivKat.length() > 0)
           lvHelpXML.append("kat=\"" + this.ivKat + "\" ");
-        
+
         if (this.ivKonsfin.length() > 0)
         {
            lvHelpXML.append("konsfin=\"" + this.ivKonsfin + "\" ");
         }
-        
+
         if (this.ivKonskredit.length() > 0)
         {
             lvHelpXML.append("konskredit=\"" + this.ivKonskredit + "\" ");
@@ -2082,27 +2106,27 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         {
             lvHelpXML.append("konsfuehrer=\"" + this.ivKonsfuehrer + "\" ");
         }
-        
+
         if (this.ivKonsantart.length() > 0)
         {
             lvHelpXML.append("konsantart=\"" + this.ivKonsantart + "\" ");
         }
-        
+
         if (this.ivKonsquo.length() > 0)
         {
             lvHelpXML.append("konsquo=\"" + this.ivKonsquo + "\" ");
         }
-        
+
         if (this.ivNbetrag.length() > 0)
         {
           lvHelpXML.append("nbetrag=\"" + this.ivNbetrag + "\" ");
         }
-        
+
         if (this.ivPfbrfrel.length() > 0)
         {
           lvHelpXML.append("pfbrfrel=\"" + this.ivPfbrfrel + "\" ");
         }
-        
+
         if (this.ivRkapi.length() > 0)
         {
           lvHelpXML.append("rkapi=\"" + this.ivRkapi + "\" ");
@@ -2112,21 +2136,21 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         {
             lvHelpXML.append("repo=\"" + this.ivRepo + "\" ");
         }
-        
+
         if (this.ivTyp.length() > 0)
         {
           lvHelpXML.append("typ=\"" + this.ivTyp + "\" ");
         }
-        
+
         if (this.ivTkurs.length() > 0)
             lvHelpXML.append("tkurs=\"" + this.ivTkurs + "\" ");
-        
+
         if (this.ivVwhrg.length() > 0)
           lvHelpXML.append("vwhrg=\"" + this.ivVwhrg + "\" ");
-        
+
         if (this.ivWhrg.length() > 0)
           lvHelpXML.append("whrg=\"" + this.ivWhrg + "\" ");
-        
+
         if (this.ivZusdat.length() > 0)
             lvHelpXML.append("zusdat=\"" + this.ivZusdat + "\" ");
 
@@ -2136,25 +2160,25 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
 
         if (this.ivAuspl.length() > 0)
             lvHelpXML.append("auspl=\"" + this.ivAuspl + "\" ");
-        
+
         if (this.ivProdschl.length() > 0)
             lvHelpXML.append("prodschl=\"" + this.ivProdschl + "\" ");
 
         if (this.ivRoll.length() > 0)
             lvHelpXML.append("roll=\"" + this.ivRoll + "\" ");
-        
+
         if (this.ivKein.length() > 0)
             lvHelpXML.append("kein=\"" + this.ivKein + "\" ");
-        
+
         if (this.ivBoe.length() > 0)
             lvHelpXML.append("boe=\"" + this.ivBoe + "\" ");
-        
+
         if (this.ivVoe.length() > 0)
             lvHelpXML.append("voe=\"" + this.ivVoe + "\" ");
-        
+
         if (this.ivPoe.length() > 0)
             lvHelpXML.append("poe=\"" + this.ivPoe + "\" ");
-        
+
         if (this.ivText.length() > 0)
         {
             lvHelpXML.append("text=\"" + this.ivText + "\" ");
@@ -2162,15 +2186,15 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
 
         if (this.ivFinart.length() > 0)
         {
-            lvHelpXML.append("finart=\"" + this.ivFinart + "\" ");            
+            lvHelpXML.append("finart=\"" + this.ivFinart + "\" ");
         }
-       
+
         if (this.ivUrtilgsatz.length() > 0)
             lvHelpXML.append("urtilgsatz=\"" + this.ivUrtilgsatz + "\" ");
 
         if (this.ivKuendr.length() > 0)
             lvHelpXML.append("kuendr=\"" + this.ivKuendr + "\" ");
-        
+
         if (this.ivMAVPROD.length() > 0)
             lvHelpXML.append("mavprod=\"" + this.ivMAVPROD + "\" ");
 
@@ -2185,65 +2209,74 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
 
         if (this.ivGd776B.length() > 0)
             lvHelpXML.append("gd776b=\"" + this.ivGd776B + "\" ");
-        
+
         if (this.ivGibnot.length() > 0)
             lvHelpXML.append("gibnot=\"" + this.ivGibnot + "\" ");
 
         if (this.ivPfandbriefoepg.length() > 0)
-            lvHelpXML.append("pfandbriefoepg=\"" + this.ivPfandbriefoepg + "\" ");
-        
+        {
+            lvHelpXML.append("pfandbriefoepg=\"");
+            lvHelpXML.append(this.ivPfandbriefoepg);
+            lvHelpXML.append("\" ");
+        }
+
+        if (this.ivAnwendungsnummer.length() > 0)
+        {
+            lvHelpXML.append("anwendungsnummer=\"");
+            lvHelpXML.append(this.ivAnwendungsnummer);
+            lvHelpXML.append("\" ");
+        }
         lvHelpXML.append(">");
 
         return lvHelpXML;
      }
-    
+
     /**
      * TXSFinanzgeschaeftDatenEnde in die XML-Datei schreiben
-     * @return 
+     * @return
      */
     public StringBuffer printTXSTransaktionEnde()
     {
         return new StringBuffer("</txsi:fgdaten>\n");
     }
-    
+
     /**
      * Importiert die Darlehensinformationen aus DarKa
-     * Aufruf aus den Klassen 'RefiRegisterAktiv' und 'RefiRegisterPassiv'
-     * @param pvModus 
-     * @param pvDarlehen 
-     * @return 
+     * Aufruf aus der Klasse 'RefiRegisterPassiv'
+     * @param pvDarlehen
+     * @return
      */
-    public boolean importDarlehen(Darlehen pvDarlehen)
-    {     
+    public boolean importDarlehen(nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen)
+    {
         /* Definition der Ursprungskapital .......................... */
         BigDecimal lvUrsprungskapital = new BigDecimal(pvDarlehen.getUrsprungsKapital());
         /* Definition der Auszahlungsverpflichtungen ................ */
         BigDecimal lvAuszahlungsVerpf = StringKonverter.convertString2BigDecimal(pvDarlehen.getOffZusage());
         /* Definition der Restkapital ............................... */
         BigDecimal lvRestkapital = new BigDecimal("0.0");
-        /* Nach Definition ohne Summe rückständiger Leistung */
+        /* Nach Definition ohne Summe rï¿½ckstï¿½ndiger Leistung */
         lvRestkapital  = ((StringKonverter.convertString2BigDecimal(pvDarlehen.getRestkapital())).add(StringKonverter.convertString2BigDecimal(pvDarlehen.getSummeNoNiFaeTilgung()))).add(StringKonverter.convertString2BigDecimal(pvDarlehen.getSondertilgung()));
 
         //System.out.println("dRestkapital: " + dRestkapital.toString());
         // Rechenkonstante
         BigDecimal lvBtrDivHd = new BigDecimal("0.01");
         //System.out.println("dBtrDivHd: " + dBtrDivHd.toString());
-        
+
         /* Wird dann immer als Multiplikator genutzt */
         BigDecimal lvWork = new BigDecimal("0.0");
         BigDecimal lvBuerge_Fakt = new BigDecimal("1.0");
         BigDecimal lvKonEigenUKAP_Fakt = new BigDecimal("1.0");
         BigDecimal lvKonEigenRKAP_Fakt = new BigDecimal("1.0");
-            
+
         if (pvDarlehen.getKredittyp().equals("4"))
-        { /* mit Bürge .. anteilig */
+        { /* mit Bï¿½rge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) != 0.0)
          { /* nichts da */
           lvBuerge_Fakt = lvBtrDivHd.multiply(StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftProzent()));
          } /* etwas da */
-        } /* mit Bürge .. anteilig */
+        } /* mit Bï¿½rge .. anteilig */
 
-        // BLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlüssel 'S' oder 'V' und das Produkt '0802' ist
+        // BLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlï¿½ssel 'S' oder 'V' und das Produkt '0802' ist
         if (pvDarlehen.getInstitutsnummer().equals("004"))
         {
             if ((pvDarlehen.getDeckungsschluessel().equals("S") || pvDarlehen.getDeckungsschluessel().equals("V")) && pvDarlehen.getProduktSchluessel().equals("00802"))
@@ -2252,8 +2285,8 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
                 lvBuerge_Fakt = new BigDecimal("1.0");
             }
         }
-        
-        // NLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlüssel 'S' oder 'V' ist
+
+        // NLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlï¿½ssel 'S' oder 'V' ist
         if (pvDarlehen.getInstitutsnummer().equals("009"))
         {
             if (pvDarlehen.getDeckungsschluessel().equals("S") || pvDarlehen.getDeckungsschluessel().equals("V"))
@@ -2261,10 +2294,10 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
                 // Buergen-Faktor wieder auf '1' setzen
                 lvBuerge_Fakt = new BigDecimal("1.0");
             }
-        }        
+        }
 
         //System.out.println("dBuerge_Fakt: " + dBuerge_Fakt.toString());
-        
+
         // CT 25.02.2013
         //wenn (Schluessel Kompensation > 0 und < 16), dann "Konsortialkredit" = ja, sonst "Konsortialkredit" = nein
         //wenn (Schluessel Kompensation = 01/10/11), dann "Konsortialfuehrer" = NORD/LB, sonst
@@ -2293,7 +2326,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
                 }
             }
         }
-        
+
         /* Konsortiale ..... Summe der anderen, nur bei korrektem Schl.... */
         if (StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) > 0 &&
                 StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) < 20)
@@ -2319,23 +2352,23 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         lvKonEigenUKAP_Fakt = lvKonEigenRKAP_Fakt;
 
         //System.out.println("dKonEigenUKAP_Fakt: " + dKonEigenUKAP_Fakt.toString());
-        //System.out.println("dKonEigenRKAP_Fakt: " + dKonEigenRKAP_Fakt.toString());        
-        
+        //System.out.println("dKonEigenRKAP_Fakt: " + dKonEigenRKAP_Fakt.toString());
+
         // CT - 06.06.2012 Ursprungskapital zu 100% nehmen
         //dUrsprungskapital = dUrsprungskapital.multiply(dKonEigenUKAP_Fakt);
         lvRestkapital      = lvRestkapital.multiply(lvKonEigenRKAP_Fakt);
         lvAuszahlungsVerpf = lvAuszahlungsVerpf.multiply(lvKonEigenUKAP_Fakt);
-        
+
         //System.out.println("dUrsprungskaptial: " + dUrsprungskapital);
         //System.out.println("dRestkapital: " + dRestkapital);
-        
+
         this.ivAbetrag = (lvUrsprungskapital.subtract(lvAuszahlungsVerpf)).toString();
-        this.ivAktivpassiv = "1"; 
-          
+        this.ivAktivpassiv = "1";
+
         /* Definition der Auszahlungstermin ......................... */
         String lvAusZahl = new String();
-        /* Änderung vom 25.04.2005 Kontozustand > '8' statt > '4' */
-        /* => Übernahme des Auszahlungstermines von == '4' auf > '3' */
+        /* ï¿½nderung vom 25.04.2005 Kontozustand > '8' statt > '4' */
+        /* => ï¿½bernahme des Auszahlungstermines von == '4' auf > '3' */
         if (StringKonverter.convertString2Int(pvDarlehen.getKontozustand()) > 3)
         { /* Voll ausgezahlt */
          lvAusZahl = pvDarlehen.getVollvalutierungsdatum();
@@ -2343,7 +2376,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         } /* Voll ausgezahlt */
         if (StringKonverter.convertString2Int(pvDarlehen.getKontozustand()) < 4)
         { /* Noch nicht vollvalutiert */
-         this.ivAusstat = "1";   
+         this.ivAusstat = "1";
          if (!(pvDarlehen.getVorNotADat() == null) &&
              !pvDarlehen.getVorNotADat().equals("11110101") && // 01.01.1111
              !pvDarlehen.getVorNotADat().equals("00000000"))   // isEmpty
@@ -2357,20 +2390,20 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         } /* Noch nicht vollvalutiert */
 
         this.ivAuszdat = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(lvAusZahl));
-        this.ivAverpfl = lvAuszahlungsVerpf.toString();                    
+        this.ivAverpfl = lvAuszahlungsVerpf.toString();
         this.ivAz = pvDarlehen.getKontonummer();
-                    
+
         this.ivKat = "1";
         // ISIN Verschluesselung als Wertpapier - CT 11.06.2014
         if (pvDarlehen.getIsin().substring(2,3).equals("W"))
         {
             this.ivKat = "2";
         }
-          
+
         this.ivNbetrag = lvUrsprungskapital.toString();
-          
+
         this.ivPfbrfrel = "3";
-        
+
         // CT - 06.06.2012
         // Restkapital darf nicht groesser als das Nominalkapital sein
         if (lvRestkapital.compareTo(lvUrsprungskapital) == 1)
@@ -2381,11 +2414,11 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         {
           this.ivRkapi = lvRestkapital.toString();
         }
-                
+
         // CT 26.03.2015 - Fest verdrahtet lvKTyp = "1"
         //lvKTyp = "1";
-        
-        // Vor den Umsetzungen ... Prüfungen, die zur Ablehnung führen
+
+        // Vor den Umsetzungen ... Prï¿½fungen, die zur Ablehnung fï¿½hren
         //if (lvKTyp.isEmpty())
         //{ // Kein Kredittyp moeglich !
         // System.out.println("-->Konto " + pvDarlehen.getKontonummer() + "(" + pvDarlehen.getInstitutsnummer() +
@@ -2396,32 +2429,32 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         //} // Kein Kredittyp moeglich !
 
         this.ivTyp = "1";
-          
+
         this.ivVwhrg = pvDarlehen.getSatzwaehrung();
-          
+
         this.ivWhrg = pvDarlehen.getSatzwaehrung();
-          
+
         this.ivZusdat = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(pvDarlehen.getBewilligungsdatum()));
-        
+
         // Neu hinzugefuegte Felder - 29.09.2011
         // Deckungsschluessel
         this.ivDeckschl = pvDarlehen.getDeckungsschluessel();
-        
+
         // Ausplatzierungsmerkmal
         this.ivAuspl = pvDarlehen.getAusplatzierungsmerkmal();
-        
+
         // Produktionsschluessel
         this.ivProdschl = pvDarlehen.getProduktSchluessel();
-        
+
         // Kennzeichen Rollover
-        // Defaultmässig erst einmal auf "0" (false) setzen
+        // Defaultmï¿½ssig erst einmal auf "0" (false) setzen
         this.ivRoll = "0";
         // Bei Rollover muss das Kennzeichen gesetzt werdem
         if (pvDarlehen.getKennzeichenRollover().equals("F") || pvDarlehen.getKennzeichenRollover().equals("V"))
         {
           this.ivRoll = "1";
         }
-        
+
         /*
         // CT 20.12.2011 - Repo-Flag
         // Defaultmaessig erst einmal auf "0" (false) setzen
@@ -2452,7 +2485,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
           {
         	  this.ivRepo = "1";
           }
-          
+
           // Produktschluessel == 105 und (Ausplatzierungsmerkmal == K0 oder K1)
           if (pvDarlehen.getProduktSchluessel().equals("00105") && (pvDarlehen.getAusplatzierungsmerkmal().equals("K0") || pvDarlehen.getAusplatzierungsmerkmal().equals("K1")))
           {
@@ -2465,14 +2498,14 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         {
         	this.ivRepo = "1";
         }
-        
+
         // Hinzugefuegte Felder - 15.11.2012
        this.ivKein = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(pvDarlehen.getKontoEinrichtung()));
        this.ivBoe = pvDarlehen.getBewilligendeOE();
        this.ivVoe = pvDarlehen.getVerwaltendeOE();
        this.ivPoe = pvDarlehen.getProduktverantwortlicheOE();
         // Hinzugefuegte Felder - 15.11.2012
-    
+
        if (pvDarlehen.getIsin().substring(2,3).equals("W"))
        {
            this.ivTkurs = "100.00";
@@ -2480,236 +2513,257 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
 
        this.ivFinart = "7";
        //System.out.println("ivFinart: " + this.ivFinart);
-     
-       return true;
+
+        // Anwendungsnummer DarKa == 30 - CT 12.08.2019
+        this.ivAnwendungsnummer = "30";
+
+        return true;
     }
-    
+
     /**
      * Importiert die Darlehensinformationen aus LoanIQ
-     * @param pvDarlehenLoanIQBlock
-     * @param pvVorlaufsatz 
+     * @param pvDarlehenBlock
+     * @param pvVorlaufsatz
      * @param pvLogger
-     * @return 
+     * @return
      */
-    public boolean importLoanIQ(DarlehenLoanIQBlock pvDarlehenLoanIQBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    public boolean importLoanIQ(DarlehenBlock pvDarlehenBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
     {
-    	DarlehenLoanIQ lvHelpDarlehenLoanIQ = pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto();
+    	Darlehen lvHelpDarlehen = pvDarlehenBlock.getDarlehenNetto();
 
     	// Konsortial
-        if (lvHelpDarlehenLoanIQ.getKennzeichenKonsortialkredit().equals("J"))
+        if (lvHelpDarlehen.getKennzeichenKonsortialkredit().equals("J"))
         {
           this.ivKonskredit = "1";
-          this.ivKonsfuehrer = lvHelpDarlehenLoanIQ.getKonsortialfuehrer();
+          this.ivKonsfuehrer = lvHelpDarlehen.getKonsortialfuehrer();
         }
         else
         {
             this.ivKonskredit = "0";
         }
-        
+
     	BigDecimal lvNennbetrag;
         // Nennbetrag
-    	if (lvHelpDarlehenLoanIQ.getKennzeichenKonsortialkredit().equals("J"))
+    	if (lvHelpDarlehen.getKennzeichenKonsortialkredit().equals("J"))
     	{
     		// Fremde Fuehrung
-    		if (pvDarlehenLoanIQBlock.isListeDarlehenLoanIQFremdEmpty())
+    		if (pvDarlehenBlock.isListeDarlehenFremdEmpty())
     		{
-    			pvLogger.info("Fremde Fuehrung - Darlehen " + pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKontonummer() + " Betrag: " + pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getNennbetrag());
-    			lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getNennbetrag());
+    			pvLogger.info("Fremde Fuehrung - Darlehen " + pvDarlehenBlock.getDarlehenNetto().getKontonummer() + " Betrag: " + pvDarlehenBlock
+              .getDarlehenNetto().getNennbetrag());
+    			lvNennbetrag = StringKonverter.convertString2BigDecimal(
+              pvDarlehenBlock.getDarlehenNetto().getNennbetrag());
     		}
     		else // Eigene Fuehrung
     		{
-    			pvLogger.info("Eigene Fuehrung - Darlehen " + pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getKontonummer() + " Betrag: " + pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getNennbetrag());
-    			lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getNennbetrag());        		
+    			pvLogger.info("Eigene Fuehrung - Darlehen " + pvDarlehenBlock.getDarlehenBrutto().getKontonummer() + " Betrag: " + pvDarlehenBlock
+              .getDarlehenBrutto().getNennbetrag());
+    			lvNennbetrag = StringKonverter.convertString2BigDecimal(
+              pvDarlehenBlock.getDarlehenBrutto().getNennbetrag());
     		}
     	}
     	else
     	{
-    		lvNennbetrag = StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getNennbetrag());
+    		lvNennbetrag = StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getNennbetrag());
     	}
         this.ivNbetrag = lvNennbetrag.toPlainString();
-        
-        BigDecimal lvAuszahlungsVerpf = StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getAuszahlungsverpflichtung());
+
+        BigDecimal lvAuszahlungsVerpf = StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getAuszahlungsverpflichtung());
         this.ivAbetrag = (lvNennbetrag.subtract(lvAuszahlungsVerpf)).toPlainString();
 
         // Uebergangsloesung Nennbetrag wegen Kapitalisierung -> andere LoanIQ Logik
-        if (lvHelpDarlehenLoanIQ.getKontonummer().equals("4250119430") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250117110") ||
-            lvHelpDarlehenLoanIQ.getKontonummer().equals("4250115800") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250119410") ||
-            lvHelpDarlehenLoanIQ.getKontonummer().equals("4250117130") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250115780") ||
-            lvHelpDarlehenLoanIQ.getKontonummer().equals("4250115100") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250117030") ||
-            lvHelpDarlehenLoanIQ.getKontonummer().equals("4250115680") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250117050") ||
-            lvHelpDarlehenLoanIQ.getKontonummer().equals("4250117040") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250116850") ||
-            lvHelpDarlehenLoanIQ.getKontonummer().equals("4250106460") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250127650") ||
-            lvHelpDarlehenLoanIQ.getKontonummer().equals("4250119000") || lvHelpDarlehenLoanIQ.getKontonummer().equals("4250134150"))
+        if (lvHelpDarlehen.getKontonummer().equals("4250119430") || lvHelpDarlehen.getKontonummer().equals("4250117110") ||
+            lvHelpDarlehen.getKontonummer().equals("4250115800") || lvHelpDarlehen.getKontonummer().equals("4250119410") ||
+            lvHelpDarlehen.getKontonummer().equals("4250117130") || lvHelpDarlehen.getKontonummer().equals("4250115780") ||
+            lvHelpDarlehen.getKontonummer().equals("4250115100") || lvHelpDarlehen.getKontonummer().equals("4250117030") ||
+            lvHelpDarlehen.getKontonummer().equals("4250115680") || lvHelpDarlehen.getKontonummer().equals("4250117050") ||
+            lvHelpDarlehen.getKontonummer().equals("4250117040") || lvHelpDarlehen.getKontonummer().equals("4250116850") ||
+            lvHelpDarlehen.getKontonummer().equals("4250106460") || lvHelpDarlehen.getKontonummer().equals("4250127650") ||
+            lvHelpDarlehen.getKontonummer().equals("4250119000") || lvHelpDarlehen.getKontonummer().equals("4250134150") ||
+            lvHelpDarlehen.getKontonummer().equals("4250136550"))
         {
         	this.ivNbetrag = "";
         	this.ivAbetrag = "";
         }
-        
-        this.ivAktivpassiv = "1"; 
-          
-        this.ivAusstat = lvHelpDarlehenLoanIQ.getAuszahlungsstatus();
 
-        this.ivAuszdat = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getAuszahlungsdatum());
+        this.ivAktivpassiv = "1";
+
+        this.ivAusstat = lvHelpDarlehen.getAuszahlungsstatus();
+
+        this.ivAuszdat = DatumUtilities.changeDate(lvHelpDarlehen.getAuszahlungsdatum());
 
         // Buergschaftprozent
         BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
 
-    	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+    	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
     	{
-    		this.ivAverpfl = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getAuszahlungsverpflichtung())).multiply(lvBuergschaftprozent).toPlainString();
+    		this.ivAverpfl = (StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getAuszahlungsverpflichtung())).multiply(lvBuergschaftprozent).toPlainString();
     	}
     	else
     	{
-    		this.ivAverpfl = lvHelpDarlehenLoanIQ.getAuszahlungsverpflichtung(); 
+    		this.ivAverpfl = lvHelpDarlehen.getAuszahlungsverpflichtung();
     	}
-        this.ivAz = lvHelpDarlehenLoanIQ.getKontonummer();
-                           
+        this.ivAz = lvHelpDarlehen.getKontonummer();
+
         this.ivPfbrfrel = "3";
- 
-    	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+
+    	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
     	{
-    		this.ivRkapi = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getRestkapital())).multiply(lvBuergschaftprozent).toPlainString();
+    		this.ivRkapi = (StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getRestkapital())).multiply(lvBuergschaftprozent).toPlainString();
         }
     	else
     	{
-    		this.ivRkapi = lvHelpDarlehenLoanIQ.getRestkapital();
+    		this.ivRkapi = lvHelpDarlehen.getRestkapital();
         }
-        
+
         // Definition des Kredittyps
-        int lvHelpKredittyp = ValueMapping.ermittleKredittyp(lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal(), lvHelpDarlehenLoanIQ.getBuergschaftprozent());
-          
-        if (lvHelpKredittyp == DarlehenLoanIQ.UNDEFINIERT)
+        int lvHelpKredittyp = ValueMapping.ermittleKredittyp(lvHelpDarlehen.getAusplatzierungsmerkmal(), lvHelpDarlehen
+            .getBuergschaftprozent());
+
+    	  ////lvHelpKredittyp = 66; // BB -> Schiffskredit
+        ////if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("A"))
+        ////{
+        ////	lvHelpKredittyp = Darlehen.REIN_KOMMUNAL;
+        ////}
+        /////// CT 02.01.2019
+        if (lvHelpKredittyp == Darlehen.UNDEFINIERT)
         {
-        	pvLogger.error("Darlehen " + lvHelpDarlehenLoanIQ.getKontonummer() + ": Kredittyp undefiniert...");
+        	pvLogger.error("Darlehen " + lvHelpDarlehen.getKontonummer() + ": Kredittyp undefiniert...");
         	return false;
         }
-                 
+
         this.ivTyp = (new Integer(lvHelpKredittyp)).toString();
-          
+        /////// CT 02.01.2019
+
         this.ivKat = "1";
-        if (lvHelpKredittyp == DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG)
+        if (lvHelpKredittyp == Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG)
         {
           this.ivKat = "2";
         }
 
-        this.ivVwhrg = lvHelpDarlehenLoanIQ.getBetragwaehrung();
-          
-        this.ivWhrg = lvHelpDarlehenLoanIQ.getBetragwaehrung();
-          
-        this.ivZusdat = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getZusagedatum());
-        
+        this.ivVwhrg = lvHelpDarlehen.getBetragwaehrung();
+
+        this.ivWhrg = lvHelpDarlehen.getBetragwaehrung();
+
+        this.ivZusdat = DatumUtilities.changeDate(lvHelpDarlehen.getZusagedatum());
+
         // Neu hinzugefuegte Felder - 29.09.2011
         // Deckungsschluessel
-        this.ivDeckschl = lvHelpDarlehenLoanIQ.getDeckungsschluessel();
-        
+        this.ivDeckschl = lvHelpDarlehen.getDeckungsschluessel();
+
         // Ausplatzierungsmerkmal - CT 01.10.2014
-        this.ivAuspl = lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal();
-        
+        this.ivAuspl = lvHelpDarlehen.getAusplatzierungsmerkmal();
+
         // Produktionsschluessel
-        this.ivProdschl = lvHelpDarlehenLoanIQ.getProduktschluessel();
-        
+        this.ivProdschl = lvHelpDarlehen.getProduktschluessel();
+
         // Kennzeichen Rollover
         // Defaultmaessig erst einmal auf "0" (false) setzen
         this.ivRoll = "0";
         // Bei Rollover muss das Kennzeichen gesetzt werden
-        if (lvHelpDarlehenLoanIQ.getKennzeichenRollover().equals("F") ||
-            lvHelpDarlehenLoanIQ.getKennzeichenRollover().equals("V"))
+        if (lvHelpDarlehen.getKennzeichenRollover().equals("F") ||
+            lvHelpDarlehen.getKennzeichenRollover().equals("V"))
         {
           this.ivRoll = "1";
         }
-        
+
         // Sonderbehandlung NLB - CT 01.10.2012
         if (pvVorlaufsatz.getInstitutsnummer().equals("009"))
         {
         	// Produktschluessel (00)204 --> repoflag = true
-        	if (lvHelpDarlehenLoanIQ.getProduktschluessel().endsWith("204"))
+        	if (lvHelpDarlehen.getProduktschluessel().endsWith("204"))
         	{
         	  this.ivRepo = "1";
         	}
-          
+
             // Produktschluessel == 105 und (Ausplatzierungsmerkmal == K0 oder K1)
-            if (lvHelpDarlehenLoanIQ.getProduktschluessel().endsWith("105") && (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("K0") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("K1")))
+            if (lvHelpDarlehen.getProduktschluessel().endsWith("105") && (
+                lvHelpDarlehen.getAusplatzierungsmerkmal().equals("K0") || lvHelpDarlehen.getAusplatzierungsmerkmal().equals("K1")))
             {
           	  this.ivRepo = "1";
             }
         }
         // CT 19.08.2016 - Repo-Flag anhand des Ausplatzierungsmerkmal
         // Kein defaultmaessiges Setzen mehr
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("2") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("4"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().endsWith("2") || lvHelpDarlehen.getAusplatzierungsmerkmal().endsWith("4"))
         {
         	this.ivRepo = "1";
         }
-        
-        // Wenn Kredittyp == 'Sonstige Schuldverschreibung' (23), dann Tageskurs (tkurs) = 100.00 
-        if (ValueMapping.ermittleKredittyp(lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal(), lvHelpDarlehenLoanIQ.getBuergschaftprozent()) == DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG)
+
+        // Wenn Kredittyp == 'Sonstige Schuldverschreibung' (23), dann Tageskurs (tkurs) = 100.00
+        if (ValueMapping.ermittleKredittyp(lvHelpDarlehen.getAusplatzierungsmerkmal(), lvHelpDarlehen
+            .getBuergschaftprozent()) == Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG)
         {
             this.ivTkurs = "100.00";
         }
-        
+
        // Hinzugefuegte Felder - 15.11.2012
-       this.ivKein = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getKontoeinrichtung());
-       this.ivBoe = lvHelpDarlehenLoanIQ.getBewilligendeOE();
-       this.ivVoe = lvHelpDarlehenLoanIQ.getVerwaltendeOE();
-       this.ivPoe = lvHelpDarlehenLoanIQ.getPOE();
+       this.ivKein = DatumUtilities.changeDate(lvHelpDarlehen.getKontoeinrichtung());
+       this.ivBoe = lvHelpDarlehen.getBewilligendeOE();
+       this.ivVoe = lvHelpDarlehen.getVerwaltendeOE();
+       this.ivPoe = lvHelpDarlehen.getPOE();
        // Hinzugefuegte Felder - 15.11.2012
-           
-       return true;
+
+        // Anwendungsnummer LoanIQ == 33 - CT 12.08.2019
+        this.ivAnwendungsnummer = "33";
+
+        return true;
     }
-    
+
     /**
      * Importiert die PassivDaten aus LoanIQ
      * @param pvPassivDaten
      * @param pvInstitutsnummer
      */
     public boolean importLoanIQPassiv(LoanIQPassivDaten pvPassivDaten, String pvInstitutsnummer)
-    {       
+    {
        String lvTxstyp = "undef";
 
        this.setAktivpassiv("2");
-       
-       String lvKey = pvPassivDaten.getAktenzeichen(); 
+
+       String lvKey = pvPassivDaten.getAktenzeichen();
        // BLB: DE + "Kontonummer"
        if (pvInstitutsnummer.startsWith("004"))
        {
     	   lvKey = "DE" + pvPassivDaten.getKontonummer();
        }
        this.setAz(lvKey);
-       this.setIsin(lvKey);       
+       this.setIsin(lvKey);
        this.setKat("7");
-       
+
        this.setNbetrag(pvPassivDaten.getNennbetrag());
 
        // Kennzeichen Rollover
        // Defaultmaessig auf "0" (false) setzen
        // Bei Rollover muss das Kennzeichen gesetzt werden
-       this.setRoll("0");  
+       this.setRoll("0");
        if (pvPassivDaten.getRolloverKennzeichen().equals("F") ||
            pvPassivDaten.getRolloverKennzeichen().equals("V"))
        {
-         this.setRoll("1");  
+         this.setRoll("1");
        }
-              
+
        // Produkttyp umsetzen
        // der TXS Produkttyp ist den dortigen Aufzaehlungen zu entnehmen
        String lvProdukt = pvPassivDaten.getKredittyp();
-         
+
        // -> neue Schluessel einpflegen ?
        if (lvProdukt.equals("5011") || lvProdukt.equals("5056"))
        {
-    	   lvTxstyp = "020101";                
+    	   lvTxstyp = "020101";
        }
        if (lvProdukt.equals("5012") || lvProdukt.equals("5057"))
        {
-    	   lvTxstyp = "020201";                
+    	   lvTxstyp = "020201";
        }
        else if (lvProdukt.equals("5013") || lvProdukt.equals("5058"))
        {
-    	   lvTxstyp = "020101";                
+    	   lvTxstyp = "020101";
        }
        else if (lvProdukt.equals("5201") || lvProdukt.equals("5202"))
        {
-    	   lvTxstyp = "020201";                
+    	   lvTxstyp = "020201";
        }
 
        // Sonderbehandlung fuer die 'anderen' Register (Schiffe und Flugzeuge)
@@ -2719,48 +2773,60 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
        }
        else if (pvPassivDaten.getAusplatzierungsmerkmal().startsWith("F"))
        {
-    	   lvTxstyp = "020401";   
+    	   lvTxstyp = "020401";
        }
+
+       // Zeros
+       ////CT 02.06.2020
+       if (pvPassivDaten.getMerkmalZinssatz().equals("ZERO"))
+       {
+       	   lvTxstyp = "020205";
+       }
+       ////CT 02.06.2020
+
        this.setTyp(lvTxstyp);
-       this.setVwhrg(pvPassivDaten.getWaehrung());       
+       this.setVwhrg(pvPassivDaten.getWaehrung());
        this.setWhrg(pvPassivDaten.getWaehrung());
-       
+
        this.setAuspl(pvPassivDaten.getAusplatzierungsmerkmal());
        this.setDeckschl(pvPassivDaten.getDeckungsschluessel());
-       
+
        if (pvPassivDaten.getAusplatzierungsmerkmal().equals("O0") || pvPassivDaten.getAusplatzierungsmerkmal().equals("O1") || pvPassivDaten.getAusplatzierungsmerkmal().equals("O3"))
        {
     	   this.ivPfandbriefoepg = "1";
        }
-       
-       return true;
+
+        // Anwendungsnummer LoanIQ == 33 - CT 12.08.2019
+        this.ivAnwendungsnummer = "33";
+
+        return true;
     }
-    
+
     /**
      * Importiert die Darlehensinformationen aus LoanIQ fuer das RefiRegister
-     * @param pvDarlehenLoanIQ
+     * @param pvDarlehen
      * @param pvLogger
-     * @return 
+     * @return
      */
-    public boolean importLoanIQRefiRegister(DarlehenLoanIQ pvDarlehenLoanIQ, Logger pvLogger)
+    public boolean importLoanIQRefiRegister(Darlehen pvDarlehen, Logger pvLogger)
     {
     	// Konsortial
-        if (pvDarlehenLoanIQ.getKennzeichenKonsortialkredit().equals("J"))
+        if (pvDarlehen.getKennzeichenKonsortialkredit().equals("J"))
         {
           this.ivKonskredit = "1";
-          this.ivKonsfuehrer = pvDarlehenLoanIQ.getKonsortialfuehrer();
+          this.ivKonsfuehrer = pvDarlehen.getKonsortialfuehrer();
         }
         else
         {
             this.ivKonskredit = "0";
         }
-        
-    	////BigDecimal lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getNennbetrag());
+
+    	////BigDecimal lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehen.getNennbetrag());
         // Nennbetrag
-    	/* if (pvDarlehenLoanIQ.getKennzeichenKonsortialkredit().equals("J"))
+    	/* if (pvDarlehen.getKennzeichenKonsortialkredit().equals("J"))
     	{
     		// Fremde Fuehrung
-    		if (pvDarlehenLoanIQ.isListeDarlehenLoanIQFremdEmpty())
+    		if (pvDarlehen.isListeDarlehenLoanIQFremdEmpty())
     		{
     			pvLogger.info("Fremde Fuehrung - Darlehen " + pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKontonummer() + " Betrag: " + pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getNennbetrag());
     			lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getNennbetrag());
@@ -2768,7 +2834,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     		else // Eigene Fuehrung
     		{
     			pvLogger.info("Eigene Fuehrung - Darlehen " + pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getKontonummer() + " Betrag: " + pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getNennbetrag());
-    			lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getNennbetrag());        		
+    			lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getNennbetrag());
     		}
     	}
     	else
@@ -2776,19 +2842,19 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     		lvNennbetrag = StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getNennbetrag());
     	} */
         ////this.ivNbetrag = lvNennbetrag.toPlainString();
-        
-        ////BigDecimal lvAuszahlungsVerpf = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getAuszahlungsverpflichtung());
-        ////this.ivAbetrag = (lvNennbetrag.subtract(lvAuszahlungsVerpf)).toPlainString();
-        
-        this.ivAktivpassiv = "1"; 
-          
-        this.ivAusstat = pvDarlehenLoanIQ.getAuszahlungsstatus();
 
-        this.ivAuszdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getAuszahlungsdatum());
+        ////BigDecimal lvAuszahlungsVerpf = StringKonverter.convertString2BigDecimal(pvDarlehen.getAuszahlungsverpflichtung());
+        ////this.ivAbetrag = (lvNennbetrag.subtract(lvAuszahlungsVerpf)).toPlainString();
+
+        this.ivAktivpassiv = "1";
+
+        this.ivAusstat = pvDarlehen.getAuszahlungsstatus();
+
+        this.ivAuszdat = DatumUtilities.changeDate(pvDarlehen.getAuszahlungsdatum());
 
         // Buergschaftprozent
         //BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-    	//BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+    	//BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
 
     	//if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
     	//{
@@ -2796,64 +2862,64 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     	//}
     	//else
     	//{
-    		this.ivAverpfl = pvDarlehenLoanIQ.getAuszahlungsverpflichtung(); 
+    		this.ivAverpfl = pvDarlehen.getAuszahlungsverpflichtung();
     	//}
-        this.ivAz = pvDarlehenLoanIQ.getKontonummer() + "_" + pvDarlehenLoanIQ.getCustomerID();
-                           
+        this.ivAz = pvDarlehen.getKontonummer() + "_" + pvDarlehen.getCustomerID();
+
         this.ivPfbrfrel = "3";
- 
+
     	//if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
     	//{
     	//	this.ivRkapi = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getRestkapital())).multiply(lvBuergschaftprozent).toPlainString();
         //}
     	//else
     	//{
-    		this.ivRkapi = pvDarlehenLoanIQ.getRestkapital();
+    		this.ivRkapi = pvDarlehen.getRestkapital();
         //}
-        
+
         // Definition des Kredittyps
-        //int lvHelpKredittyp = ValueMapping.ermittleKredittyp(pvDarlehenLoanIQ.getAusplatzierungsmerkmal(), lvHelpDarlehenLoanIQ.getBuergschaftprozent());
-          
-        //if (lvHelpKredittyp == DarlehenLoanIQ.UNDEFINIERT)
+        //int lvHelpKredittyp = ValueMapping.ermittleKredittyp(pvDarlehen.getAusplatzierungsmerkmal(), lvHelpDarlehenLoanIQ.getBuergschaftprozent());
+
+        //if (lvHelpKredittyp == Darlehen.UNDEFINIERT)
         //{
         //	pvLogger.error("Darlehen " + lvHelpDarlehenLoanIQ.getKontonummer() + ": Kredittyp undefiniert...");
         //	return false;
         //}
-                 
+
         this.ivTyp = "1"; //(new Integer(lvHelpKredittyp)).toString();
-          
+
         this.ivKat = "1";
-        //if (lvHelpKredittyp == DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG)
+        //if (lvHelpKredittyp == Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG)
         //{
         //  this.ivKat = "2";
         //}
 
-        this.ivVwhrg = pvDarlehenLoanIQ.getBetragwaehrung();
-          
-        this.ivWhrg = pvDarlehenLoanIQ.getBetragwaehrung();
-          
-        this.ivZusdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getZusagedatum());
-        
+        this.ivVwhrg = pvDarlehen.getBetragwaehrung();
+
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
+
+        this.ivZusdat = DatumUtilities.changeDate(pvDarlehen.getZusagedatum());
+
         // Neu hinzugefuegte Felder - 29.09.2011
         // Deckungsschluessel
-        this.ivDeckschl = pvDarlehenLoanIQ.getDeckungsschluessel();
-        
+        this.ivDeckschl = pvDarlehen.getDeckungsschluessel();
+
         // Ausplatzierungsmerkmal - CT 01.10.2014
-        this.ivAuspl = pvDarlehenLoanIQ.getAusplatzierungsmerkmal();
-        
+        this.ivAuspl = pvDarlehen.getAusplatzierungsmerkmal();
+
         // Produktionsschluessel
-        this.ivProdschl = pvDarlehenLoanIQ.getProduktschluessel();
-        
+        this.ivProdschl = pvDarlehen.getProduktschluessel();
+
         // Kennzeichen Rollover
         // Defaultmaessig erst einmal auf "0" (false) setzen
         this.ivRoll = "0";
         // Bei Rollover muss das Kennzeichen gesetzt werden
-        if (pvDarlehenLoanIQ.getKennzeichenRollover().equals("F") ||
-            pvDarlehenLoanIQ.getKennzeichenRollover().equals("V"))
+        if (pvDarlehen.getKennzeichenRollover().equals("F") ||
+            pvDarlehen.getKennzeichenRollover().equals("V"))
         {
           this.ivRoll = "1";
         }
-        
+
         // Produktschluessel (00)204 --> repoflag = true
         // Sonderbehandlung NLB - CT 01.10.2012
         //if (pvVorlaufsatz.getInstitutsnummer().equals("009"))
@@ -2869,33 +2935,36 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         //{
         	//this.ivRepo = "0";
         //}
-        
-        // Wenn Kredittyp == 'Sonstige Schuldverschreibung' (23), dann Tageskurs (tkurs) = 100.00 
-        //if (ValueMapping.ermittleKredittyp(lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal(), lvHelpDarlehenLoanIQ.getBuergschaftprozent()) == DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG)
+
+        // Wenn Kredittyp == 'Sonstige Schuldverschreibung' (23), dann Tageskurs (tkurs) = 100.00
+        //if (ValueMapping.ermittleKredittyp(lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal(), lvHelpDarlehenLoanIQ.getBuergschaftprozent()) == Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG)
         //{
         //    this.ivTkurs = "100.00";
         //}
-        
+
        // Hinzugefuegte Felder - 15.11.2012
-       this.ivKein = DatumUtilities.changeDate(pvDarlehenLoanIQ.getKontoeinrichtung());
-       this.ivBoe = pvDarlehenLoanIQ.getBewilligendeOE();
-       this.ivVoe = pvDarlehenLoanIQ.getVerwaltendeOE();
-       this.ivPoe = pvDarlehenLoanIQ.getPOE();
+       this.ivKein = DatumUtilities.changeDate(pvDarlehen.getKontoeinrichtung());
+       this.ivBoe = pvDarlehen.getBewilligendeOE();
+       this.ivVoe = pvDarlehen.getVerwaltendeOE();
+       this.ivPoe = pvDarlehen.getPOE();
        // Hinzugefuegte Felder - 15.11.2012
-           
-       return true;
+
+        // Anwendungsnummer LoanIQ == 33 - CT 12.08.2019
+        this.ivAnwendungsnummer = "33";
+
+        return true;
     }
-    
+
     /**
      * Importiert die Darlehensinformationen aus DarKa
      * Aufruf aus den Klassen 'DarlehenVerarbeiten' und 'DarlehenVerarbeitung'
-     * @param pvModus 
+     * @param pvModus
      * @param pvDarlehen
-     * @param pvLogger 
-     * @return 
+     * @param pvLogger
+     * @return
      */
-    public boolean importDarlehen(int pvModus, Darlehen pvDarlehen, Logger pvLogger)
-    {     
+    public boolean importDarlehen(int pvModus, nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen, Logger pvLogger)
+    {
         /* Definition der Ursprungskapital .......................... */
         BigDecimal lvUrsprungskapital = new BigDecimal(pvDarlehen.getUrsprungsKapital());
         /* Definition der Auszahlungsverpflichtungen ................ */
@@ -2908,13 +2977,13 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         // Rechenkonstante
         BigDecimal lvBtrDivHd = new BigDecimal("0.01");
         //System.out.println("dBtrDivHd: " + dBtrDivHd.toString());
-        
+
         /* Wird dann immer als Multiplikator genutzt */
         BigDecimal lvWork = new BigDecimal("0.0");
         BigDecimal lvBuerge_Fakt = new BigDecimal("1.0");
         BigDecimal lvKonEigenUKAP_Fakt = new BigDecimal("1.0");
         BigDecimal lvKonEigenRKAP_Fakt = new BigDecimal("1.0");
-            
+
         if (pvDarlehen.getKredittyp().equals("4"))
         { /* mit Buerge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) != 0.0)
@@ -2932,7 +3001,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
                 lvBuerge_Fakt = new BigDecimal("1.0");
             }
         }
-        
+
         // NLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschluessel 'S' oder 'V' ist
         if (pvDarlehen.getInstitutsnummer().equals("009"))
         {
@@ -2941,12 +3010,12 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
                 // Buergen-Faktor wieder auf '1' setzen
                 lvBuerge_Fakt = new BigDecimal("1.0");
             }
-        }        
+        }
 
         // CT 25.02.2013
         // wenn (Schluessel Kompensation > 0 und < 16), dann "Konsortialkredit" = ja, sonst "Konsortialkredit" = nein
-        // wenn (Schluessel Kompensation = 01/10/11), dann "Konsortialführer" = NORD/LB, sonst
-        // wenn (Schluessel Kompensation = 02/04/12/13/14/15), dann "Konsortialführer" = Fremde Fuehrung, sonst "Konsortialfuehrer" bleibt leer
+        // wenn (Schluessel Kompensation = 01/10/11), dann "Konsortialfï¿½hrer" = NORD/LB, sonst
+        // wenn (Schluessel Kompensation = 02/04/12/13/14/15), dann "Konsortialfï¿½hrer" = Fremde Fuehrung, sonst "Konsortialfuehrer" bleibt leer
         this.ivKonskredit = "0"; // Standardmaessig erst einmal "0" setzen
         if (pvDarlehen.getInstitutsnummer().equals("009"))
         {
@@ -2971,7 +3040,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
                 }
             }
         }
-        
+
         /* Konsortiale ..... Summe der anderen, nur bei korrektem Schl.... */
         if (StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) > 0 &&
                 StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) < 20)
@@ -2995,19 +3064,24 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
 
         /* dKonEigenUKAP_Fakt wird vom dKonEigenRKAP_Fakt gesetzt ! */
         lvKonEigenUKAP_Fakt = lvKonEigenRKAP_Fakt;
-        
+
         // CT - 06.06.2012 Ursprungskapital zu 100% nehmen
         //dUrsprungskapital = dUrsprungskapital.multiply(dKonEigenUKAP_Fakt);
-        lvRestkapital      = lvRestkapital.multiply(lvKonEigenRKAP_Fakt);
-        lvAuszahlungsVerpf = lvAuszahlungsVerpf.multiply(lvKonEigenUKAP_Fakt);
-               
+
+        // CT 10.12.2019 - Bei KEV das Restkapital ohne Buergschaftprozent verwenden
+        if (pvModus != DarlehenVerarbeiten.KEV)
+        {
+          lvRestkapital      = lvRestkapital.multiply(lvKonEigenRKAP_Fakt);
+          lvAuszahlungsVerpf = lvAuszahlungsVerpf.multiply(lvKonEigenUKAP_Fakt);
+        }
+
         this.ivAbetrag = (lvUrsprungskapital.subtract(lvAuszahlungsVerpf)).toString();
-        this.ivAktivpassiv = "1"; 
-          
+        this.ivAktivpassiv = "1";
+
         /* Definition der Auszahlungstermin ......................... */
         String lvAusZahl = new String();
-        /* Änderung vom 25.04.2005 Kontozustand > '8' statt > '4' */
-        /* => Übernahme des Auszahlungstermines von == '4' auf > '3' */
+        /* ï¿½nderung vom 25.04.2005 Kontozustand > '8' statt > '4' */
+        /* => ï¿½bernahme des Auszahlungstermines von == '4' auf > '3' */
         if (StringKonverter.convertString2Int(pvDarlehen.getKontozustand()) > 3)
         { /* Voll ausgezahlt */
          lvAusZahl = pvDarlehen.getVollvalutierungsdatum();
@@ -3015,7 +3089,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         } /* Voll ausgezahlt */
         if (StringKonverter.convertString2Int(pvDarlehen.getKontozustand()) < 4)
         { /* Noch nicht vollvalutiert */
-         this.ivAusstat = "1";   
+         this.ivAusstat = "1";
          if (!(pvDarlehen.getVorNotADat() == null) &&
              !pvDarlehen.getVorNotADat().equals("11110101") && // 01.01.1111
              !pvDarlehen.getVorNotADat().equals("00000000"))   // isEmpty
@@ -3029,9 +3103,9 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         } /* Noch nicht vollvalutiert */
 
         this.ivAuszdat = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(lvAusZahl));
-        this.ivAverpfl = lvAuszahlungsVerpf.toString();                    
+        this.ivAverpfl = lvAuszahlungsVerpf.toString();
         this.ivAz = pvDarlehen.getKontonummer();
-                    
+
         this.ivKat = "1";
         // Umschluesselung zum Wertpapier(Aktiv) -> kat="2"
         // H2, S2, O2, F2, H4, S4, O4 und F4 -> Wertpapier(Aktiv)
@@ -3045,11 +3119,11 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         {
         	this.ivKat = "2";
         }
-          
+
         this.ivNbetrag = lvUrsprungskapital.toString();
-          
+
         this.ivPfbrfrel = "3";
-        
+
         // CT - 06.06.2012
         // Restkapital darf nicht groesser als das Nominalkapital sein
         if (lvRestkapital.compareTo(lvUrsprungskapital) == 1)
@@ -3059,8 +3133,8 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         else
         {
           this.ivRkapi = lvRestkapital.toString();
-        }                
-        
+        }
+
         String lvKTyp = (new Integer(ValueMapping.ermittleKredittyp(pvDarlehen.getAusplatzierungsmerkmal(), pvDarlehen.getBuergschaftProzent()))).toString();
 
         // Sonderregel BLB - CT 19.12.2016
@@ -3068,7 +3142,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         // ansonsten Schuldverschreibung (aktuelle Regel)
         if (pvDarlehen.getInstitutsnummer().equals("004"))
         {
-        	if (pvDarlehen.getAusplatzierungsmerkmal().equals("H3") || pvDarlehen.getAusplatzierungsmerkmal().equals("S3")) // Wenn H3 und S3, dann... 
+        	if (pvDarlehen.getAusplatzierungsmerkmal().equals("H3") || pvDarlehen.getAusplatzierungsmerkmal().equals("S3")) // Wenn H3 und S3, dann...
         	{   // Wenn Produktschluessel 0101, 0103 oder 0106 dann Bankkredit
         		if (pvDarlehen.getProduktSchluessel().equals("00101") || pvDarlehen.getProduktSchluessel().equals("00103") || pvDarlehen.getProduktSchluessel().equals("00106"))
         		{
@@ -3076,7 +3150,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         		}
         	}
         }
-        
+
         // Besonderheit fuers Deckungspooling - CT 12.11.2014 - Nur NLB
         if (pvDarlehen.getInstitutsnummer().equals("009"))
         {
@@ -3085,17 +3159,15 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
             lvKTyp = "1";
           }
         }
-        
-        // CT 10.05.2017 - Einfach nur LettreDeGage-Schrott
-        // LettreDeGage einfach "1"
-        //if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("G"))
-        //{
-        //	lvKTyp = "1";
-        //}
-        
-        // Vor den Umsetzungen... Pruefungen, die zur Ablehnung fuehren
-        if (lvKTyp.equals("undefiniert"))
-        { // Kein Kredittyp moeglich !
+
+      // CT 05.06.2019 - KEV Defaultmaessig 1
+      if (pvModus == DarlehenVerarbeiten.KEV)
+      {
+      	lvKTyp = "1";
+      }
+
+      // Vor den Umsetzungen... Pruefungen, die zur Ablehnung fuehren
+      if (lvKTyp.equals("undefiniert")) { // Kein Kredittyp moeglich !
           pvLogger.error("-->Konto " + pvDarlehen.getKontonummer() + "(" + pvDarlehen.getInstitutsnummer() +
                    ";" + pvDarlehen.getHerkunftDarlehen() + ";" + pvDarlehen.getHerkunftDaten() +
                    ";" + pvDarlehen.getKundennummer() + ";" + pvDarlehen.getObjektnummer() +
@@ -3104,25 +3176,25 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         } // Kein Kredittyp moeglich !
 
         this.ivTyp = lvKTyp;
-          
+
         this.ivVwhrg = pvDarlehen.getSatzwaehrung();
-          
+
         this.ivWhrg = pvDarlehen.getSatzwaehrung();
-          
+
         this.ivZusdat = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(pvDarlehen.getBewilligungsdatum()));
-        
+
         // Neu hinzugefuegte Felder - 29.09.2011
         // Deckungsschluessel
         this.ivDeckschl = pvDarlehen.getDeckungsschluessel();
-        
+
         // Ausplatzierungsmerkmal
         this.ivAuspl = pvDarlehen.getAusplatzierungsmerkmal();
-        
+
         // Produktionsschluessel
         this.ivProdschl = pvDarlehen.getProduktSchluessel();
-        
+
         // Kennzeichen Rollover
-        // Defaultmässig erst einmal auf "0" (false) setzen
+        // Defaultmï¿½ssig erst einmal auf "0" (false) setzen
         this.ivRoll = "0";
         // Bei Rollover muss das Kennzeichen gesetzt werden
         if (pvDarlehen.getKennzeichenRollover().equals("F") ||
@@ -3130,7 +3202,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         {
           this.ivRoll = "1";
         }
-        
+
          // Sonderbehandlung NLB - CT 01.10.2012
         if (pvDarlehen.getInstitutsnummer().equals("009"))
         {
@@ -3139,7 +3211,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
           {
         	  this.ivRepo = "1";
           }
-          
+
           // Produktschluessel == 105 und (Ausplatzierungsmerkmal == K0 oder K1)
           if (pvDarlehen.getProduktSchluessel().equals("00105") && (pvDarlehen.getAusplatzierungsmerkmal().equals("K0") || pvDarlehen.getAusplatzierungsmerkmal().equals("K1")))
           {
@@ -3152,14 +3224,14 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
         {
         	this.ivRepo = "1";
         }
-        
+
        // Hinzugefuegte Felder - 15.11.2012
        this.ivKein = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(pvDarlehen.getKontoEinrichtung()));
        this.ivBoe = pvDarlehen.getBewilligendeOE();
        this.ivVoe = pvDarlehen.getVerwaltendeOE();
        this.ivPoe = pvDarlehen.getProduktverantwortlicheOE();
        // Hinzugefuegte Felder - 15.11.2012
-    
+
        // Tilgungskurs = "100.00" bei Wertpapier(Aktiv)
        // H2, S2, O2, F2, H4, S4, O4 und F4 -> Wertpapier(Aktiv)
        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("2") || pvDarlehen.getAusplatzierungsmerkmal().endsWith("4"))
@@ -3172,132 +3244,172 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
        {
     	   this.ivTkurs = "100.00";
        }
-       
+
+       if (pvModus == DarlehenVerarbeiten.KEV)
+       {
+            // CT 06.06.2019 - Finanzierungsart Schuldscheinkredit (12) -> KEV Kredittyp =
+            // Schuldscheindarlehen
+            if (pvDarlehen.getProduktSchluessel().endsWith("204")
+                || pvDarlehen.getProduktSchluessel().endsWith("209")
+                || pvDarlehen.getProduktSchluessel().endsWith("309")
+                || pvDarlehen.getProduktSchluessel().endsWith("343")
+                || pvDarlehen.getProduktSchluessel().endsWith("407")
+                || pvDarlehen.getProduktSchluessel().endsWith("4611")
+                || pvDarlehen.getProduktSchluessel().endsWith("4612")
+                || pvDarlehen.getProduktSchluessel().endsWith("4613"))
+            {
+                this.ivFinart = "12";
+            }
+       }
+
+       //if (pvModus == DarlehenVerarbeiten.KEV)
+       //{
+           // Anwendungsnummer DarKa == 30 - CT 12.08.2019
+           this.ivAnwendungsnummer = "30";
+       //}
+
        return true;
     }
 
     /**
      * Importiert die Darlehensinformationen aus MIDAS
-     * @param pvDarlehenLoanIQ
-     * @param pvVorlaufsatz 
+     * @param pvDarlehen
+     * @param pvVorlaufsatz
      * @param pvLogger
-     * @return 
+     * @return
      */
-    public boolean importMIDAS(DarlehenLoanIQ pvDarlehenLoanIQ, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    public boolean importMIDAS(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
     {
     	// Konsortial
     	this.ivKonskredit = "0";
-        if (pvDarlehenLoanIQ.getKennzeichenKonsortialkredit().equals("J"))
+        if (pvDarlehen.getKennzeichenKonsortialkredit().equals("J"))
         {
           this.ivKonskredit = "1";
-          this.ivKonsfuehrer = "Fremde F&#252;hrung"; //pvDarlehenLoanIQ.getKonsortialfuehrer();
+          this.ivKonsfuehrer = "Fremde F&#252;hrung"; //pvDarlehen.getKonsortialfuehrer();
         }
-        
+
         // Nennbetrag
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("0"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("0"))
         {
-        	BigDecimal lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getNennbetrag());
+        	BigDecimal lvNennbetrag = StringKonverter.convertString2BigDecimal(pvDarlehen.getNennbetrag());
         	this.ivNbetrag = lvNennbetrag.toPlainString();
         }
-        
-        //BigDecimal lvAuszahlungsVerpf = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getAuszahlungsverpflichtung());
+
+        //BigDecimal lvAuszahlungsVerpf = StringKonverter.convertString2BigDecimal(pvDarlehen.getAuszahlungsverpflichtung());
         //this.ivAbetrag = (lvNennbetrag.subtract(lvAuszahlungsVerpf)).toPlainString();
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("0"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("0"))
         {
         	this.ivAbetrag = this.ivNbetrag; // CT 30.11.2017
         }
-        
-        this.ivAktivpassiv = "1"; 
-          
-        this.ivAusstat = pvDarlehenLoanIQ.getAuszahlungsstatus();
 
-        this.ivAuszdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getAuszahlungsdatum());
-        this.ivAverpfl = pvDarlehenLoanIQ.getAuszahlungsverpflichtung();                    
-        this.ivAz = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer());
+        this.ivAktivpassiv = "1";
+
+        this.ivAusstat = pvDarlehen.getAuszahlungsstatus();
+
+        this.ivAuszdat = DatumUtilities.changeDate(pvDarlehen.getAuszahlungsdatum());
+        this.ivAverpfl = pvDarlehen.getAuszahlungsverpflichtung();
+        this.ivAz = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen.getKontonummer());
 
         this.ivFinart = "13"; // Tilgungsdarlehen
-        
+
         this.ivKat = "1";
-                    
+
         this.ivPfbrfrel = "3";
-                
+
         // Buergschaftprozent
         BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
- 
+    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+
     	if (lvBuergschaftprozent.doubleValue() > 0.0)
     	{
-    		this.ivRkapi = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getRestkapital())).multiply(lvBuergschaftprozent).toString();
+    		this.ivRkapi = (StringKonverter.convertString2BigDecimal(pvDarlehen.getRestkapital())).multiply(lvBuergschaftprozent).toString();
     	}
     	else
     	{
-    		this.ivRkapi = pvDarlehenLoanIQ.getRestkapital();
+    		this.ivRkapi = pvDarlehen.getRestkapital();
         }
-        
+
         // Definition des Kredittyps
-        int lvHelpKredittyp = MappingMIDAS.ermittleKredittyp(pvDarlehenLoanIQ.getAusplatzierungsmerkmal(), pvDarlehenLoanIQ.getBuergschaftprozent());
-          
+        int lvHelpKredittyp = MappingMIDAS.ermittleKredittyp(pvDarlehen.getAusplatzierungsmerkmal(), pvDarlehen
+            .getBuergschaftprozent());
+
         if (lvHelpKredittyp == 0)
         {
-        	pvLogger.error("MIDAS-Darlehen " + pvDarlehenLoanIQ.getKontonummer() + ": Kredittyp undefiniert...");
+        	pvLogger.error("MIDAS-Darlehen " + pvDarlehen.getKontonummer() + ": Kredittyp undefiniert...");
         	return false;
         }
-                              
+
         this.ivTyp = "" + lvHelpKredittyp;
-          
-        this.ivVwhrg = pvDarlehenLoanIQ.getBetragwaehrung();
-          
-        this.ivWhrg = pvDarlehenLoanIQ.getBetragwaehrung();
-          
-        this.ivZusdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getZusagedatum());
-        
+
+        this.ivVwhrg = pvDarlehen.getBetragwaehrung();
+
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
+
+        this.ivZusdat = DatumUtilities.changeDate(pvDarlehen.getZusagedatum());
+
         // Neu hinzugefuegte Felder - 29.09.2011
         // Deckungsschluessel
-        this.ivDeckschl = pvDarlehenLoanIQ.getDeckungsschluessel();
-        
+        this.ivDeckschl = pvDarlehen.getDeckungsschluessel();
+
         // Ausplatzierungsmerkmal - CT 01.10.2014
-        this.ivAuspl = pvDarlehenLoanIQ.getAusplatzierungsmerkmal();
-        
+        this.ivAuspl = pvDarlehen.getAusplatzierungsmerkmal();
+
         // Produktionsschluessel
-        this.ivProdschl = pvDarlehenLoanIQ.getProduktschluessel();
-        
+        this.ivProdschl = pvDarlehen.getProduktschluessel();
+
         // Kennzeichen Rollover
         // Defaultmaessig erst einmal auf "0" (false) setzen
         this.ivRoll = "0";
         // Bei Rollover muss das Kennzeichen gesetzt werden
-        if (pvDarlehenLoanIQ.getKennzeichenRollover().equals("F") ||
-            pvDarlehenLoanIQ.getKennzeichenRollover().equals("V"))
+        if (pvDarlehen.getKennzeichenRollover().equals("F") ||
+            pvDarlehen.getKennzeichenRollover().equals("V"))
         {
           this.ivRoll = "1";
         }
-        
+
         // Produktschluessel (00)204 --> repoflag = true
-        if (pvDarlehenLoanIQ.getProduktschluessel().equals("00204"))
+        if (pvDarlehen.getProduktschluessel().equals("00204"))
         {
         	this.ivRepo = "1";
         }
-        
+
         // Produktschluessel == 105 und (Ausplatzierungsmerkmal == K0 oder K1)
-        //if (pvDarlehenLoanIQ.getProduktschluessel().equals("00105") && (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("K0") || pvDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("K1")))
+        //if (pvDarlehen.getProduktschluessel().equals("00105") && (pvDarlehen.getAusplatzierungsmerkmal().equals("K0") || pvDarlehen.getAusplatzierungsmerkmal().equals("K1")))
         //{
       	//  this.ivRepo = "1";
         //}
 
         // CT 19.08.2016 - Repo-Flag anhand des Ausplatzierungsmerkmal
         // Kein defaultmaessiges Setzen mehr
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("2") || pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("4"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("2") || pvDarlehen.getAusplatzierungsmerkmal().endsWith("4"))
         {
         	this.ivRepo = "1";
         }
-        
+
        // Hinzugefuegte Felder - 15.11.2012
-       this.ivKein = DatumUtilities.changeDate(pvDarlehenLoanIQ.getKontoeinrichtung());
-       this.ivBoe = pvDarlehenLoanIQ.getBewilligendeOE();
-       this.ivVoe = pvDarlehenLoanIQ.getVerwaltendeOE();
-       this.ivPoe = pvDarlehenLoanIQ.getPOE();
+       this.ivKein = DatumUtilities.changeDate(pvDarlehen.getKontoeinrichtung());
+       this.ivBoe = pvDarlehen.getBewilligendeOE();
+       this.ivVoe = pvDarlehen.getVerwaltendeOE();
+       this.ivPoe = pvDarlehen.getPOE();
        // Hinzugefuegte Felder - 15.11.2012
-           
-       return true;
+
+        // Anwendungsnummer MIDAS Shanghai == 69 - CT 12.08.2019
+        if (pvDarlehen.getQuellsystem().equals("MIDNSHA"))
+        {
+            this.ivAnwendungsnummer = "69";
+        }
+        // Anwendungsnummer MIDAS New York == 71 - CT 12.08.2019
+        if (pvDarlehen.getQuellsystem().equals("MIDNNYC"))
+        {
+            this.ivAnwendungsnummer = "71";
+        }
+        // Anwendungsnummer MIDAS Singapur == 73 - CT 12.08.2019
+        if (pvDarlehen.getQuellsystem().equals("MIDNSGP"))
+        {
+            this.ivAnwendungsnummer = "73";
+        }
+
+        return true;
     }
 
     /**
@@ -3305,7 +3417,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
      * @param pvBestandsdaten
      * @param pvGattung
      * @param pvLogger
-     * @return 
+     * @return
      */
     public boolean importWertpapier(Bestandsdaten pvBestandsdaten, Gattung pvGattung, Logger pvLogger)
     {
@@ -3331,7 +3443,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     	{
     		this.ivRkapi = pvBestandsdaten.getNominalbetrag();
     	}
-    	
+
         // Ausplatzierungsmerkmal wird verwendet - CT 16.06.2016
         // Aktive Wertpapiere aus der Liquiditaetsreserve oder der sichernden Ueberdeckung erhalten repo -> 'Ja'
         // CT 06.08.2015
@@ -3342,16 +3454,16 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
             ("F2".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // sichernde Ueberdeckung Flugzeuge
             ("K4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve KO
             ("H4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve HPF
-            ("S4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve Schiffe 
+            ("S4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve Schiffe
             ("F4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve Flugzeuge
             ("O4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // sichernde Ueberdeckung OEPG KO
             ("O2".equals(pvBestandsdaten.getAusplatzierungsmerkmal())))    // sichernde Ueberdeckung OEPG Hypo
         {
             this.ivRepo = "1";
         }
-    	
+
     	this.ivAbetrag = pvBestandsdaten.getNominalbetrag();
-    	
+
     	this.ivUrtilgsatz = pvGattung.getGD861A();
     	this.ivKuendr = pvGattung.getGD943();
     	if (pvBestandsdaten.getAktivPassiv().equals("1")) // Aktiv - Konstant '21'
@@ -3362,30 +3474,297 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     	{
     		this.ivTyp = pvBestandsdaten.getWertpapierart();
     	}
-    	
+
         if ("S0".equals(pvBestandsdaten.getAusplatzierungsmerkmal()) || "S1".equals(pvBestandsdaten.getAusplatzierungsmerkmal()))
         {
            this.ivTyp = "010301";
         }
-        if ("F0".equals(pvBestandsdaten.getAusplatzierungsmerkmal()) || "F1".equals(pvBestandsdaten.getAusplatzierungsmerkmal()))  
+        if ("F0".equals(pvBestandsdaten.getAusplatzierungsmerkmal()) || "F1".equals(pvBestandsdaten.getAusplatzierungsmerkmal()))
         {
            this.ivTyp = "010401";
         }
 
-    	
+
     	this.ivTkurs = "100.00";
     	//if (pvBestandsdaten.getAktivPassiv().equals("1")) // Nur Aktiv
     	//{
     	//	this.ivTkurs = pvGattung.getGD669();
     	//}
-    	
+
         this.ivMAVPROD = pvBestandsdaten.getMAVPROD();
     	this.ivGd160 = pvGattung.getGD160();
-    	this.ivGd260 = pvGattung.getGD260();
+    	this.ivGd260 = String2XML.change2XML(pvGattung.getGD260());
     	this.ivGd776 = pvGattung.getGD776();
     	this.ivGd776B = pvGattung.getGD776B();
     	//this.ivGibnot = pvGattung.getBoersennotiert();
-    	
+
+        // Anwendungsnummer Wertpapiere MAVIS == 83 - CT 12.08.2019
+        this.ivAnwendungsnummer = "83";
+
         return true;
     }
+
+    /**
+     * Importiert die Wertpapier-Informationen fuer KEV
+     * @param pvBestandsdaten
+     * @param pvGattung
+     * @param pvLogger
+     * @return
+     */
+    public boolean importKEVWertpapier(Bestandsdaten pvBestandsdaten, Gattung pvGattung, Logger pvLogger)
+    {
+        // Wertpapiere mit Nominalbetrag von 0.0 werden nicht beruecksichtigt - CT 07.04.2020
+        if (StringKonverter.convertString2Double(pvBestandsdaten.getNominalbetrag()) == 0.0)
+        {
+            return false;
+        }
+
+        this.ivAktivpassiv = pvBestandsdaten.getAktivPassiv();
+
+        // Auszahlungsdatum -> Emissionsdatum
+        if (!pvGattung.getGD660().isEmpty())
+        {
+            this.ivAuszdat = pvGattung.getGD660();
+        }
+        else
+        {
+            this.ivAuszdat = pvGattung.getGD322();
+        }
+
+        this.ivAz = pvBestandsdaten.getProdukt();
+        this.ivIsin = pvBestandsdaten.getProdukt();
+        if (pvBestandsdaten.getAktivPassiv().equals("1")) // Nur Aktiv
+        {
+            this.ivDepotnummer = pvBestandsdaten.getDepotNr();
+        }
+        if (pvBestandsdaten.getAktivPassiv().equals("1")) // Aktiv - Konstant '2'
+        {
+            this.ivKat = "2";
+        }
+        if (pvBestandsdaten.getAktivPassiv().equals("2")) // Passiv - Konstant '7'
+        {
+            this.ivKat = "7";
+        }
+        this.ivVwhrg = pvGattung.getGD630B();
+        this.ivWhrg =  pvGattung.getGD630B();
+
+        this.ivNbetrag = pvBestandsdaten.getNominalbetrag();
+        if (pvBestandsdaten.getAktivPassiv().equals("1")) // Nur Aktiv
+        {
+            this.ivRkapi = pvBestandsdaten.getNominalbetrag();
+        }
+
+        // Ausplatzierungsmerkmal wird verwendet - CT 16.06.2016
+        // Aktive Wertpapiere aus der Liquiditaetsreserve oder der sichernden Ueberdeckung erhalten repo -> 'Ja'
+        // CT 06.08.2015
+        this.ivRepo = "0"; //Default
+
+        this.ivAbetrag = pvBestandsdaten.getNominalbetrag();
+
+        this.ivUrtilgsatz = pvGattung.getGD861A();
+        this.ivKuendr = pvGattung.getGD943();
+        if (pvBestandsdaten.getAktivPassiv().equals("1")) // Aktiv - Konstant '21'
+        {
+            this.ivTyp = "21";
+        }
+        if (pvBestandsdaten.getAktivPassiv().equals("2")) // Passiv - WP-Art
+        {
+            this.ivTyp = pvBestandsdaten.getWertpapierart();
+        }
+
+        if ("S0".equals(pvBestandsdaten.getAusplatzierungsmerkmal()) || "S1".equals(pvBestandsdaten.getAusplatzierungsmerkmal()))
+        {
+            this.ivTyp = "010301";
+        }
+        if ("F0".equals(pvBestandsdaten.getAusplatzierungsmerkmal()) || "F1".equals(pvBestandsdaten.getAusplatzierungsmerkmal()))
+        {
+            this.ivTyp = "010401";
+        }
+
+        this.ivFinart = "12"; // Default: Schuldscheindarlehen
+
+
+        this.ivTkurs = "100.00";
+        //if (pvBestandsdaten.getAktivPassiv().equals("1")) // Nur Aktiv
+        //{
+        //	this.ivTkurs = pvGattung.getGD669();
+        //}
+
+        this.ivMAVPROD = pvBestandsdaten.getMAVPROD();
+        this.ivGd160 = pvGattung.getGD160();
+        this.ivGd260 = String2XML.change2XML(pvGattung.getGD260());
+        this.ivGd776 = pvGattung.getGD776();
+        this.ivGd776B = pvGattung.getGD776B();
+
+        // Defaultmaessig 'Shanghai' (69) - relevant fuer MIDAS-Geschaefte
+        this.ivAnwendungsnummer ="69";
+
+        // Anwendungsnummer Wertpapiere MAVIS == 83 - CT 12.08.2019
+        if (pvBestandsdaten.getSystem().startsWith("MAVIS"))
+        {
+            this.ivAnwendungsnummer = "83";
+        }
+
+        return true;
+    }
+
+    /**
+     * Importiert die Darlehensinformationen aus LoanIQ fuer KEV
+     * @param pvDarlehen
+     * @param pvVorlaufsatz
+     * @param pvLogger
+     * @return
+     */
+    public boolean importKEVLoanIQ(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    {
+        // Konsortial
+        this.ivKonskredit = "0";
+        if (pvDarlehen.getKennzeichenKonsortialkredit().equals("J"))
+        {
+            this.ivKonskredit = "1";
+            this.ivKonsfuehrer = "Fremde F&#252;hrung"; //pvDarlehen.getKonsortialfuehrer();
+        }
+
+        this.ivNbetrag = pvDarlehen.getNennbetrag();
+
+        this.ivAbetrag = this.ivNbetrag;
+
+        this.ivAktivpassiv = "1";
+
+        this.ivAusstat = pvDarlehen.getAuszahlungsstatus();
+
+        this.ivAuszdat = DatumUtilities.changeDate(pvDarlehen.getAuszahlungsdatum());
+        this.ivAverpfl = pvDarlehen.getAuszahlungsverpflichtung();
+        this.ivAz = pvDarlehen.getKontonummer();
+
+        // CT 06.06.2019 - Finanzierungsart Schuldscheinkredit (12) -> KEV Kredittyp = Schuldscheindarlehen
+        if (pvDarlehen.getProduktschluessel().endsWith("204") || pvDarlehen.getProduktschluessel().endsWith("209") ||
+            pvDarlehen.getProduktschluessel().endsWith("309") || pvDarlehen.getProduktschluessel().endsWith("343") ||
+            pvDarlehen.getProduktschluessel().endsWith("407") || pvDarlehen.getProduktschluessel().endsWith("4611") ||
+            pvDarlehen.getProduktschluessel().endsWith("4612") || pvDarlehen.getProduktschluessel().endsWith("4613"))
+        {
+            this.ivFinart = "12";
+        }
+        //else
+        //{
+      //this.ivFinart = "13"; // Tilgungsdarlehen
+       //     }
+
+        this.ivKat = "1";
+
+        this.ivPfbrfrel = "3";
+
+        // Buergschaftprozent
+        //BigDecimal lvHelpFaktor = new BigDecimal("100.0");
+        //BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+
+        //if (lvBuergschaftprozent.doubleValue() > 0.0)
+        //{
+            //this.ivRkapi = (StringKonverter.convertString2BigDecimal(pvDarlehen.getRestkapital())).multiply(lvBuergschaftprozent).toString();
+        //}
+        //else
+        //{
+            this.ivRkapi = pvDarlehen.getRestkapital();
+        //}
+
+        // Definition des Kredittyps
+        int lvHelpKredittyp = MappingMIDAS.ermittleKredittyp(pvDarlehen.getAusplatzierungsmerkmal(), pvDarlehen
+            .getBuergschaftprozent());
+
+        lvHelpKredittyp = 1;
+        if (lvHelpKredittyp == 0)
+        {
+            pvLogger.error("LoanIQKEV-Darlehen " + pvDarlehen.getKontonummer() + ": Kredittyp undefiniert...");
+            return false;
+        }
+
+        this.ivTyp = "" + lvHelpKredittyp;
+
+        this.ivVwhrg = pvDarlehen.getBetragwaehrung();
+
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
+
+        this.ivZusdat = DatumUtilities.changeDate(pvDarlehen.getZusagedatum());
+
+        // Neu hinzugefuegte Felder - 29.09.2011
+        // Deckungsschluessel
+        this.ivDeckschl = pvDarlehen.getDeckungsschluessel();
+
+        // Ausplatzierungsmerkmal - CT 01.10.2014
+        this.ivAuspl = pvDarlehen.getAusplatzierungsmerkmal();
+
+        // Produktionsschluessel
+        this.ivProdschl = pvDarlehen.getProduktschluessel();
+
+        // Kennzeichen Rollover
+        // Defaultmaessig erst einmal auf "0" (false) setzen
+        this.ivRoll = "0";
+        // Bei Rollover muss das Kennzeichen gesetzt werden
+        if (pvDarlehen.getKennzeichenRollover().equals("F") ||
+            pvDarlehen.getKennzeichenRollover().equals("V"))
+        {
+            this.ivRoll = "1";
+        }
+
+        // Produktschluessel (00)204 --> repoflag = true
+        if (pvDarlehen.getProduktschluessel().equals("00204"))
+        {
+            this.ivRepo = "1";
+        }
+
+        // Produktschluessel == 105 und (Ausplatzierungsmerkmal == K0 oder K1)
+        //if (pvDarlehen.getProduktschluessel().equals("00105") && (pvDarlehen.getAusplatzierungsmerkmal().equals("K0") || pvDarlehen.getAusplatzierungsmerkmal().equals("K1")))
+        //{
+        //  this.ivRepo = "1";
+        //}
+
+        // CT 19.08.2016 - Repo-Flag anhand des Ausplatzierungsmerkmal
+        // Kein defaultmaessiges Setzen mehr
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("2") || pvDarlehen.getAusplatzierungsmerkmal().endsWith("4"))
+        {
+            this.ivRepo = "1";
+        }
+
+        // Hinzugefuegte Felder - 15.11.2012
+        this.ivKein = DatumUtilities.changeDate(pvDarlehen.getKontoeinrichtung());
+        this.ivBoe = pvDarlehen.getBewilligendeOE();
+        this.ivVoe = pvDarlehen.getVerwaltendeOE();
+        this.ivPoe = pvDarlehen.getPOE();
+        // Hinzugefuegte Felder - 15.11.2012
+
+        // Anwendungsnummer LoanIQ == 33 - CT 12.08.2019
+        this.ivAnwendungsnummer = "33";
+
+        return true;
+    }
+
+    /**
+     * Importiert die Termingeldinformationen
+     * @param pvTermingeld Termingeld
+     * @param pvVorlaufsatz Vorlaufsatz
+     * @param pvLogger log4j-Logger
+     * @return
+     */
+    public boolean importTermingeld(Termingeld pvTermingeld, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    {
+        this.ivAktivpassiv = "1";
+
+        this.ivAuszdat = DatumUtilities.changeDate(pvTermingeld.getEmissionsdatum());
+
+        this.ivAz = pvTermingeld.getKontonummer();
+
+        this.ivKat = "4";
+
+        this.ivVwhrg = pvTermingeld.getWaehrung();
+        this.ivWhrg =  pvTermingeld.getWaehrung();
+
+        this.ivNbetrag = pvTermingeld.getSaldo();
+
+        this.ivAbetrag = pvTermingeld.getSaldo();
+
+        this.ivTyp = "62";
+
+        return true;
+    }
+
 }

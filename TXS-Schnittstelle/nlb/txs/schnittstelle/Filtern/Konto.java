@@ -10,21 +10,22 @@ package nlb.txs.schnittstelle.Filtern;
  * @author tepperc
  *
  */
+@Deprecated
 public class Konto 
 {
   /**
-   *   
+   *  Kontonummer
    */
   private String ivKontonummer;
   
   /**
-   * 
+   * Kennzeichen 'Gefunden'
    */
   private boolean ivGefunden;
   
   /**
-   * 
-   * @param pvNr
+   * Konstruktor
+   * @param pvNr Kontonummer
    */
   public Konto(String pvNr)
   {
@@ -33,8 +34,8 @@ public class Konto
   }
   
   /**
-   * Liefert eine Kontonummer
-   * @return 
+   * Liefert die Kontonummer
+   * @return Kontonummer
    */
   public String getKontonummer()
   {
@@ -43,7 +44,7 @@ public class Konto
   
   /**
    * Setzt die Kontonummer
-   * @param pvNr 
+   * @param pvNr Kontonummer
    */
   public void setKontonummer(String pvNr)
   {
@@ -51,8 +52,8 @@ public class Konto
   }
   
   /**
-   * Wurde die Kontonummer gefunden?
-   * @return 
+   * Wurde die Kontonummer gefunden? (Abfrage Kennzeichen 'Gefunden')
+   * @return true -> gefunden; false -> nicht gefunden
    */
   public boolean isGefunden()
   {
@@ -60,8 +61,8 @@ public class Konto
   }
   
   /**
-   * Setzt das 'Gefunden'-Flag
-   * @param pvFlag 
+   * Setzt das Kennzeichen 'Gefunden'
+   * @param pvFlag true -> gefunden; false -> nicht gefunden
    */
   public void setGefunden(boolean pvFlag)
   {

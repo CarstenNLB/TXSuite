@@ -27,8 +27,8 @@ public class ANNADatei
     
     /**
      * Konstruktor
-     * @param pvFilename 
-     * @param pvLogger 
+     * @param pvFilename Name der ANNA-Datei
+     * @param pvLogger log4j-Logger
      */
     public ANNADatei(String pvFilename, Logger pvLogger) 
     {   
@@ -38,8 +38,8 @@ public class ANNADatei
     }
 
     /**
-     * 
-     * @return
+     * Liefert die Liste mit ANNA-Daten
+     * @return Liste mit ANNA-Daten
      */
     public ArrayList<ANNADaten> getListeANNADaten() 
     {
@@ -47,16 +47,17 @@ public class ANNADatei
 	}
 
     /**
-     * 
-     * @param ivListeANNADaten
+     * Setzt die Liste mit ANNA-Daten
+     * @param pvListeANNADaten Liste mit ANNA-Daten
      */
-	public void setListeANNADaten(ArrayList<ANNADaten> pvListeANNADaten) 
-	{
-		this.ivListeANNADaten = pvListeANNADaten;
-	}
+    public void setListeANNADaten(ArrayList<ANNADaten> pvListeANNADaten)
+	  {
+		   this.ivListeANNADaten = pvListeANNADaten;
+	  }
 
-	/**
+	  /**
      * Liest die ANNADaten ein
+     * @param pvDateiname Name der ANNA-Datei
      */
     private void readANNADaten(String pvDateiname)
     {
@@ -73,7 +74,7 @@ public class ANNADatei
         }
         catch (Exception e)
         {
-            ivLogger.info("Konnte ANNA-Datei nicht oeffnen!");
+            ivLogger.info("Konnte ANNA-Datei '" + pvDateiname + "' nicht oeffnen!");
             return;
         }
     
@@ -90,7 +91,7 @@ public class ANNADatei
             	}
             	if (lvZeilenNummer > 2)
             	{
-            		ANNADaten lvANNADaten = new ANNADaten();
+            		ANNADaten lvANNADaten = new ANNADaten(ivLogger);
             		lvANNADaten.parseANNADaten(lvZeile);
             		ivListeANNADaten.add(lvANNADaten);
             	}
@@ -109,7 +110,7 @@ public class ANNADatei
         }
         catch (Exception e)
         {
-            ivLogger.error("Konnte ANNA-Datei nicht schliessen!");
+            ivLogger.error("Konnte ANNA-Datei '" + pvDateiname + "' nicht schliessen!");
         } 
         ivLogger.info("Anzahl eingelesener Zeilen: " + lvZeilenNummer);
         ivLogger.info("Anzahl eingelesener ANNA-Daten: " + ivListeANNADaten.size());
@@ -134,9 +135,9 @@ public class ANNADatei
     }
 	
     /**
-     * Startroutine (main) Anna
+     * Startroutine(main) zum Einlesen der Anna-Datei
      * Wird nur zu Testzwecken benoetigt!
-     * @param args
+     * @param args Array der Uebergabeparameter
      */
     public static void main(String args[])
     { 

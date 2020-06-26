@@ -12,6 +12,7 @@ import java.util.LinkedList;
  * @author tepperc
  *
  */
+@Deprecated
 public class OSPVermoegensobjekt 
 {
     /**
@@ -20,7 +21,7 @@ public class OSPVermoegensobjekt
     private String ivNr;
     
     /**
-     * Liste der Grundbücher
+     * Liste der Grundbï¿½cher
      */
     private LinkedList<String> ivGrundbuecher;
     

@@ -13,8 +13,9 @@ import org.jdom2.Element;
 
 /**
  * @author unnasch
- * Erzeugt die TXS Transaktionen für Namenspapiere aus Darlehen
+ * Erzeugt die TXS Transaktionen fï¿½r Namenspapiere aus Darlehen
  */
+@Deprecated
 public class PassivDarl {
 
 	/**
@@ -26,7 +27,7 @@ public class PassivDarl {
 	 * Konstruktor
 	 * @param pvPassivprojekt
 	 */
-    public PassivDarl(String pvPassivprojekt) 
+    public PassivDarl(String pvPassivprojekt)
     {
         this.txsprojekt = pvPassivprojekt;        
     }
@@ -88,17 +89,17 @@ public class PassivDarl {
            lvEl_fgdaten.setAttribute("roll", "0");          
        }
        
-       // Sonderbehandlung Umläufe OEPG für TXS 4.05.450
+       // Sonderbehandlung Umlï¿½ufe OEPG fï¿½r TXS 4.05.450
        if ("PDARLOEPG".equals(pvQuellsystem))
        {
          lvEl_fgdaten.setAttribute("pfandbriefoepg","1");
        }
        
          // Produkttyp umsetzen
-         // der TXS Produkttyp ist den dortigen Aufzählungen zu entnehmen
+         // der TXS Produkttyp ist den dortigen Aufzï¿½hlungen zu entnehmen
          lvProdukt = pvPassiv.getChildText("ProduktSchluessel");
          
-         // -> neue Schlüssel einpflegen ?
+         // -> neue Schlï¿½ssel einpflegen ?
          if (lvProdukt.equals("05011") || lvProdukt.equals("05056"))
          {
            lvTxstyp = "020101";                
@@ -116,7 +117,7 @@ public class PassivDarl {
              lvTxstyp = "020201";                
          }
 
-         // Sonderbehandlung für die 'anderen' Register (Schiffe und Flugzeuge)
+         // Sonderbehandlung fï¿½r die 'anderen' Register (Schiffe und Flugzeuge)
          if ("PDARLSCHF".equals(pvQuellsystem))
          {
              lvTxstyp = "020301";
@@ -128,7 +129,7 @@ public class PassivDarl {
          
          lvEl_fgdaten.setAttribute("typ",lvTxstyp);
     
-         // urlfzmon wird für passive Wertpapiere nicht gebraucht
+         // urlfzmon wird fï¿½r passive Wertpapiere nicht gebraucht
          // daher keine Lieferung
     //   el_fgdaten.setAttribute("urlfzmon",nodeSA04.getChildText("Laufzeit"));
        
@@ -149,7 +150,7 @@ public class PassivDarl {
      * Fuellen der TXS Transaktion konddaten, enthaelt Konditionen des Finanzgeschaeftes
      * @param pvPassiv
      * @param pvKorrekturBelieferung 
-     * @return Element zum einhängen in die XML-Ausgabe
+     * @return Element zum einhï¿½ngen in die XML-Ausgabe
      */
     public Element konddaten_passivdarl(Element pvPassiv, boolean pvKorrekturBelieferung)
     {   
@@ -353,8 +354,8 @@ public class PassivDarl {
         }    
       }
       
-      // Tilgungsrythmus, aus Anzahl der Tilgungen (pro Jahr) und dem Tilgungsschlüssel ableiten
-      // Endfällig -> Sonderfall
+      // Tilgungsrythmus, aus Anzahl der Tilgungen (pro Jahr) und dem Tilgungsschlï¿½ssel ableiten
+      // Endfï¿½llig -> Sonderfall
       // Namenspapiere -> Sonderfall
       
       String lvTilgryth = "";
@@ -367,7 +368,7 @@ public class PassivDarl {
       {
           if ("3".equals(pvPassiv.getChildText("TilgungsschluesselKON"))) 
           {
-            lvTilgryth = "13"; // endfällig
+            lvTilgryth = "13"; // endfï¿½llig
           }
           else
           {    
@@ -402,14 +403,14 @@ public class PassivDarl {
       
       lvEl_konddaten.setAttribute("tilgsatz",pvPassiv.getChildText("TilgungProzent"));
       
-      // es kommt nur endfällig in Frage
+      // es kommt nur endfï¿½llig in Frage
       lvEl_konddaten.setAttribute("zahltyp","3");
       
       lvEl_konddaten.setAttribute("tilgver","0");
       
       // daher ist die Rate immer das Restkapital
-      // aber achtung, für schon geradegestellte Positionen wird von Darlehen
-      // ein Restkapital von 0 geliefert, daher wird für Kontostatus 8 anders 
+      // aber achtung, fï¿½r schon geradegestellte Positionen wird von Darlehen
+      // ein Restkapital von 0 geliefert, daher wird fï¿½r Kontostatus 8 anders 
       // verfahren
       
       if (pvPassiv.getChildText("Kontozustand").equals("8"))
@@ -462,7 +463,7 @@ public class PassivDarl {
       // immer anchor
       lvEl_konddaten.setAttribute("zinsperkonv","1");
       
-      // Zinsrythmus anhand zweier Felder und für zeros Sonderfall
+      // Zinsrythmus anhand zweier Felder und fï¿½r zeros Sonderfall
       String lvZinsryth ="";
       
       String lvAnzahlZinsperioden = pvPassiv.getChildText("AnzahlZinsperioden");
@@ -533,13 +534,13 @@ public class PassivDarl {
       String lvTxszinstyp = "";
       
       // eventuell nach ValueMapping auslagern
-      // welche Ausprägungen aus Darlehen gibt es ??
+      // welche Ausprï¿½gungen aus Darlehen gibt es ??
       if (pvPassiv.getChildText("Zinstyp").equals("F"))
       {
           
        // Aber Achtung, Floater auf EURIBOR usw habe auch ein 'F' sind aber variabel
        // Zeros ebenfalls  
-       // und es gibt auch Zeros ohne ZERO, diese werden über den Zinsssatz 0 identifiziert   
+       // und es gibt auch Zeros ohne ZERO, diese werden ï¿½ber den Zinsssatz 0 identifiziert   
        // Telefonat mit R.Lau 111222
           if (0.0 == Double.parseDouble(pvPassiv.getChildText("DarlehenszinssatzProzent")))
           {
@@ -594,11 +595,11 @@ public class PassivDarl {
     }  
     
     /**
-     * Füllen der TXS Transaktion wpposdaten, enthält weitere Wertpapierdaten zum Finanzgeschäft
+     * Fï¿½llen der TXS Transaktion wpposdaten, enthï¿½lt weitere Wertpapierdaten zum Finanzgeschï¿½ft
      * @param pvPassiv 
      * @param pvKorrekturBelieferung 
      * @param pvRestsaldoNull 
-     * @return Element zum einhängen in die XML-Ausgabe
+     * @return Element zum einhï¿½ngen in die XML-Ausgabe
      */
     public Element wpposdaten_passivdarl(Element pvPassiv, boolean pvKorrekturBelieferung, boolean pvRestsaldoNull)
     {
@@ -657,8 +658,8 @@ public class PassivDarl {
       
       System.out.println("Restkapital - Kontonummer: " + pvPassiv.getChildText("Kontonummer") + " - " + pvKorrekturBelieferung);
 
-      // aber achtung, für schon geradegestellte Positionen wird von Darlehen
-      // ein Restkapital von 0 geliefert, daher wird für Kontostatus 8 anders verfahren
+      // aber achtung, fï¿½r schon geradegestellte Positionen wird von Darlehen
+      // ein Restkapital von 0 geliefert, daher wird fï¿½r Kontostatus 8 anders verfahren
       // Sonderbehandlung CT 08.07.2014 - Restkapital nicht liefern, wenn Umsatz12 == 0.0
       //if (!pvKorrekturBelieferung)
       //{

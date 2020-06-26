@@ -1,26 +1,33 @@
 package nlb.txs.schnittstelle.LoanIQ.RefiRegister;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
-import nlb.txs.schnittstelle.SAPCMS.SAPCMS_Neu;
-import nlb.txs.schnittstelle.SAPCMS.Entities.Immobilie;
-import nlb.txs.schnittstelle.SAPCMS.Entities.Last;
-import nlb.txs.schnittstelle.SAPCMS.Entities.Schiff;
-import nlb.txs.schnittstelle.SAPCMS.Entities.Sicherheitenvereinbarung;
-import nlb.txs.schnittstelle.SAPCMS.Entities.Sicherungsumfang;
+import nlb.txs.schnittstelle.RefiRegister.RefiDeepSeaZusatz;
+import nlb.txs.schnittstelle.Sicherheiten.Entities.Immobilie;
+import nlb.txs.schnittstelle.Sicherheiten.Entities.Last;
+import nlb.txs.schnittstelle.Sicherheiten.Entities.Schiff;
+import nlb.txs.schnittstelle.Sicherheiten.Entities.Sicherheitenvereinbarung;
+import nlb.txs.schnittstelle.Sicherheiten.Entities.Sicherungsumfang;
+import nlb.txs.schnittstelle.Sicherheiten.Sicherheiten2RefiRegister;
+import nlb.txs.schnittstelle.Sicherheiten.SicherheitenDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeft;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeftDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSKonditionenDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSKreditKunde;
 import nlb.txs.schnittstelle.Transaktion.TXSSliceInDaten;
-
+import nlb.txs.schnittstelle.Utilities.String2XML;
+import nlb.txs.schnittstelle.Utilities.ValueMapping;
 import org.apache.log4j.Logger;
 
+/**
+ * Diese Klasse wurde nur für DeepSea benoetigt.
+ */
+@Deprecated
 public class RefiRegisterAktiv
 {
     // Transaktionen
@@ -29,12 +36,12 @@ public class RefiRegisterAktiv
     private TXSFinanzgeschaeftDaten ivFinanzgeschaeftDaten;
     private TXSKonditionenDaten ivKondDaten;
     private TXSKreditKunde ivKredkundeKonsorte;
-    //private TXSKreditKunde ivKredkundeKreditnehmer;
+    private TXSKreditKunde ivKredkundeKreditnehmer;
 
     /**
-     * SAP CMS
+     * Sicherheiten-Daten
      */
-    private SAPCMS_Neu ivSapcms;
+    private SicherheitenDaten ivSicherheitenDaten;
     
     /**
      * OutputDarlehenXML
@@ -50,9 +57,9 @@ public class RefiRegisterAktiv
      * Konstruktor
      * @param pvLogger
      */
-    public RefiRegisterAktiv(SAPCMS_Neu pvSapcms, OutputDarlehenXML pvOutputDarlehenXML, Logger pvLogger) 
+    public RefiRegisterAktiv(SicherheitenDaten pvSicherheitenDaten, OutputDarlehenXML pvOutputDarlehenXML, Logger pvLogger)
     {
-    	this.ivSapcms = pvSapcms;
+    	this.ivSicherheitenDaten = pvSicherheitenDaten;
     	this.ivOutputDarlehenXML = pvOutputDarlehenXML;
         this.ivLogger = pvLogger;
              
@@ -61,15 +68,16 @@ public class RefiRegisterAktiv
         this.ivFinanzgeschaeftDaten = new TXSFinanzgeschaeftDaten();
         this.ivKondDaten = new TXSKonditionenDaten();
         this.ivKredkundeKonsorte = new TXSKreditKunde();
-        //this.ivKredkundeKreditnehmer = new TXSKreditKunde();
+        this.ivKredkundeKreditnehmer = new TXSKreditKunde();
     }
     
     /**
      * Importiert die Darlehensinformationen in die TXS-Transaktionen
-     * @param pvZielDarlehen 
-     * @param pvVorlaufsatz 
+     * @param pvDarlehenBlock
+     * @param pvVorlaufsatz
+     * @param pvListeRefiDeepSeaZusatz
      */
-     public void importDarlehen2Transaktion(DarlehenLoanIQBlock pvDarlehenBlock, Vorlaufsatz pvVorlaufsatz)
+     public void importDarlehen2Transaktion(DarlehenBlock pvDarlehenBlock, Vorlaufsatz pvVorlaufsatz, HashMap<String, RefiDeepSeaZusatz> pvListeRefiDeepSeaZusatz)
      {
          ivFinanzgeschaeft.initTXSFinanzgeschaeft();
          ivSliceInDaten.initTXSSliceInDaten();
@@ -79,17 +87,16 @@ public class RefiRegisterAktiv
          //ivKredkundeKreditnehmer.initTXSKreditKunde();
             
          boolean lvOkayDarlehen = true;
-         
-         //String lvHelpKontonummer = new String();
-         
-         lvOkayDarlehen = ivFinanzgeschaeft.importLoanIQ(pvDarlehenBlock, pvVorlaufsatz, ivLogger);
-         ivFinanzgeschaeft.setQuelle("ADARLREFI");  
+
+       lvOkayDarlehen = ivFinanzgeschaeft.importLoanIQ(pvDarlehenBlock, pvVorlaufsatz, ivLogger);
+         ivFinanzgeschaeft.setQuelle("ALIQREFI");  
                      
          if (lvOkayDarlehen)
          {
              // TXSFinanzgeschaeftDaten
             lvOkayDarlehen = ivFinanzgeschaeftDaten.importLoanIQ(pvDarlehenBlock, pvVorlaufsatz, ivLogger);
-            ////ivFinanzgeschaeftDaten.setKonskredit("1");
+
+           ////ivFinanzgeschaeftDaten.setKonskredit("1");
             ////ivFinanzgeschaeftDaten.setKonsfuehrer("NORD/LB");
             ////ivFinanzgeschaeftDaten.setKonsantart("FREMD");
               
@@ -114,13 +121,18 @@ public class RefiRegisterAktiv
          {
              lvOkayDarlehen = ivKondDaten.importLoanIQ(pvDarlehenBlock, pvVorlaufsatz, ivLogger);
              ivKondDaten.setLrate("0.01");
-             
          }
          if (lvOkayDarlehen)
          {
              lvOkayDarlehen = ivKredkundeKonsorte.importLoanIQ(pvDarlehenBlock, pvVorlaufsatz, ivLogger);
              ////ivKredkundeKonsorte.setRolle("2");
          }
+
+         ivKredkundeKreditnehmer.setKdnr("0080126288");
+         ivKredkundeKreditnehmer.setOrg(ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer()));
+         ivKredkundeKreditnehmer.setQuelle("KUNDE");
+         ivKredkundeKreditnehmer.setRolle("2");
+
          ////if (lvOkayDarlehen)
          ////{
          ////    AktivkontenDaten lvHelpDatenAktiv = ivListeAktivkontenDaten.get(pvZielDarlehen.getKontonummer());
@@ -147,32 +159,7 @@ public class RefiRegisterAktiv
          //}
          
             
-         // Transaktionen in die Datei schreiben
-         if (lvOkayDarlehen)
-         {
-             ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeft.printTXSTransaktionStart());
 
-             ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionStart());
-             ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionDaten());
-             ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionEnde());
-
-             //pvOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSSliceInDatenStart());
-             //pvOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSSliceInDaten());
-             //pvOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSSliceInDatenEnde());
-
-             ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionStart());
-             ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionDaten());
-             ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionEnde());
-
-             //pvOutputDarlehenXML.printTransaktion(ivKredkundeKreditnehmer.printTXSTransaktionStart());
-             //pvOutputDarlehenXML.printTransaktion(ivKredkundeKreditnehmer.printTXSTransaktionDaten());
-             //pvOutputDarlehenXML.printTransaktion(ivKredkundeKreditnehmer.printTXSTransaktionEnde());
-
-             ivOutputDarlehenXML.printTransaktion(ivKredkundeKonsorte.printTXSTransaktionStart());
-             ivOutputDarlehenXML.printTransaktion(ivKredkundeKonsorte.printTXSTransaktionDaten());
-             ivOutputDarlehenXML.printTransaktion(ivKredkundeKonsorte.printTXSTransaktionEnde());
-         }
-              
          ////if (lvHelpRefiRegisterFilterElement != null)
          ////{
          ////  if (lvHelpRefiRegisterFilterElement.getKonsortialHauptkontonummer().equals("0000000000"))
@@ -188,14 +175,15 @@ public class RefiRegisterAktiv
 
            Sicherungsumfang lvShum = null;
            
-           ivLogger.info("Suche SAPCMS SicherheitObjekt zu Kontonummer " + pvDarlehenBlock.getDarlehenLoanIQNetto().getKontonummer());
+           ivLogger.info("Suche Sicherheiten SicherheitObjekt zu Kontonummer " + pvDarlehenBlock.getDarlehenNetto().getKontonummer());
          
            // Passende Liste der Sicherungsumfaenge zur Kontonummer ermitteln
-           LinkedList<Sicherungsumfang> lvHelpListe = ivSapcms.getListeSicherungsumfang().get(pvDarlehenBlock.getDarlehenLoanIQNetto().getKontonummer());
+           LinkedList<Sicherungsumfang> lvHelpListe = ivSicherheitenDaten.getListeSicherungsumfang().get(pvDarlehenBlock.getDarlehenNetto().getKontonummer());
            
            if (lvHelpListe != null)
            {
-               for (int x = 0; x < lvHelpListe.size(); x++)
+               int x;
+               for (x = 0; x < lvHelpListe.size(); x++)
                {
                  lvShum = lvHelpListe.get(x);
                  //System.out.println("SicherungsumfangId: " + lvShum.getId() + " Zuweisungsbetrag: " + lvShum.getZuweisungsbetrag());
@@ -203,14 +191,14 @@ public class RefiRegisterAktiv
                  {
                      //if (StringKonverter.convertString2Double(lvShum.getZuweisungsbetrag()) > 0.0)
                      //{
-                       Sicherheitenvereinbarung lvSicherheitenvereinbarung = ivSapcms.getListeSicherheitenvereinbarung().get(lvShum.getSicherheitenvereinbarungId());
+                       Sicherheitenvereinbarung lvSicherheitenvereinbarung = ivSicherheitenDaten.getListeSicherheitenvereinbarung().get(lvShum.getSicherheitenvereinbarungId());
                        String lvSicherheitenId = lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId();
                      //}
                        boolean lvDeckungskennzeichen = false;
                        
                        // Last suchen
                        Last lvLast = null;
-                       Collection<Last> lvCollectionLast = ivSapcms.getListeLast().values();
+                       Collection<Last> lvCollectionLast = ivSicherheitenDaten.getListeLast().values();
                        Iterator<Last> lvIteratorLast = lvCollectionLast.iterator();
                        while (lvIteratorLast.hasNext())
                        {
@@ -225,7 +213,7 @@ public class RefiRegisterAktiv
                             {
                                 // Immobilie suchen
                                 Immobilie lvImmobilie = null;
-                                Collection<Immobilie> lvCollectionImmobilie = ivSapcms.getListeImmobilie().values();
+                                Collection<Immobilie> lvCollectionImmobilie = ivSicherheitenDaten.getListeImmobilie().values();
                                 Iterator<Immobilie> lvIteratorImmobilie = lvCollectionImmobilie.iterator();
                                 while (lvIteratorImmobilie.hasNext())
                                 {
@@ -238,7 +226,7 @@ public class RefiRegisterAktiv
                                 
                                 // Schiff suchen
                                 Schiff lvSchiff = null;
-                                Collection<Schiff> lvCollectionSchiff = ivSapcms.getListeSchiff().values();
+                                Collection<Schiff> lvCollectionSchiff = ivSicherheitenDaten.getListeSchiff().values();
                                 Iterator<Schiff> lvIteratorSchiff = lvCollectionSchiff.iterator();
                                 while (lvIteratorSchiff.hasNext())
                                 {
@@ -269,8 +257,50 @@ public class RefiRegisterAktiv
                                   }
                             }
                        }
-           
-                       /*
+
+                   //String lvHelpKontonummer = new String();
+                   //System.out.println("CTCTCT: " + pvDarlehenBlock.getKontonummer() + "_" + lvSicherheitenId);
+                   RefiDeepSeaZusatz lvRefiDeepSeaZusatz = pvListeRefiDeepSeaZusatz.get(pvDarlehenBlock.getKontonummer() + "_" + lvSicherheitenId);
+
+                  if (lvRefiDeepSeaZusatz != null) {
+                      ivFinanzgeschaeftDaten.setNbetrag(lvRefiDeepSeaZusatz.getNominalbetrag().trim().replace(",", "."));
+                      ivFinanzgeschaeftDaten.setAbetrag(lvRefiDeepSeaZusatz.getNominalbetrag().trim().replace(",", "."));
+                      ivFinanzgeschaeftDaten.setWhrg(lvRefiDeepSeaZusatz.getNominalbetragWaehrung().trim());
+                      ivFinanzgeschaeftDaten.setVwhrg(lvRefiDeepSeaZusatz.getNominalbetragWaehrung().trim());
+                      ivFinanzgeschaeftDaten.setText(String2XML.change2XML(lvRefiDeepSeaZusatz.getBemerkung()));
+                      //System.out.println("CTCTCT - " + ivFinanzgeschaeftDaten.getWhrg());
+                      ivKondDaten.setWhrg(ivFinanzgeschaeftDaten.getWhrg());
+                  }
+
+                   // Transaktionen in die Datei schreiben
+                   if (lvOkayDarlehen)
+                   {
+                     ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeft.printTXSTransaktionStart());
+
+                     ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionStart());
+                     ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionDaten());
+                     ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionEnde());
+
+                     //pvOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSSliceInDatenStart());
+                     //pvOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSSliceInDaten());
+                     //pvOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSSliceInDatenEnde());
+
+                     ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionStart());
+                     ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionDaten());
+                     ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionEnde());
+
+                     ivOutputDarlehenXML.printTransaktion(ivKredkundeKonsorte.printTXSTransaktionStart());
+                     ivOutputDarlehenXML.printTransaktion(ivKredkundeKonsorte.printTXSTransaktionDaten());
+                     ivOutputDarlehenXML.printTransaktion(ivKredkundeKonsorte.printTXSTransaktionEnde());
+
+                     ivOutputDarlehenXML.printTransaktion(ivKredkundeKreditnehmer.printTXSTransaktionStart());
+                     ivOutputDarlehenXML.printTransaktion(ivKredkundeKreditnehmer.printTXSTransaktionDaten());
+                     ivOutputDarlehenXML.printTransaktion(ivKredkundeKreditnehmer.printTXSTransaktionEnde());
+
+                     x = lvHelpListe.size();
+                   }
+
+/*
                        ////if (pvVerarbeitungstyp == RefiRegisterVerarbeitung.REFI_REG)
                        ////{
                     	   if (lvSicherheitenId != null && lvDeckungskennzeichen)
@@ -300,7 +330,7 @@ public class RefiRegisterAktiv
                     		   //}
                            
                     		   TXSSicherheitPerson2 lvHelpPerson = new TXSSicherheitPerson2();
-                    		   lvHelpPerson.setKdnr(pvDarlehenBlock.getDarlehenLoanIQNetto().getKundennummer());
+                    		   lvHelpPerson.setKdnr("0080126288"); //pvDarlehenBlock.getDarlehenLoanIQNetto().getKundennummer());
                     		   lvHelpPerson.setOrg(ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer()));
                     		   lvHelpPerson.setQuelle("KUNDE");
                     		   lvHelpPerson.setRolle("2");
@@ -323,17 +353,20 @@ public class RefiRegisterAktiv
                     		   ivLogger.info("Konsortial-Hauptkontonummer - Sicherheit existiert nicht...");
                     	   }
                        	////} */
-                 	}
+                 }
                }
            } 
          ////}
 
          
-         ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitRefiRegister(pvDarlehenBlock.getKontonummer(), pvDarlehenBlock.getKontonummer(), pvDarlehenBlock.getDarlehenLoanIQNetto().getKundennummer(), 
-        		                                                                    "1", //new String("" + ValueMapping.ermittleKredittyp(pvDarlehenBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal(), pvDarlehenBlock.getDarlehenLoanIQNetto().getBuergschaftprozent())), 
-        		                                                                    pvDarlehenBlock.getDarlehenLoanIQNetto().getBuergschaftprozent(), "ADARLREFI", 
-        		                                                                    pvDarlehenBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal()));
+         ////////ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitRefiRegister(pvDarlehenBlock.getKontonummer(), pvDarlehenBlock.getKontonummer(), pvDarlehenBlock.getDarlehenLoanIQNetto().getKundennummer(), 
+         ////////		 							                                        "1", //new String("" + ValueMapping.ermittleKredittyp(pvDarlehenBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal(), pvDarlehenBlock.getDarlehenLoanIQNetto().getBuergschaftprozent())), 
+         ////////		                                                                    pvDarlehenBlock.getDarlehenLoanIQNetto().getBuergschaftprozent(), "ADARLREFI", 
+         ////////		                                                                    pvDarlehenBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal()));
+       Sicherheiten2RefiRegister lvSicherheiten2RefiRegister = new Sicherheiten2RefiRegister(ivSicherheitenDaten, ivLogger);
 
+       //ivOutputDarlehenXML.printTransaktion(lvSicherheiten2RefiRegister.importSicherheitRefiRegisterDeepSea(pvDarlehenBlock.getKontonummer(), pvListeRefiDeepSeaZusatz));
+           
          if (lvOkayDarlehen)
          {
             ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeft.printTXSTransaktionEnde());

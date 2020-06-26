@@ -5,11 +5,12 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
 
 import org.apache.log4j.xml.DOMConfigurator;
 
+@Deprecated
 public class RefiRegisterDeepSea 
 {
     /**
      * Startroutine RefiRegister
-     * @param argv 
+     * @param argv
      */
     public static void main(String argv[])
     { 
@@ -45,7 +46,7 @@ public class RefiRegisterDeepSea
             }            
             
             // Aufruf des Konstruktors der RefiRegister-Verarbeitung
-            new RefiRegisterVerarbeitung(lvReader, RefiRegisterVerarbeitung.DEEP_SEA);
+            //new RefiRegisterVerarbeitung(lvReader, RefiRegisterVerarbeitung.DEEP_SEA);
         }
         System.exit(0);
     }

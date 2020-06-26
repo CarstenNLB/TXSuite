@@ -314,65 +314,73 @@ public class TXSPersonenDaten implements TXSTransaktion
      */
     public TXSPersonenDaten()
     {
-        this.ivAkqdat = new String();
-        this.ivBankmit = new String();
-        this.ivBic = new String();
-        this.ivBlz = new String();
-        this.ivBon = new String();
-        this.ivBranche = new String();
-        this.ivEbesch = new String();
-        this.ivEinsolv = new String();
-        this.ivErgeb = new String();
-        this.ivErgebdat = new String();
-        this.ivEstatus = new String();
-        this.ivFax = new String();
-        this.ivFstand = new String();
-        this.ivGebdat = new String();
-        this.ivGebiet = new String();
-        this.ivGstand = new String();
-        this.ivHausbes = new String();
-        this.ivHausnr = new String();
-        this.ivHreg = new String();
-        this.ivIban = new String();
-        this.ivKnebez = new String();
-        this.ivKnenr = new String();
-        this.ivKoerper = new String();
-        this.ivKonzern = new String();
-        this.ivKreditvers = new String();
-        this.ivKwuerd = new String();
-        this.ivLand = new String();
-        this.ivLimit = new String();
-        this.ivLimitdat = new String();
-        this.ivLimitinan = new String();
-        this.ivMail = new String();
-        this.ivMieter = new String();
-        this.ivMitarb = new String();
-        this.ivNat = new String();
-        this.ivNetto = new String();
-        this.ivNettodat = new String();
-        this.ivNettoverf = new String();
-        this.ivNname = new String();
-        this.ivOrt = new String();
-        this.ivPlz = new String();
-        this.ivRatfitch = new String();
-        this.ivRatfitchk = new String();
-        this.ivRatint = new String();
-        this.ivRatinttxt = new String();
-        this.ivRatmoody = new String();
-        this.ivRatmoodyk = new String();
-        this.ivRatsp = new String();
-        this.ivRatspk = new String();
-        this.ivRform = new String();
-        this.ivRgruppe = new String();
-        this.ivStr = new String();
-        this.ivTelgesch = new String();
-        this.ivTelmob = new String();
-        this.ivTelpriv = new String();
-        this.ivText = new String();
-        this.ivTitel = new String();
-        this.ivUmsatz = new String();
-        this.ivVname = new String();
-        this.ivWhrg = new String();
+      initTXSPersonenDaten();
+    }
+
+   /**
+     * Initialisiert die Instanzvariablen mit leeren Strings
+    */
+    public void initTXSPersonenDaten()
+    {
+      this.ivAkqdat = new String();
+      this.ivBankmit = new String();
+      this.ivBic = new String();
+      this.ivBlz = new String();
+      this.ivBon = new String();
+      this.ivBranche = new String();
+      this.ivEbesch = new String();
+      this.ivEinsolv = new String();
+      this.ivErgeb = new String();
+      this.ivErgebdat = new String();
+      this.ivEstatus = new String();
+      this.ivFax = new String();
+      this.ivFstand = new String();
+      this.ivGebdat = new String();
+      this.ivGebiet = new String();
+      this.ivGstand = new String();
+      this.ivHausbes = new String();
+      this.ivHausnr = new String();
+      this.ivHreg = new String();
+      this.ivIban = new String();
+      this.ivKnebez = new String();
+      this.ivKnenr = new String();
+      this.ivKoerper = new String();
+      this.ivKonzern = new String();
+      this.ivKreditvers = new String();
+      this.ivKwuerd = new String();
+      this.ivLand = new String();
+      this.ivLimit = new String();
+      this.ivLimitdat = new String();
+      this.ivLimitinan = new String();
+      this.ivMail = new String();
+      this.ivMieter = new String();
+      this.ivMitarb = new String();
+      this.ivNat = new String();
+      this.ivNetto = new String();
+      this.ivNettodat = new String();
+      this.ivNettoverf = new String();
+      this.ivNname = new String();
+      this.ivOrt = new String();
+      this.ivPlz = new String();
+      this.ivRatfitch = new String();
+      this.ivRatfitchk = new String();
+      this.ivRatint = new String();
+      this.ivRatinttxt = new String();
+      this.ivRatmoody = new String();
+      this.ivRatmoodyk = new String();
+      this.ivRatsp = new String();
+      this.ivRatspk = new String();
+      this.ivRform = new String();
+      this.ivRgruppe = new String();
+      this.ivStr = new String();
+      this.ivTelgesch = new String();
+      this.ivTelmob = new String();
+      this.ivTelpriv = new String();
+      this.ivText = new String();
+      this.ivTitel = new String();
+      this.ivUmsatz = new String();
+      this.ivVname = new String();
+      this.ivWhrg = new String();
     }
 
     /**

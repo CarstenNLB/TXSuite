@@ -51,7 +51,7 @@ public class CashflowsLoanIQ
                 DOMConfigurator.configure(lvLoggingXML);
             }            
             
-            new CashflowsVerarbeitung(lvReader, CashflowsVerarbeitung.LOANIQ);
+            new CashflowsLoanIQVerarbeitung(lvReader, CashflowsLoanIQVerarbeitung.LOANIQ);
         }
         System.exit(0);
     }

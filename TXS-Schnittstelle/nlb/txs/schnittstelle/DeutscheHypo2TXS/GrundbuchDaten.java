@@ -10,6 +10,7 @@ package nlb.txs.schnittstelle.DeutscheHypo2TXS;
  * @author tepperc
  *
  */
+@Deprecated
 public class GrundbuchDaten 
 {
     /**

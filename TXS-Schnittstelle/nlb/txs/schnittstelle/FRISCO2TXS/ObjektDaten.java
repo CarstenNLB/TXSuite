@@ -10,6 +10,7 @@ package nlb.txs.schnittstelle.FRISCO2TXS;
  * @author tepperc
  *
  */
+@Deprecated
 public class ObjektDaten 
 {
     /**
@@ -43,7 +44,7 @@ public class ObjektDaten
     private String ivBeleihungswertAkt;
     
     /**
-     * Währung des akt. Beleihungswert
+     * Wï¿½hrung des akt. Beleihungswert
      */
     private String ivWaehrungBeleihungswertAkt;
     
@@ -58,7 +59,7 @@ public class ObjektDaten
     private String ivBeleihungswertInd;
     
     /**
-     * Währung des Beleihungswerts Indeckungnahme
+     * Wï¿½hrung des Beleihungswerts Indeckungnahme
      */
     private String ivWaehrungBeleihungswertInd;
     
@@ -108,7 +109,7 @@ public class ObjektDaten
     private String ivSicherheitenNr;
        
     /**
-     * Währung vom Nennbetrag und Verfügungsbetrag
+     * Wï¿½hrung vom Nennbetrag und Verfï¿½gungsbetrag
      */
     private String ivWaehrungSicherheit;
     

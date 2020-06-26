@@ -46,6 +46,7 @@ import org.apache.log4j.Logger;
  * @author tepperc
  *
  */
+@Deprecated
 public class DarlehenVerarbeitung 
 {
     // Status BAUFI
@@ -183,11 +184,11 @@ public class DarlehenVerarbeitung
         ivOzw.close();
         
         // Darlehen XML-Datei
-        ivDarlehenXML = new DarlehenXML(pvExportVerzeichnis + "\\" + pvDarlehenDatei);
+        ivDarlehenXML = new DarlehenXML(pvExportVerzeichnis + "\\" + pvDarlehenDatei, ivLogger);
         ivDarlehenXML.openXML();
         
         // Darlehen XML-Datei im TXS-Format
-        ivOutputDarlehenXML = new OutputDarlehenXML(pvExportVerzeichnis + "\\" + pvDarlehenTXSDatei);
+        ivOutputDarlehenXML = new OutputDarlehenXML(pvExportVerzeichnis + "\\" + pvDarlehenTXSDatei, ivLogger);
         ivOutputDarlehenXML.openXML();
         ivOutputDarlehenXML.printXMLStart();
                 
@@ -771,7 +772,7 @@ public class DarlehenVerarbeitung
              }
              ivSliceInDaten.setBis(ivFgdaten.getNbetrag());
              
-             lvOkayDarlehen = ivKondDaten.importDarlehen(ivZielDarlehen, ivLogger);
+             lvOkayDarlehen = ivKondDaten.importDarlehen(DarlehenVerarbeiten.DARKA, ivZielDarlehen, ivLogger);
              // TXS muss selber rechnen, da keine Cashflows angeliefert werden
              ivKondDaten.setMantilg("0");
              ivKondDaten.setManzins("0");

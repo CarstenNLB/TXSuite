@@ -1,6 +1,7 @@
 package nlb.txs.schnittstelle.Rueckmeldung;
 
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
+import org.apache.log4j.Logger;
 
 public class RueckmeldungDarKaObjekt 
 {
@@ -58,12 +59,18 @@ public class RueckmeldungDarKaObjekt
 	 * Originator vom Finanzgeschaeft
 	 */
 	private String ivOriginator;
-	
+
+	/**
+	 * log4j-Logger
+	 */
+	private Logger ivLogger;
+
 	/**
 	 * Konstruktor fuer die Initialiserung mit leeren Strings
 	 */
-	public RueckmeldungDarKaObjekt() 
+	public RueckmeldungDarKaObjekt(Logger pvLogger)
 	{
+		this.ivLogger = pvLogger;
 		this.ivAktenzeichen = new String();
 		this.ivISIN = new String();
 		this.ivAktivPassiv = new String();
@@ -257,30 +264,27 @@ public class RueckmeldungDarKaObjekt
 
 	/**
      * Zerlegt eine Zeile des RueckmeldungDarKaObjekts 
-     * @param pvZeile 
-     * @return 
+     * @param pvZeile die zu zerlegende Zeile
      */
-	public boolean parseRueckmeldungDarKaObjekt(String pvZeile)
+	public void parseRueckmeldungDarKaObjekt(String pvZeile)
 	{
       StringBuilder lvTemp = new StringBuilder(); // arbeitsbereich/zwischenspeicher feld
       int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
-      int    lvZzStr=0;              // pointer fuer satzbereich
       boolean lvDatenStart = false;
      
-      //System.out.println("Zeile: " + pvZeile);
       // steuerung/iteration eingabesatz
-      for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
+      for (int lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
       {    	
-    	// wenn Trennzeichen erkannt
-    	if (pvZeile.charAt(lvZzStr) == ivTrennzeichen)
-    	{
-    		this.setRueckmeldungDarKaObjekt(lvLfd, lvTemp.toString());
+    	  // wenn Trennzeichen erkannt
+    	  if (pvZeile.charAt(lvZzStr) == ivTrennzeichen)
+    	  {
+    		    this.setRueckmeldungDarKaObjekt(lvLfd, lvTemp.toString());
             lvLfd++;                  // naechste Feldnummer
             // Zwischenbuffer loeschen
             lvTemp = new StringBuilder();
-    	}
-    	else
-    	{
+    	  }
+    	  else
+    	  {
     		
         	if (pvZeile.charAt(lvZzStr) == '"')
         	{
@@ -297,13 +301,11 @@ public class RueckmeldungDarKaObjekt
         			}
         		}
         	}
-    	}
+    	  }
       } // ende for	
       
       // Das letzte Feld muss auch noch gesetzt werden
       this.setRueckmeldungDarKaObjekt(lvLfd, lvTemp.toString());
-      
-      return true;
 	}
     
     /**
@@ -313,7 +315,6 @@ public class RueckmeldungDarKaObjekt
      */
     private void setRueckmeldungDarKaObjekt(int pvPos, String pvWert)
     {
-    	//System.out.println("Pos: " + pvPos + " Wert: " + pvWert);
         switch (pvPos)
         {
           case 0:
@@ -355,7 +356,7 @@ public class RueckmeldungDarKaObjekt
         	  this.setOriginator(pvWert);
         	  break;
           default:
-              System.out.println("RueckmeldungDarKaObjekts: undefiniert - Position: " + pvPos + " Wert: " + pvWert);
+              ivLogger.error("RueckmeldungDarKaObjekts: undefiniert - Position: " + pvPos + " Wert: " + pvWert);
         }
     }
     

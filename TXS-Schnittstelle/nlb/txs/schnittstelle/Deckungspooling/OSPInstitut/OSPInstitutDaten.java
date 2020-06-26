@@ -19,6 +19,7 @@ import nlb.txs.schnittstelle.Deckungspooling.Sicherheiten.OSPVermoegensobjekt;
  * @author tepperc
  *
  */
+@Deprecated
 public class OSPInstitutDaten 
 {
     /**
@@ -57,12 +58,12 @@ public class OSPInstitutDaten
     private OSPInstitutSicherheitenStatistik ivSicherheitenStatistik;
     
     /**
-     * Liste der Vermögensobjekte
+     * Liste der Vermï¿½gensobjekte
      */
     private ArrayList<OSPVermoegensobjekt> ivListeVermoegensobjekte;
     
     /**
-     * Liste der Grundbücher
+     * Liste der Grundbï¿½cher
      */
     private ArrayList<OSPGrundbuch> ivListeGrundbuecher;
     
@@ -215,8 +216,8 @@ public class OSPInstitutDaten
     }
 
     /**
-     * Fügt eine Sicherheit aus OSPlus hinzu
-     * @param pvSicherheitenStatistik Die einzufügende Sicherheit
+     * Fï¿½gt eine Sicherheit aus OSPlus hinzu
+     * @param pvSicherheitenStatistik Die einzufï¿½gende Sicherheit
      */
     public void setSicherheitenStatistik(OSPInstitutSicherheitenStatistik pvSicherheitenStatistik) 
     {
@@ -224,8 +225,8 @@ public class OSPInstitutDaten
     }
 
     /**
-     * Liefert die komplette Liste der Vermögensobjekte aus OSPlus
-     * @return the listeVermoegensobjekt Die komplette Liste der Vermögensobjkete
+     * Liefert die komplette Liste der Vermï¿½gensobjekte aus OSPlus
+     * @return the listeVermoegensobjekt Die komplette Liste der Vermï¿½gensobjkete
      */
     public ArrayList<OSPVermoegensobjekt> getListeVermoegensobjekt() 
     {
@@ -233,8 +234,8 @@ public class OSPInstitutDaten
     }
 
     /**
-     * Setzt die komplette Liste der Vermögensobjekte aus OSPlus
-     * @param pvListeVermoegensobjekt Die zu setzende komplette Liste der Vermögensobjekte
+     * Setzt die komplette Liste der Vermï¿½gensobjekte aus OSPlus
+     * @param pvListeVermoegensobjekt Die zu setzende komplette Liste der Vermï¿½gensobjekte
      */
     public void setListeVermoegensobjekt(ArrayList<OSPVermoegensobjekt> pvListeVermoegensobjekt) 
     {
@@ -242,8 +243,8 @@ public class OSPInstitutDaten
     }
     
     /**
-     * Fügt ein Vermögensobjekt aus OSPlus der Liste hinzu
-     * @param vObj Das einzufügende Vermögensobjekt
+     * Fï¿½gt ein Vermï¿½gensobjekt aus OSPlus der Liste hinzu
+     * @param vObj Das einzufï¿½gende Vermï¿½gensobjekt
      */
     public void addListeVermoegensobjekte(OSPVermoegensobjekt vObj)
     {
@@ -251,8 +252,8 @@ public class OSPInstitutDaten
     }
 
     /**
-     * Liefert die komplette Liste der Grundbücher aus OSPlus
-     * @return Die komplette Liste der Grundbücher
+     * Liefert die komplette Liste der Grundbï¿½cher aus OSPlus
+     * @return Die komplette Liste der Grundbï¿½cher
      */
     public ArrayList<OSPGrundbuch> getListeGrundbuecher() 
     {
@@ -260,8 +261,8 @@ public class OSPInstitutDaten
     }
 
     /**
-     * Setzt die komplette Liste der Grundbücher aus OSPlus
-     * @param pvListeGrundbuecher Die zu setzende komplette Liste der Grundbücher
+     * Setzt die komplette Liste der Grundbï¿½cher aus OSPlus
+     * @param pvListeGrundbuecher Die zu setzende komplette Liste der Grundbï¿½cher
      */
     public void setListeGrundbuecher(ArrayList<OSPGrundbuch> pvListeGrundbuecher) 
     {
@@ -269,8 +270,8 @@ public class OSPInstitutDaten
     }
     
     /**
-     * Fügt ein Grundbuch aus OSPlus der Liste hinzu
-     * @param pvGb Das einzufügende Grundbuch
+     * Fï¿½gt ein Grundbuch aus OSPlus der Liste hinzu
+     * @param pvGb Das einzufï¿½gende Grundbuch
      */
     public void addListeGrundbuecher(OSPGrundbuch pvGb)
     {
@@ -298,7 +299,7 @@ public class OSPInstitutDaten
     /**
      * Liefert die Institutskennung
      * @param pvKontonummer Kontonummer zum gesuchten Konto
-     * @return Die zugehörige Institutsnummer zum Konto
+     * @return Die zugehï¿½rige Institutsnummer zum Konto
      */
     public String getInstitutskennung(String pvKontonummer)
     {
@@ -319,7 +320,7 @@ public class OSPInstitutDaten
     /**
      * Liefert die Kundennummer 
      * @param pvKontonummer Kontonummer zum gesuchten Konto
-     * @return Die zugehörige Kundennummer zum Konto
+     * @return Die zugehï¿½rige Kundennummer zum Konto
      */
     public String getKundennummer(String pvKontonummer)
     {
@@ -359,9 +360,9 @@ public class OSPInstitutDaten
     }
 
     /**
-     * Liefert ein Vermögensobjekt aus OSPlus
-     * @param pvString Die Vermögensobjekt-Nr des zu suchenden Vermögensobjekt
-     * @return Das gefundene Vermögensobjekt
+     * Liefert ein Vermï¿½gensobjekt aus OSPlus
+     * @param pvString Die Vermï¿½gensobjekt-Nr des zu suchenden Vermï¿½gensobjekt
+     * @return Das gefundene Vermï¿½gensobjekt
      */
     public OSPVermoegensobjekt getVermoegensobjekt(String pvString) 
     {
@@ -397,9 +398,9 @@ public class OSPInstitutDaten
     }
     
     /**
-     * Prüft die Statistikdaten, ob diese mit den tatsächlich gelieferten
-     * Datenanzahlen übereinstimmt.
-     * @return true - Daten stimmen überein; false - Daten inkonsistent
+     * Prï¿½ft die Statistikdaten, ob diese mit den tatsï¿½chlich gelieferten
+     * Datenanzahlen ï¿½bereinstimmt.
+     * @return true - Daten stimmen ï¿½berein; false - Daten inkonsistent
      */
     public boolean checkStatistik()
     {
@@ -418,13 +419,13 @@ public class OSPInstitutDaten
         
         if (ivSicherheitenStatistik.getAnzahlVermoegensobjekte() != ivListeVermoegensobjekte.size())
         {
-            System.out.println("Ungleiche Vermögensobjekteanzahl: " + ivSicherheitenStatistik.getAnzahlVermoegensobjekte() + "!=" + ivListeVermoegensobjekte.size());
+            System.out.println("Ungleiche Vermï¿½gensobjekteanzahl: " + ivSicherheitenStatistik.getAnzahlVermoegensobjekte() + "!=" + ivListeVermoegensobjekte.size());
             lvOkay = false;
         }
 
         if (ivSicherheitenStatistik.getAnzahlGrundbuecher() != ivListeGrundbuecher.size())
         {
-            System.out.println("Ungleiche Grundbücheranzahl: " + ivSicherheitenStatistik.getAnzahlGrundbuecher() + "!=" + ivListeGrundbuecher.size());
+            System.out.println("Ungleiche Grundbï¿½cheranzahl: " + ivSicherheitenStatistik.getAnzahlGrundbuecher() + "!=" + ivListeGrundbuecher.size());
             lvOkay = false;
         }
 

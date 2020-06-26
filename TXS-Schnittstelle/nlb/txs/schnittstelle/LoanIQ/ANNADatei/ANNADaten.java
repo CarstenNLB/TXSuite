@@ -1,6 +1,7 @@
 package nlb.txs.schnittstelle.LoanIQ.ANNADatei;
 
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -108,12 +109,18 @@ public class ANNADaten
 	 * KOMPENSATIONSKENNZEICHEN_QUELLSYSTEM
 	 */
 	private String ivKompensationskennzeichenQuellsystem;
-	
+
+	/**
+	 * log4j-Logger
+	 */
+	private Logger ivLogger;
+
 	/**
 	 * Konstruktor - Initialisiert die Instanzvariablen
 	 */
-    public ANNADaten() 
-    {
+	public ANNADaten(Logger pvLogger)
+	{
+		ivLogger = pvLogger;
 		this.ivIDExternQuellsystem = new String();
 		this.ivInstitutsnummerQuellsystem = new String();
 		this.ivAnwendungsnummerQuellsystem = new String();
@@ -290,7 +297,7 @@ public class ANNADaten
 
 	/**
 	 * Setzt die InstitutsnummerLoanIQ
-	 * @param pvInstitusnummerLoanIQ
+	 * @param pvInstitutsnummerLoanIQ
 	 */
 	public void setInstitutsnummerLoanIQ(String pvInstitutsnummerLoanIQ) 
 	{
@@ -479,17 +486,15 @@ public class ANNADaten
 
 	/**
      * Zerlegt eine Zeile der ANNA-Datei 
-     * @param pvZeile 
-     * @return 
+     * @param pvZeile die zu zerlegende Zeile
      */
-	public boolean parseANNADaten(String pvZeile)
+	public void parseANNADaten(String pvZeile)
 	{
       String lvTemp = new String(); // arbeitsbereich/zwischenspeicher feld
       int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
-      int    lvZzStr=0;              // pointer fuer satzbereich
-     
+
       // steuerung/iteration eingabesatz
-      for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
+      for (int lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
       {
 
         // wenn Trennzeichen erkannt
@@ -505,8 +510,7 @@ public class ANNADaten
            // uebernehmen byte aus eingabesatzposition
            lvTemp = lvTemp + pvZeile.charAt(lvZzStr);
         }
-      } // ende for	
-      return true;
+      } // ende for
 	}
     
     /**
@@ -576,13 +580,13 @@ public class ANNADaten
         	  this.setKompensationskennzeichenQuellsystem(pvWert);
         	  break;
            default:
-              System.out.println("ANNA-Daten: undefiniert - Position: " + pvPos + " Wert: " + pvWert);
+              ivLogger.info("ANNA-Daten: undefiniert - Position: " + pvPos + " Wert: " + pvWert);
         }
     }
     
     /**
      * Liefert einen String mit den Inhalten der ANNA-Daten zurueck
-     * @return 
+     * @return Inhalt der ANNA-Daten
      */
     public String toString()
     {

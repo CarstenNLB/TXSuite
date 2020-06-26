@@ -31,16 +31,24 @@ public class TXSSicherheitPerson implements TXSTransaktion
     private String ivQuelle;
 
     /**
-     *
+     * Konstruktor
      */
     public TXSSicherheitPerson() 
     {
-        this.ivKdnr = new String();
-        this.ivOrg = new String();
-        this.ivQuelle = new String();
+      initTXSSicherheitPerson();
     }
 
-    /**
+   /**
+    * Initialisert die Instanzvariablen mit leeren Strings
+    */
+   public void initTXSSicherheitPerson()
+   {
+     this.ivKdnr = new String();
+     this.ivOrg = new String();
+     this.ivQuelle = new String();
+   }
+
+   /**
      * @return the kdnr
      */
     public String getKdnr() {

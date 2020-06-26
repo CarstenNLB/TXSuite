@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * @author tepperc
  *
  */
+@Deprecated
 public class KontoListe extends ArrayList<String>
 {
     /**
@@ -29,7 +30,7 @@ public class KontoListe extends ArrayList<String>
         String lvHelpKontonummer;
         for (int x = 0; x < this.size();x++)
         {
-            lvHelpKontonummer = (String)this.get(x);
+            lvHelpKontonummer = this.get(x);
             if (lvHelpKontonummer.equals(pvNr))
             {
                  return true;
@@ -48,7 +49,7 @@ public class KontoListe extends ArrayList<String>
         String lvHelpKontonummer;
         for (int x = 0; x < this.size();x++)
         {
-            lvHelpKontonummer = (String)this.get(x);
+            lvHelpKontonummer = this.get(x);
             if (lvHelpKontonummer.equals(pvNr))
             {
                  this.remove(x);

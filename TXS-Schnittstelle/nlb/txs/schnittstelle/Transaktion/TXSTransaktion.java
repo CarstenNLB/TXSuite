@@ -9,9 +9,9 @@ package nlb.txs.schnittstelle.Transaktion;
  */
 public abstract interface TXSTransaktion 
 {
-   /**
-    * TXSTransaktionStart in einen StringBuffer schreiben
-    */
+	/**
+	 * TXSTransaktionStart in einen StringBuffer schreiben
+	 */
 	public abstract StringBuffer printTXSTransaktionStart();
 	
 	/**

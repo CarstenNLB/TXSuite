@@ -19,6 +19,7 @@ import org.apache.log4j.xml.DOMConfigurator;
  *
  * Zum Lesen und Schreiben der XML-Dateien wird jdom benutzt.
  */
+@Deprecated
 public class MAVIS 
 {
 
@@ -44,7 +45,7 @@ public class MAVIS
         {
             System.out.println("Starten:");
             System.out.println("MAVIS <ini-Datei>");
-            System.exit(0);
+            System.exit(1);
         }
         else
         {

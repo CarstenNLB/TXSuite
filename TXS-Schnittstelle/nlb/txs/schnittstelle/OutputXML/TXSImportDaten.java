@@ -10,6 +10,7 @@ package nlb.txs.schnittstelle.OutputXML;
  * @author tepperc
  *
  */
+@Deprecated
 public class TXSImportDaten 
 {
     /**
@@ -18,7 +19,7 @@ public class TXSImportDaten
      */
     public String printTXSImportDatenStart()
     {
-      return new String("<txsi:importdaten xmlns:txsi=\"http://agens.com/txsimport.xsd\">\n");
+      return "<txsi:importdaten xmlns:txsi=\"http://agens.com/txsimport.xsd\">\n";
     }
 
     /**
@@ -27,7 +28,6 @@ public class TXSImportDaten
      */
     public String printTXSImportDatenEnde()
     {
-      return new String("</txsi:importdaten>");
+      return "</txsi:importdaten>";
     }
-   
 }

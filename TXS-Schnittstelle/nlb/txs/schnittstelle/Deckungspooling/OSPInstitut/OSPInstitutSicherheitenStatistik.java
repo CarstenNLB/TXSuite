@@ -12,6 +12,7 @@ import nlb.txs.schnittstelle.Utilities.StringKonverter;
  * @author tepperc
  *
  */
+@Deprecated
 public class OSPInstitutSicherheitenStatistik 
 {
     /**

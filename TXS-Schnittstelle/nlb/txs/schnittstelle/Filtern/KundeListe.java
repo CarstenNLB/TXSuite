@@ -16,34 +16,24 @@ public class KundeListe extends HashSet<String>
 {
 
     /**
-     * 
+     * UID
      */
     private static final long serialVersionUID = 1L;
 
     /**
-     * Überprüft, ob die Kundennummer schon existiert.
-     * @param pvNr 
-     * @return 
+     * Ueberprueft, ob die Kundennummer bereits existiert.
+     * @param pvNr Kundennummer
+     * @return true -> Kundennummer existiert; false -> Kundennummer gibt es noch nicht
      * 
      */
     public boolean containsKunde(String pvNr)
     {
-       /* String lvHelpKundennummer;
-        for (int x = 0; x < this.size(); x++)
-        {
-            lvHelpKundennummer = (String) this.get(x);
-            if (lvHelpKundennummer.equals(pvNr))
-            {
-                return true;
-            }
-        }
-        return false; */
-        return this.contains(pvNr);
+         return this.contains(pvNr);
     }
     
     /**
-     * Fügt eine Kundenummer hinzu
-     * @param pvNr 
+     * Fuegt eine Kundenummer hinzu
+     * @param pvNr Kundennummer
      */
     public void addKunde(String pvNr)
     {

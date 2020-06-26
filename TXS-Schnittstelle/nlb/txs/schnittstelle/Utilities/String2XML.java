@@ -8,7 +8,9 @@ public abstract class String2XML
 	 * @return konvertierter Text/Zeile mit Sonderzeichen im XML-Format
 	 */
 	public static String change2XML(String pvText)
-	{	 	   
+	{
+
+		//System.out.println("Replace-Text: " + pvText);
 		// Ampersand
 		pvText = pvText.replace("&", "&amp;");
 		
@@ -20,7 +22,7 @@ public abstract class String2XML
 		//  text = text.substring(0, text.length() - 1);
 		
 		// Akzent Akut
-		pvText = pvText.replace("´", "&#180;");
+		pvText = pvText.replace("Â´", "&#180;");
 		
 		// Slash
 		pvText = pvText.replace("/", "&#47;");
@@ -30,30 +32,30 @@ public abstract class String2XML
 		pvText = pvText.replace(">", "&gt;");
 	
 		// Umlaute
-		pvText = pvText.replace("Ä", "&#196;");
-		pvText = pvText.replace("Ö", "&#214;");
-		pvText = pvText.replace("Ü", "&#220;");
-		pvText = pvText.replace("ä", "&#228;");
-		pvText = pvText.replace("ö", "&#246;");
-		pvText = pvText.replace("ü", "&#252;");
-		pvText = pvText.replace("ß", "&#223;");
+		pvText = pvText.replace("Ã„", "&#196;");
+		pvText = pvText.replace("Ã–", "&#214;");
+		pvText = pvText.replace("Ãœ", "&#220;");
+		pvText = pvText.replace("Ã¤", "&#228;");
+		pvText = pvText.replace("Ã¶", "&#246;");
+		pvText = pvText.replace("Ã¼", "&#252;");
+		pvText = pvText.replace("ÃŸ", "&#223;");
 		
 		// Franzoesische Umlaute
-		pvText = pvText.replace("â", "&#226;");
-		pvText = pvText.replace("á", "&#225;");
-		pvText = pvText.replace("à", "&#224;");
+		pvText = pvText.replace("Ã¢", "&#226;");
+		pvText = pvText.replace("Ã¡", "&#225;");
+		pvText = pvText.replace("Ã ", "&#224;");
 		
-		pvText = pvText.replace("ê", "&#234;");
-		pvText = pvText.replace("é", "&#233;");
-		pvText = pvText.replace("è", "&#232;");
+		pvText = pvText.replace("Ãª", "&#234;");
+		pvText = pvText.replace("Ã©", "&#233;");
+		pvText = pvText.replace("Ã¨", "&#232;");
 		
-		pvText = pvText.replace("î", "&#238;");
-		pvText = pvText.replace("í", "&#237;");
-		pvText = pvText.replace("ì", "&#236;");
+		pvText = pvText.replace("Ã®", "&#238;");
+		pvText = pvText.replace("Ã­", "&#237;");
+		pvText = pvText.replace("Ã¬", "&#236;");
 		
-		pvText = pvText.replace("û", "&#251;");
-		pvText = pvText.replace("ú", "&#250;");
-		pvText = pvText.replace("ù", "&#249;");
+		pvText = pvText.replace("Ã»", "&#251;");
+		pvText = pvText.replace("Ãº", "&#250;");
+		pvText = pvText.replace("Ã¹", "&#249;");
 		
 		return pvText;
 	}

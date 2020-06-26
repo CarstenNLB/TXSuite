@@ -1,50 +1,73 @@
 package nlb.txs.schnittstelle.Utilities;
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+/**
+ * In dieser Klasse sind Datum Hilfsfunktionen.
+ * @author Carsten Tepper
+ */
 public abstract class DatumUtilities 
 {	
 	/**
-	 * @param pvDatum zu konvertierendes Datum
-	 * @return konvertierte Datum
+	 * Konvertiert das Datum im Format 'TT.MM.JJJJ' in das TXS-Format 'JJJJ-MM-TT'
+	 * @param pvDatum zu konvertierendes Datum im Format 'TT.MM.JJJJ'
+	 * @return konvertiertes Datum im TXS-Format 'JJJJ-MM-TT'
 	 */
 	public static String changeDate(String pvDatum)
 	{
 		String lvNeuesDatum = pvDatum;
-		if (pvDatum.length() > 0)
+
+		try
 		{
-		  lvNeuesDatum = pvDatum.substring(6,10)
+		  if (pvDatum.length() > 0)
+		  {
+		    lvNeuesDatum = pvDatum.substring(6,10)
                          + "-" + pvDatum.substring(3,5)
                          + "-" + pvDatum.substring(0,2);
+		  }
 		}
+		catch (Exception exp)
+		{
+			System.out.println("Konnte Datum '" + pvDatum + "' nicht umwandeln!");
+		}
+
 		return lvNeuesDatum;
 	}
 	
 	/**
-	 * @param pvDatum zu konvertierendes Datum
-	 * @return konvertierte Datum
+	 * Konvertiert das Datum im Format 'JJJJMMTT' in das Format 'TT.MM.JJJJ'
+	 * @param pvDatum zu konvertierendes Datum im Format 'JJJJMMTT'
+	 * @return konvertiertes Datum im Format 'TT.MM.JJJJ'
 	 */
 	public static String changeDatePoints(String pvDatum)
 	{
 		String lvNeuesDatum = pvDatum;
-		if (pvDatum.length() > 0)
+
+		try
 		{
-			lvNeuesDatum = pvDatum.substring(6,8)
-					       + "." + pvDatum.substring(4,6)
-					       + "." + pvDatum.substring(0,4);
+		  if (pvDatum.length() > 0)
+		  {
+			  lvNeuesDatum = pvDatum.substring(6,8)
+				   	       + "." + pvDatum.substring(4,6)
+					         + "." + pvDatum.substring(0,4);
+		  }
 		}
+		catch (Exception exp)
+		{
+			System.out.println("Konnte Datum '" + pvDatum + "' nicht umwandeln!");
+		}
+
 		return lvNeuesDatum;
 	}
 	
 	/**
 	 * Erzeugt einen Timestamp
-	 * @param pvDatum 
-	 * @param pvZeit 
-	 * @return
+	 * @param pvDatum Datum im Format 'JJJJMMTT'
+	 * @param pvZeit Uhrzeit im Format 'SSMMss' (Stunden Minuten Sekunden)
+	 * @return Einen Zeitstempel im Format 'JJJJ-MM-TTTSS:MM:ssZ'
 	 */
 	public static String createTimestamp(String pvDatum, String pvZeit)
 	{
@@ -61,20 +84,21 @@ public abstract class DatumUtilities
 	 * @param pvFile Verweis auf eine Datei
 	 * @return das Datum aus dem Dateinamen
 	 */
+	/*
 	public static String getFileDate(File pvFile)
 	{
-		System.out.println(pvFile.getName());
+		//System.out.println(pvFile.getName());
 		Date lvFileDate = new Date(pvFile.lastModified());
-		System.out.println(lvFileDate.toString());
+		//System.out.println(lvFileDate.toString());
 		return "";
-	}
+	} */
 	
 	/**
-	 * Berechnet die Differenztage zwischen zwei Datum.
+	 * Berechnet die Differenztage zwischen einem Start- und einem Endedatum
 	 * Das Startdatum muss immer kleiner als das Endedatum sein.
-	 * @param pvStartDatum Startdatum
-	 * @param pvEndeDatum Endedatum
-	 * @return 
+	 * @param pvStartDatum Startdatum Startdatum
+	 * @param pvEndeDatum Endedatum Endedatum
+	 * @return Die Differenztage zwischen Start- und Endedatum
 	 */
 	public static int calculateDays(String pvStartDatum, String pvEndeDatum)
 	{
@@ -103,15 +127,14 @@ public abstract class DatumUtilities
         // Berechnet die Differenztage
 	    lvDifferenzTage = lvDiff / (24 * 60 * 60 * 1000);
 	   
-	    // Liefert das Ergebnis (Datentyp int) zurück
+	    // Liefert das Ergebnis (Datentyp int) zurueck
 	    return (int)lvDifferenzTage;
 	}
 	
 	/**
-	 * Berechnet die Differenztage zwischen dem '01.01.1900' und 
-	 * dem übergebenen Datum.
-	 * @param pvDatum 
-	 * @return 
+	 * Berechnet die Differenztage zwischen dem '01.01.1900' und dem uebergebenen Datum.
+	 * @param pvDatum Datum
+	 * @return Die Differenztage zwischen '01.01.1900' und dem uebergebenen Datum
 	 */
 	public static int berechneAnzahlTage(String pvDatum)
 	{
@@ -124,35 +147,31 @@ public abstract class DatumUtilities
 	    if (pvDatum.equals(lvSonderJahr1) ||
 	        pvDatum.equals(lvSonderJahr2) ||
 	        pvDatum.equals(lvSonderJahr3))
-	    { /* Sonderfall */
+	    { // Sonderfall
 	     lvHelpInt = 0;
-	    } /* Sonderfall */
+	    } // Sonderfall
 	    else
 	    {
-	    //if (datum != null)
-	    //{
 	      // Datum im Format JJJJMMTT umwandeln in TT.MM.JJJJ
 	      if (pvDatum.length() == 8)
 	      {
 	        pvDatum = pvDatum.substring(6, 8) + "." + pvDatum.substring(4, 6) + "." + pvDatum.substring(0,4);
 	      }
-	      //System.out.println("Datum: " + datum);
-	   
+
 	      lvHelpInt = calculateDays("01.01.1900", pvDatum);
 	    }
-	    //else
+
 	    return lvHelpInt;
 	}
 	
 	/**
-	 * @param pvDatum 
-	 * @return 
-	 * 
+	 * Ermittelt den Buchungstag plus 2 Tage
+	 * @param pvDatum Buchungsdatum
+	 * @return Buchungsdatum plus 2 Tage
 	 */
 	public static String berechneBuchungstagPlus2(String pvDatum)
 	{
-	    //System.out.println("Buchungsdatum: " + datum);
-        String lvHelpDatum = new String(); 
+		  String lvHelpDatum = new String();
 
 	    if (pvDatum != null)
 	    {
@@ -189,15 +208,15 @@ public abstract class DatumUtilities
 	       //System.out.println("Buchungstag + 2: " + calHelper.printDate(cal));
 	       lvHelpDatum = DatumUtilities.printDate(lvCal);
 	     }
-	    //System.out.println(helpDatum);
+
 	    return lvHelpDatum;
 	}
 	
-	/**
-     * @param pvDatum 
-     * @return 
-     * 
-     */
+	 /**
+	  * Addiert einen Tag auf das uebergebene Datum ohne jegliche Pruefung
+	  * @param pvDatum Datum
+	  * @return Datum plus ein Tag
+	  */
     public static String addTagOhnePruefung(String pvDatum)
     {
         String lvHelpDatum = new String();
@@ -206,9 +225,7 @@ public abstract class DatumUtilities
         {
            lvHelpDatum = changeDatePoints(pvDatum);   
         }
-       
-        //System.out.println("Alte Datum: " + helpDatum);
-        
+
         Calendar lvCal = Calendar.getInstance();
         // Setzt das Datum
         lvCal.clear();
@@ -217,20 +234,16 @@ public abstract class DatumUtilities
                 (new Integer(lvHelpDatum.substring(0,2))).intValue());
         // plus 1.Tag
         lvCal.add(Calendar.DAY_OF_MONTH, 1);
-        //CalendarHelper ch = new CalendarHelper();
-        //while (!ch.isWorkingDay(cal))
-        //{
-        //  cal.add(Calendar.DAY_OF_MONTH, 1);   
-        //}
+
         lvHelpDatum = printDate(lvCal);
         
-        //System.out.println("Neue Datum: " + helpDatum);
         return lvHelpDatum;
     }
 	
 	/**
-     * @param lvDatum 
-     * @return 
+	 * Addiert einen Tag auf das uebergebene Datum mit Pruefung auf Arbeitstag
+     * @param lvDatum Datum
+     * @return Datum des nÃ¤chsten Arbeitstag
      * 
      */
     public static String addTag(String lvDatum)
@@ -241,9 +254,7 @@ public abstract class DatumUtilities
         {
            lvHelpDatum = changeDatePoints(lvDatum);   
         }
-       
-        //System.out.println("Alte Datum: " + helpDatum);
-        
+
         Calendar lvCal = Calendar.getInstance();
         // Setzt das Datum
         lvCal.clear();
@@ -259,21 +270,19 @@ public abstract class DatumUtilities
         }
         lvHelpDatum = printDate(lvCal);
         
-        //System.out.println("Neue Datum: " + helpDatum);
         return lvHelpDatum;
     }
     
     /**
-     * 
-     * @param pvCal
-     * @return
+     * Formatiert das Datum
+     * @param pvCal Ein Calendar-Objekt
+     * @return formatiertes Datum als String
      */
     private static String printDate(Calendar pvCal)
     { 
         SimpleDateFormat lvSdf = new SimpleDateFormat(); 
         lvSdf.applyPattern( "yyyyMMdd"); //dd.MM.yyyy" ); 
-        return lvSdf.format(pvCal.getTime()); 
-                
+        return lvSdf.format(pvCal.getTime());
     }
     
     /**
@@ -353,9 +362,9 @@ public abstract class DatumUtilities
     }
 
     /**
-     * 
-     * @param pvDatum_ein
-     * @return
+     * Formatiert das Datum
+     * @param pvDatum_ein Datum
+     * @return formatiertes Datum
      */
     public static String FormatDatum(String pvDatum_ein)
     {
@@ -376,7 +385,7 @@ public abstract class DatumUtilities
        {
          lvDate = lvSdfein.parse (pvDatum_ein);
        } 
-       catch (ParseException lvException) 
+       catch (ParseException lvException)
        {
          lvException.printStackTrace();
        }  
@@ -385,5 +394,4 @@ public abstract class DatumUtilities
        
        return (lvDatum_aus); 
     }
-
 }

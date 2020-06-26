@@ -10,11 +10,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import nlb.txs.schnittstelle.Darlehen.DarlehenVerarbeiten;
-import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
 import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Sicherheit;
 import nlb.txs.schnittstelle.Deckungspooling.Sicherheiten.OSPKonto;
 import nlb.txs.schnittstelle.Deckungspooling.Sicherheiten.OSPSicherheit;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
 import nlb.txs.schnittstelle.Utilities.MappingMIDAS;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
@@ -59,9 +58,17 @@ public class TXSKreditSicherheit implements TXSTransaktion
     private String ivZuwbetrag;
 
     /**
-     * Konstruktor - Initialisiert die Variablen mit leeren Strings
+     * Konstruktor
      */
     public TXSKreditSicherheit() 
+    {
+        initTXSKreditSicherheit();
+    }
+
+    /**
+     *  Initialisiert die Variablen mit leeren Strings
+     */
+    public void initTXSKreditSicherheit()
     {
         this.ivHauptsh = new String();
         this.ivKey = new String();
@@ -209,7 +216,7 @@ public class TXSKreditSicherheit implements TXSTransaktion
      * @param pvLogger 
      * @return 
      */
-    public boolean importDarlehen(int pvModus, Darlehen pvDarlehen, Sicherheit pvSicherheit, Logger pvLogger)
+    public boolean importDarlehen(int pvModus, nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen, Sicherheit pvSicherheit, Logger pvLogger)
     {
         BigDecimal lvWork = new BigDecimal("0.0");
         BigDecimal lvBuerge_Fakt = new BigDecimal("1.0");
@@ -254,9 +261,9 @@ public class TXSKreditSicherheit implements TXSTransaktion
         //BigDecimal lvZuwBetragBu = new BigDecimal("0.0");
         BigDecimal lvZuwBetragRe = new BigDecimal("0.0");
         if (pvDarlehen.getKredittyp().equals("1"))
-        { /* ohne Bürge .. alles */
+        { /* ohne Bï¿½rge .. alles */
             lvZuwBetragRe  = lvZuwBetrag;
-        } /* ohne Bürge .. alles */
+        } /* ohne Bï¿½rge .. alles */
 
         this.ivKey = "SH_DARL" + pvSicherheit.getObjektnummer(); //+ "_" + sicherheit.getKontonummer();
         this.ivOrg = ValueMapping.changeMandant(pvDarlehen.getInstitutsnummer());
@@ -308,7 +315,7 @@ public class TXSKreditSicherheit implements TXSTransaktion
      * @param pvLogger 
      * @return
      */
-    public boolean importDarlehen(int pvModus, Darlehen pvDarlehen, Logger pvLogger) 
+    public boolean importDarlehen(int pvModus, nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen, Logger pvLogger)
     {
         BigDecimal lvBtrDivHd = new BigDecimal("0.01");
 
@@ -318,12 +325,12 @@ public class TXSKreditSicherheit implements TXSTransaktion
         BigDecimal lvKonEigenRKAP_Fakt = new BigDecimal("1.0");
                 
         if (pvDarlehen.getKredittyp().equals("4"))
-        { /* mit Bürge .. anteilig */
+        { /* mit Bï¿½rge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) != 0.0)
          { /* nichts da */
           lvBuerge_Fakt = lvBtrDivHd.multiply(StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftProzent()));
          } /* etwas da */
-        } /* mit Bürge .. anteilig */
+        } /* mit Bï¿½rge .. anteilig */
         /* Konsortiale ..... Summe der anderen, nur bei korrektem Schl.... */
         if (StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) > 0 &&
                 StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) < 20)
@@ -358,9 +365,9 @@ public class TXSKreditSicherheit implements TXSTransaktion
         BigDecimal lvSollBetrag = StringKonverter.convertString2BigDecimal(pvDarlehen.getSolldeckung()).multiply(lvKonEigenUKAP_Fakt);        
 
         //BigDecimal lvZuwBetragBu = new BigDecimal("0.0");
-        /* Da Fall 'D' schon vorher über Faktor verrechnet wurde ....
-        hier keine Unterscheidung mehr, dafür wird dann aber nur
-        der Bürge geschrieben ! .................................. */
+        /* Da Fall 'D' schon vorher ï¿½ber Faktor verrechnet wurde ....
+        hier keine Unterscheidung mehr, dafï¿½r wird dann aber nur
+        der Bï¿½rge geschrieben ! .................................. */
         BigDecimal lvZuwBetragRe = new BigDecimal("0.0");
         lvZuwBetragRe  = StringKonverter.convertString2BigDecimal(pvDarlehen.getZuweisungsbetrag());
         
@@ -424,7 +431,7 @@ public class TXSKreditSicherheit implements TXSTransaktion
      * @param pvLogger 
      * @return
      */
-    public boolean importDarlehen(Darlehen pvDarlehen, OSPKonto pvKonto, OSPSicherheit pvSicherheit, String pvInstitut, Logger pvLogger) 
+    public boolean importDarlehen(nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen, OSPKonto pvKonto, OSPSicherheit pvSicherheit, String pvInstitut, Logger pvLogger)
     {        
         if (pvSicherheit == null)
         {
@@ -454,17 +461,33 @@ public class TXSKreditSicherheit implements TXSTransaktion
      * @param pvLogger 
      * @return
      */
-    public boolean importDarlehen(DarlehenLoanIQ pvDarlehen, String pvInstitutsnummer, Logger pvLogger) 
+    public boolean importDarlehen(Darlehen pvDarlehen, String pvInstitutsnummer, Logger pvLogger)
     {
         this.ivKey = pvDarlehen.getBuergennummer() + "_" + pvDarlehen.getKontonummer();
         this.ivOrg = ValueMapping.changeMandant(pvInstitutsnummer);
+
         if (pvDarlehen.getDeckungsschluessel().equals("A"))
         {
-          this.ivQuelle = "ALIQOEPG";   
+          if (pvDarlehen.getQuellsystem().equals("LOANIQ"))
+          {
+            this.ivQuelle = "ALIQOEPG";
+          }
+          if (pvDarlehen.getQuellsystem().equals("IWHS"))
+          {
+              this.ivQuelle = "AAZ6OEPG";
+          }
         }
         else
         {
-          this.ivQuelle = "ALIQPFBG";
+            if (pvDarlehen.getQuellsystem().equals("LOANIQ"))
+            {
+                this.ivQuelle = "ALIQPFBG";
+            }
+            if (pvDarlehen.getQuellsystem().equals("IWHS"))
+            {
+                this.ivQuelle = "AAZ6PFBG";
+            }
+
         }
         // MIDAS-Daten(Key und Quelle) setzen
         if (pvDarlehen.getQuellsystem().startsWith("MID"))
@@ -475,20 +498,20 @@ public class TXSKreditSicherheit implements TXSTransaktion
 
         this.ivWhrg = pvDarlehen.getBetragwaehrung();
         // Buergschaftprozent
-        BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+      ////  BigDecimal lvHelpFaktor = new BigDecimal("100.0");
+    	////BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
 
-    	System.out.println("Solldeckung: " + pvDarlehen.getSolldeckung());
-    	System.out.println("Buergschaftprozent: " + pvDarlehen.getBuergschaftprozent());
+    	////System.out.println("Solldeckung: " + pvDarlehen.getSolldeckung());
+    	////System.out.println("Buergschaftprozent: " + pvDarlehen.getBuergschaftprozent());
     	
-    	if (lvBuergschaftprozent.doubleValue() > 0.0)
-    	{
-    		this.ivZuwbetrag = (StringKonverter.convertString2BigDecimal(pvDarlehen.getSolldeckung())).multiply(lvBuergschaftprozent).toString();
-    	}
-    	else
-    	{
+    	////if (lvBuergschaftprozent.doubleValue() > 0.0)
+    	////{
+    	////	this.ivZuwbetrag = (StringKonverter.convertString2BigDecimal(pvDarlehen.getSolldeckung())).multiply(lvBuergschaftprozent).toString();
+    	////}
+    	////else
+    	////{
     		this.ivZuwbetrag = pvDarlehen.getSolldeckung(); 
-    	}
+    	////}
         
         return true;
     }
@@ -499,7 +522,7 @@ public class TXSKreditSicherheit implements TXSTransaktion
      * @param pvLogger 
      * @return
      */
-    public boolean importMIDAS(DarlehenLoanIQ pvDarlehen, String pvInstitutsnummer, Logger pvLogger) 
+    public boolean importMIDAS(Darlehen pvDarlehen, String pvInstitutsnummer, Logger pvLogger)
     {
         // MIDAS-Daten(Key und Quelle) setzen
         this.ivKey = pvDarlehen.getBuergennummer() + "_"  + MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen.getKontonummer());

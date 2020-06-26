@@ -6,18 +6,16 @@
 
 package nlb.txs.schnittstelle.Transaktion;
 
-import org.apache.log4j.Logger;
-
 import nlb.txs.schnittstelle.Darlehen.DarlehenVerarbeiten;
-import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
-import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.DarlehenPassiv.Daten.LoanIQPassivDaten;
-import nlb.txs.schnittstelle.Utilities.MappingDPP;
+import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
+import nlb.txs.schnittstelle.Termingeld.Daten.Termingeld;
 import nlb.txs.schnittstelle.Utilities.MappingKunde;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
+import org.apache.log4j.Logger;
 
 
 /**
@@ -159,7 +157,7 @@ public class TXSKreditKunde implements TXSTransaktion
      * @param pvDarlehen
      * @return
      */
-    public boolean importDarlehen(int pvModus, Darlehen pvDarlehen) 
+    public boolean importDarlehen(int pvModus, nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen)
     {
         this.ivKdnr = pvDarlehen.getKundennummer();
         this.ivOrg = ValueMapping.changeMandant(pvDarlehen.getInstitutsnummer());
@@ -169,6 +167,7 @@ public class TXSKreditKunde implements TXSTransaktion
            case DarlehenVerarbeiten.FLUGZEUGE:
            case DarlehenVerarbeiten.SCHIFFE:
            case DarlehenVerarbeiten.OEPG:
+            case DarlehenVerarbeiten.KEV:
            //case DarlehenVerarbeiten.ALT:
                this.ivQuelle = "KUNDE";
                break;
@@ -186,15 +185,15 @@ public class TXSKreditKunde implements TXSTransaktion
 
     /**
      * Importiert den Kreditnehmer aus LoanIQ
-     * @param pvDarlehenLoanIQBlock
+     * @param pvDarlehenBlock
      * @param pvVorlaufsatz 
      * @return
      */
-    public boolean importLoanIQ(DarlehenLoanIQBlock pvDarlehenLoanIQBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger) 
+    public boolean importLoanIQ(DarlehenBlock pvDarlehenBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
     {
-    	DarlehenLoanIQ lvHelpDarlehenLoanIQ = pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto();
+    	Darlehen lvHelpDarlehen = pvDarlehenBlock.getDarlehenNetto();
     	
-        this.ivKdnr = MappingKunde.extendKundennummer(lvHelpDarlehenLoanIQ.getKundennummer(), pvLogger);
+        this.ivKdnr = MappingKunde.extendKundennummer(lvHelpDarlehen.getKundennummer(), pvLogger);
         this.ivOrg = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
         this.ivQuelle = "KUNDE";
         this.ivRolle = "0";
@@ -205,7 +204,7 @@ public class TXSKreditKunde implements TXSTransaktion
     /**
      * Importiert die PassivDaten aus LoanIQ
      * @param pvPassivDaten
-     * @param pvInstiututsnummer
+     * @param pvInstitutsnummer
      */
     public boolean importLoanIQPassiv(LoanIQPassivDaten pvPassivDaten, String pvInstitutsnummer)
     {
@@ -222,13 +221,13 @@ public class TXSKreditKunde implements TXSTransaktion
     
     /**
      * Importiert den Kreditnehmer aus MIDAS
-     * @param pvDarlehenLoanIQ
+     * @param pvDarlehen
      * @param pvVorlaufsatz 
      * @return
      */
-    public boolean importMIDAS(DarlehenLoanIQ pvDarlehenLoanIQ, Vorlaufsatz pvVorlaufsatz) 
+    public boolean importMIDAS(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz)
     {
-        this.ivKdnr = MappingDPP.extendKundennummer(pvDarlehenLoanIQ.getKundennummer());
+        this.ivKdnr = MappingKunde.extendKundennummer(pvDarlehen.getKundennummer(), null);
         this.ivOrg = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
         this.ivQuelle = "KUNDE";
         this.ivRolle = "0";
@@ -248,6 +247,54 @@ public class TXSKreditKunde implements TXSTransaktion
     	this.ivRolle = "0";
     	
     	return true;
+    }
+
+    /**
+     * Importiert die Wertpapier-Informationen fuer KEV
+     * @return
+     */
+    public boolean importKEVWertpapier(Bestandsdaten pvBestandsdaten, String pvInstitutsnummer)
+    {
+        this.ivKdnr = pvBestandsdaten.getKundennummer();
+        this.ivOrg = ValueMapping.changeMandant(pvInstitutsnummer);
+        this.ivQuelle = "KUNDE";
+        this.ivRolle = "0";
+
+        return true;
+    }
+
+
+    /**
+     * Importiert den Kreditnehmer aus LoanIQ fuer KEV
+     * @param pvDarlehen
+     * @param pvVorlaufsatz
+     * @return
+     */
+    public boolean importKEVLoanIQ(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz)
+    {
+        this.ivKdnr = MappingKunde.extendKundennummer(pvDarlehen.getKundennummer(), null);
+        this.ivOrg = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
+        this.ivQuelle = "KUNDE";
+        this.ivRolle = "0";
+
+        return true;
+    }
+
+    /**
+     * Importiert die Termingeldinformationen
+     * @param pvTermingeld Termingeld
+     * @param pvVorlaufsatz Vorlaufsatz
+     * @param pvLogger log4j-Logger
+     * @return
+     */
+    public boolean importTermingeld(Termingeld pvTermingeld, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    {
+        this.ivKdnr = pvTermingeld.getGeschaeftspartnernummer();
+        this.ivOrg = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
+        this.ivQuelle = "KUNDE";
+        this.ivRolle = "0";
+
+        return true;
     }
 
 }

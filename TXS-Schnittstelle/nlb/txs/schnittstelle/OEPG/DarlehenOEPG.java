@@ -18,8 +18,8 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
 public class DarlehenOEPG 
 {
     /**
-     * Startroutine DarKa
-     * @param argv 
+     * Startroutine DarlehenOEPG
+     * @param argv Uebergabeparameter
      */
     public static void main(String argv[])
     { 

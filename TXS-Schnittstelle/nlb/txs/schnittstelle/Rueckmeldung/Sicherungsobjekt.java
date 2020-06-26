@@ -9,9 +9,11 @@ package nlb.txs.schnittstelle.Rueckmeldung;
 import java.util.LinkedList;
 
 /**
+ * Diese Klasse wurde in der alten Ruckmeldung an SAP CMS verwendet.
+ * An ihre Stelle wird in der neuen Rueckmeldung an SAP CMS die Klasse 'RueckmeldeTripel' verwendet.
  * @author tepperc
- *
  */
+@Deprecated
 public class Sicherungsobjekt 
 {
     /**

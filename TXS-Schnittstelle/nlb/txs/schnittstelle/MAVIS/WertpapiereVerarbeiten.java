@@ -10,9 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-
-import org.apache.log4j.Logger;
-
+import java.util.HashMap;
 import nlb.txs.schnittstelle.Kunde.KundennummernOutput;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeft;
@@ -26,8 +24,10 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
 import nlb.txs.schnittstelle.Utilities.MappingKunde;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
+import nlb.txs.schnittstelle.Wertpapier.Bestand.DepotSummierung;
 import nlb.txs.schnittstelle.Wertpapier.Gattungsdaten.Gattung;
 import nlb.txs.schnittstelle.Wertpapier.Gattungsdaten.Gattungsdaten;
+import org.apache.log4j.Logger;
 
 /**
  * In dieser Klasse werden die Bestands- und Gattungsdaten aus MAVIS eingelesen und verarbeitet.
@@ -73,7 +73,12 @@ public class WertpapiereVerarbeiten
      * Quellsystem-Datei fuer die FRISCO-Verarbeitung
      */
     private String ivCashflowQuellsystemDatei;
-    
+
+    /**
+     * Name der Rueckmeldedaten-Datei
+     */
+    private String ivRueckmeldungMAVIS;
+
     /**
      * FileOutputStream fuer CashflowQuellsystem-Datei
      */
@@ -104,6 +109,7 @@ public class WertpapiereVerarbeiten
     private int ivAnzahlH = 0;
     private int ivAnzahlF = 0;
     private int ivAnzahlS = 0;
+    private int ivAnzahlO = 0;
 
     /**
      * TXS-Importdatei
@@ -130,11 +136,21 @@ public class WertpapiereVerarbeiten
     private Gattung ivGattung;
     
     /**
-	 * Gattungsdaten
-	 */
-	private Gattungsdaten ivGattungsdaten;
-	
-	/**
+	   * Gattungsdaten
+	   */
+	  private Gattungsdaten ivGattungsdaten;
+
+    /**
+     * Liste der RueckmeldeDaten
+     */
+    private HashMap<String, RueckmeldeDatenMAVIS> ivListeRueckmeldeDaten;
+
+    /**
+     * Summierung bei mehreren Depots
+     */
+    private DepotSummierung ivDepotSummierung;
+
+    /**
 	 * Konstruktor
 	 * @param pvReader
 	 */
@@ -284,11 +300,22 @@ public class WertpapiereVerarbeiten
 
               
             // Gattungsdaten einlesen
-    		ivGattungsdaten =  new Gattungsdaten(pvReader, LOGGER_MAVIS);
-            
-            // Verarbeitung starten
-            startVerarbeitung();  
-            
+        		ivGattungsdaten =  new Gattungsdaten(pvReader, LOGGER_MAVIS);
+
+        		// Initialisierung der Liste der RueckmeldeDaten
+            //ivListeRueckmeldeDaten = new HashMap<String, RueckmeldeDatenMAVIS>();
+            // Liest die RueckmeldeDaten aus einer Datei ein
+            //leseRueckmeldeDaten(ivRueckmeldungMAVIS);
+
+            // DepotSummierungDaten initialisieren
+            ivDepotSummierung = new DepotSummierung(LOGGER_MAVIS);
+
+            // Start der Verarbeitung
+            startVerarbeitung();
+
+            // Schreibt die RueckmeldeDaten in eine Datei
+            //schreibeRueckmeldeDaten(ivRueckmeldungMAVIS);
+
             // KundeRequest-Datei schliessen
             ivKundennummernOutput.close();               
        }
@@ -317,7 +344,7 @@ public class WertpapiereVerarbeiten
         // Cashflow-Quellsystem oeffnen (zum Schreiben)
   
         // XML-Datei im TXS-Format
-        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivMAVISOutputDatei);
+        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivMAVISOutputDatei, LOGGER_MAVIS);
         ivOutputDarlehenXML.openXML();
         ivOutputDarlehenXML.printXMLStart();
         ivOutputDarlehenXML.printTXSImportDatenStart();
@@ -345,7 +372,108 @@ public class WertpapiereVerarbeiten
        // KundeRequest-Datei schliessen
         ivKundennummernOutput.close();               
     }
-    
+
+    /**
+     * Einlesen der RueckmeldeDaten aus einer Datei
+     * @param pvDateiname
+     */
+    private void leseRueckmeldeDaten(String pvDateiname)
+    {
+        String lvZeile = null;
+        int lvZaehlerRueckmeldeDaten = 0;
+
+        // Oeffnen der Dateien
+        FileInputStream lvFis = null;
+        File ivFileRueckmeldeDaten = new File(pvDateiname);
+        try
+        {
+            lvFis = new FileInputStream(ivFileRueckmeldeDaten);
+        }
+        catch (Exception e)
+        {
+            LOGGER_MAVIS.error("Konnte RueckmeldeDaten-Datei nicht oeffnen!");
+            return;
+        }
+
+        BufferedReader lvIn = new BufferedReader(new InputStreamReader(lvFis));
+
+        try
+        {
+            while ((lvZeile = lvIn.readLine()) != null)  // Lesen der RueckmeldeDaten
+            {
+                RueckmeldeDatenMAVIS lvRueckmeldeDaten = new RueckmeldeDatenMAVIS();
+
+                lvRueckmeldeDaten.parseRueckmeldeDaten(lvZeile, LOGGER_MAVIS); // Parsen der Felder
+
+                //if (lvRueckmeldeDaten.parseRueckmeldeDaten(lvZeile, LOGGER_MAVIS)) // Parsen der Felder
+                //{
+                lvZaehlerRueckmeldeDaten++;
+                ivListeRueckmeldeDaten.put(lvRueckmeldeDaten.getProdukt(), lvRueckmeldeDaten);
+                //}
+            }
+        }
+        catch (Exception e)
+        {
+            LOGGER_MAVIS.error("Fehler beim Verarbeiten einer Zeile!");
+            LOGGER_MAVIS.error("Zeile: " + lvZeile);
+            e.printStackTrace();
+        }
+
+        try
+        {
+            lvIn.close();
+        }
+        catch (Exception e)
+        {
+            LOGGER_MAVIS.error("Konnte RueckmeldeDaten-Datei nicht schliessen!");
+        }
+
+        LOGGER_MAVIS.info("Anzahl eingelesener RueckmeldeDaten: " + lvZaehlerRueckmeldeDaten);
+    }
+
+    /**
+     * Schreiben der RueckmeldeDaten in eine Datei
+     * @param pvDateiname
+     */
+    private void schreibeRueckmeldeDaten(String pvDateiname)
+    {
+        // Fuer die Ausgabe der Rueckmeldedaten
+        File lvRueckFile = new File(pvDateiname);
+        FileOutputStream lvRueckOut = null;
+
+        try
+        {
+            lvRueckOut = new FileOutputStream(lvRueckFile);
+        }
+        catch (Exception e)
+        {
+            LOGGER_MAVIS.error("Konnte RueckmeldeDaten-Datei " + lvRueckFile +" nicht oeffnen!");
+            return;
+        }
+
+        // Schreibe RueckmeldeDaten in die Datei
+        for (RueckmeldeDatenMAVIS lvRueckmeldeDaten:ivListeRueckmeldeDaten.values())
+        {
+            try
+            {
+                lvRueckOut.write((lvRueckmeldeDaten.toString() + StringKonverter.lineSeparator).getBytes());
+            }
+            catch (Exception e)
+            {
+                LOGGER_MAVIS.error("Fehler beim Rausschreiben der RueckmeldeDaten");
+            }
+        }
+
+        try
+        {
+            lvRueckOut.close();
+        }
+        catch (Exception e)
+        {
+            LOGGER_MAVIS.error("Konnte RueckmeldeDaten-Datei " + lvRueckFile +" nicht schliessen!");
+        }
+    }
+
     /**
      * Einlesen und Verarbeiten der Wertpapier-Bestandsdaten
      */
@@ -412,7 +540,13 @@ public class WertpapiereVerarbeiten
      * Verarbeite Bestandsdaten
      */
     private void verarbeiteBestandsdaten()
-    {  
+    {
+      // CT 20.08.2018 - Sonderverarbeitung bis Aufsummierung von zwei Depots realisiert
+      if (ivBestandsdaten.getProdukt().equals("DE000LFA1602"))
+      {
+          ivBestandsdaten.setNominalbetrag("55000000.0000");
+      }
+
     	ivGattung = ivGattungsdaten.getGattung(ivBestandsdaten.getProdukt());
     	if (ivGattung == null)
     	{
@@ -426,16 +560,19 @@ public class WertpapiereVerarbeiten
     	}
 
         if (ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("K") || ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("H") ||
-        	ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("F")	|| ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("S"))
+            ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("F")	|| ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("S") ||
+            ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("O"))
         {
            ivKundennummernOutput.printKundennummer(MappingKunde.extendKundennummer(ivBestandsdaten.getKundennummer(), LOGGER_MAVIS));
 
+           ivDepotSummierung.addDepotSummierungDaten(ivBestandsdaten.getProdukt(), ivBestandsdaten.getDepotNr(), ivBestandsdaten.getNominalbetrag());
            importWertpapier2Transaktion();
 
            if (ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("K")) ivAnzahlK++;
            if (ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("H")) ivAnzahlH++;
            if (ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("F")) ivAnzahlF++;
            if (ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("S")) ivAnzahlS++;
+           if (ivBestandsdaten.getAusplatzierungsmerkmal().startsWith("O")) ivAnzahlO++;
         }
     }
     
@@ -570,7 +707,10 @@ public class WertpapiereVerarbeiten
         lvOut.append(ivAnzahlH + " mit Ausplatzierungsmerkmal Hx" + StringKonverter.lineSeparator);
         lvOut.append(ivAnzahlF + " mit Ausplatzierungsmerkmal Fx" + StringKonverter.lineSeparator);
         lvOut.append(ivAnzahlS + " mit Ausplatzierungsmerkmal Sx" + StringKonverter.lineSeparator);
-        
+        lvOut.append(ivAnzahlO + " mit Ausplatzierungsmerkmal Ox" + StringKonverter.lineSeparator);
+        lvOut.append("Depotsummierungen:" + StringKonverter.lineSeparator);
+        lvOut.append(ivDepotSummierung.toString());
+
         return lvOut.toString();
     }
 

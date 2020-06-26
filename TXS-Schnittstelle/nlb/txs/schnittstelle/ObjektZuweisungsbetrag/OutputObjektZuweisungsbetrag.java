@@ -25,11 +25,6 @@ public class OutputObjektZuweisungsbetrag
     /**
      * 
      */
-    private File ivFile;
-    
-    /**
-     * 
-     */
     private FileOutputStream ivFos;
  
     /**
@@ -46,7 +41,7 @@ public class OutputObjektZuweisungsbetrag
       */
     public void open()
     {
-      ivFile = new File(ivFilename);
+      File ivFile = new File(ivFilename);
       try
       {
         ivFos = new FileOutputStream(ivFile);
@@ -75,8 +70,7 @@ public class OutputObjektZuweisungsbetrag
     
     /**
      * Schreibt das Objekt mit Zuweisungsbetrag in die Datei
-     * @param pvOzw 
-     * @param ObjektZuweisungsbetrag
+     * @param pvOzw
      */
     public void printObjektZuweisungsbetrag(ObjektZuweisungsbetrag pvOzw)
     {

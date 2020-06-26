@@ -35,7 +35,7 @@ public class AktivkontenDaten
     private String ivKundennummer;
 
     /**
-     * Konstruktor
+     * Konstruktor zur Initialisierung der
      */
     public AktivkontenDaten() 
     {
@@ -47,6 +47,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Liefert die Kontonummer
      * @return the kontonummer
      */
     public String getKontonummer() 
@@ -55,6 +56,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Setzt die Kontonummer
      * @param pvKontonummer the kontonummer to set
      */
     public void setKontonummer(String pvKontonummer) 
@@ -63,6 +65,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Liefert die Kontonummer des Passivgeschaeft
      * @return the passivkontonummer
      */
     public String getPassivkontonummer() 
@@ -71,6 +74,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Setzt die Kontonummer des Passivgeschaefts
      * @param pvPassivkontonummer the passivkontonummer to set
      */
     public void setPassivkontonummer(String pvPassivkontonummer) 
@@ -79,6 +83,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Liefert die Kontonummer des Konsortialgeschaefts
      * @return the konsortialkontonummer
      */
     public String getKonsortialkontonummer() 
@@ -87,6 +92,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Setzt die Kontonummer des Konsortialgeschaefts
      * @param pvKonsortialkontonummer the konsortialkontonummer to set
      */
     public void setKonsortialkontonummer(String pvKonsortialkontonummer) 
@@ -95,6 +101,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Liefert die Kundennummer
      * @return the kundennummer
      */
     public String getKundennummer() 
@@ -103,6 +110,7 @@ public class AktivkontenDaten
     }
 
     /**
+     * Setzt die Kundennummer
      * @param pvKundennummer the kundennummer to set
      */
     public void setKundennummer(String pvKundennummer) 
@@ -111,16 +119,24 @@ public class AktivkontenDaten
     }
 
     /**
-     * AktivkontenDaten in einen String schreiben
-     * @return 
+     * Schreibt die AktivkontenDaten in einen String
+     * @return String mit AktivkontenDaten
      */
     public String toString()
     {
         StringBuilder ivHelpText = new StringBuilder();
-        ivHelpText.append("Kontonummer: " + ivKontonummer + StringKonverter.lineSeparator);
-        ivHelpText.append("Passivkontonummer: " + ivPassivkontonummer + StringKonverter.lineSeparator);
-        ivHelpText.append("Konsortialkontonummer: " + ivKonsortialkontonummer + StringKonverter.lineSeparator);
-        ivHelpText.append("Kundennummer: " + ivKundennummer + StringKonverter.lineSeparator);
+        ivHelpText.append("Kontonummer: ");
+        ivHelpText.append(ivKontonummer);
+        ivHelpText.append(StringKonverter.lineSeparator);
+        ivHelpText.append("Passivkontonummer: ");
+        ivHelpText.append(ivPassivkontonummer);
+        ivHelpText.append(StringKonverter.lineSeparator);
+        ivHelpText.append("Konsortialkontonummer: ");
+        ivHelpText.append(ivKonsortialkontonummer);
+        ivHelpText.append(StringKonverter.lineSeparator);
+        ivHelpText.append("Kundennummer: ");
+        ivHelpText.append(ivKundennummer);
+        ivHelpText.append(StringKonverter.lineSeparator);
         
         return ivHelpText.toString();
     }

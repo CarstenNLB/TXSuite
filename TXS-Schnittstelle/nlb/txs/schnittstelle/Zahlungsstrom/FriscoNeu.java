@@ -95,6 +95,8 @@ public class FriscoNeu extends DefaultHandler {
     private String cv_stamm_isin = "";
     private String cv_stamm_prod = "";
     private double cv_proz = 0.00;
+    private String cv_mantilg = "";
+    private String cv_manzins = "";
     
     private long cv_mehrzeilig;
     
@@ -103,13 +105,13 @@ public class FriscoNeu extends DefaultHandler {
     static long lvAW30Acnt=0, lvAW31Acnt=0, lvAW85Acnt=0;
     static long lvAW30Pcnt=0, lvAW31Pcnt=0, lvAW85Pcnt=0;
     
-    static long lvDPP_cnt = 0;
+    //static long lvDPP_cnt = 0;
     static long lvOEPG_cnt = 0;
     static long lvPFBG_cnt = 0;
-    static long lvSchiff_cnt = 0;
-    static long lvFlug_cnt = 0;
-    static long lvMAVIS_cnt = 0;
-    static long lvDarlWP_cnt = 0;
+    //static long lvSchiff_cnt = 0;
+    //static long lvFlug_cnt = 0;
+    //static long lvMAVIS_cnt = 0;
+    //static long lvDarlWP_cnt = 0;
     
     private static String lvMyDatum = "0000-00-00";
     private static String cvQuellen ="";
@@ -135,8 +137,8 @@ public class FriscoNeu extends DefaultHandler {
      * Statistikvariablen
      */
     private static BigDecimal ivSummeAblaufart17ADARLPFBG = new BigDecimal("0.0");
-    private static BigDecimal ivSummeAblaufart17ADARLFLUG = new BigDecimal("0.0");
-    private static BigDecimal ivSummeAblaufart17ADARLSCHF = new BigDecimal("0.0");
+    //private static BigDecimal ivSummeAblaufart17ADARLFLUG = new BigDecimal("0.0");
+    //private static BigDecimal ivSummeAblaufart17ADARLSCHF = new BigDecimal("0.0");
     
     /**
     * nimmt Kontonummer oder ISIN und dazu das Quellsystem auf
@@ -148,6 +150,9 @@ public class FriscoNeu extends DefaultHandler {
         String ivQuelle;
         double ivProz;
         String ivKontozustand;
+        String ivManTilg;
+        String ivManZins;
+        String ivFaelligkeit;
     }
     
     /**
@@ -175,31 +180,31 @@ public class FriscoNeu extends DefaultHandler {
         String lvMaske                ="";
         
         // alles für Liste DPP
-        String lvDPPDatei             ="";  
-        String lvDPPPfad              ="";  
+        //String lvDPPDatei             ="";  
+        //String lvDPPPfad              ="";  
         
         // alles für Liste DARLEHEN 
         String lvDarlDatei            ="";  
         String lvDarlPfad             ="";  
         
         // alles für Liste Flug 
-        String lvFlugDatei            ="";  
-        String lvFlugPfad             ="";  
+        //String lvFlugDatei            ="";  
+        //String lvFlugPfad             ="";  
         
         // alles für Liste Schiffe 
-        String lvSchiffDatei          ="";  
-        String lvSchiffPfad           ="";  
+        //String lvSchiffDatei          ="";  
+        //String lvSchiffPfad           ="";  
         
         // alles für Liste OEPG 
         String lvOEPGDatei            ="";  
         String lvOEPGPfad             ="";  
         
         // alles für Liste MAVIS 
-        String lvMAVISDatei            ="";  
-        String lvMAVISPfad             ="";  
+        //String lvMAVISDatei            ="";  
+        //String lvMAVISPfad             ="";  
         
         // alles für Liste Darlehen WP
-        String lvDarlWPDatei            ="";  
+        //String lvDarlWPDatei            ="";  
         
         FileInputStream     lvStreamlogein    = null;
         FileOutputStream    lvStreamlogaus    = null;
@@ -324,7 +329,7 @@ public class FriscoNeu extends DefaultHandler {
         }
         
         LOGGER.info("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
-        
+        /*
         // Pfad zur Deckungspoolingdatei aus .ini lesen
         lvDPPPfad = lvReader.getPropertyString("Deckungspooling", "ExportVerzeichnis", "Fehler");
         if (lvDPPPfad.equals("Fehler"))
@@ -382,10 +387,10 @@ public class FriscoNeu extends DefaultHandler {
         catch (Exception e)
         {
             LOGGER.error("Konnte DPP " + lvDPPDatei + " nicht öffnen");
-        } 
+        } */
         
         LOGGER.info("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
-        
+        /*
         // Pfad zur Schiffsdatei aus .ini lesen
         lvSchiffPfad = lvReader.getPropertyString("Schiffe", "ExportVerzeichnis", "Fehler");
         if (lvSchiffPfad.equals("Fehler"))
@@ -442,9 +447,9 @@ public class FriscoNeu extends DefaultHandler {
         {
             LOGGER.error("Konnte Schiff " + lvSchiffDatei + " nicht öffnen");
         }    
-        
+        */
         LOGGER.info("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
-        
+        /*
         // Pfad zur Flugzeugdatei aus .ini lesen
         lvFlugPfad = lvReader.getPropertyString("Flugzeuge", "ExportVerzeichnis", "Fehler");
         if (lvFlugPfad.equals("Fehler"))
@@ -501,7 +506,7 @@ public class FriscoNeu extends DefaultHandler {
         {
             LOGGER.error("Konnte Flug " + lvFlugDatei + " nicht öffnen");
         }    
-        
+        */
         LOGGER.info("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
         
         // Pfad zur OEPGdatei aus .ini lesen
@@ -551,12 +556,18 @@ public class FriscoNeu extends DefaultHandler {
                 lvOEPGkq.ivQuelle = lvOEPGline.substring(31,40);
                 //lvOEPGkq.ivQuelle = "ADARLOEPG";
                 lvOEPGkq.ivKontozustand = lvOEPGline.substring(56, 57);
+                lvOEPGkq.ivManTilg = lvOEPGline.substring(58, 59);
+                //System.out.println("ManTilg: " + lvDarlkq.ivManTilg);
+                lvOEPGkq.ivManZins = lvOEPGline.substring(60, 61);
+                //System.out.println("ManZins: " + lvDarlkq.ivManZins);
+
                 
                 cvListeKontenQuelle.put(lvOEPGkq.ivKey, lvOEPGkq);
                 lvOEPG_cnt++;
             }  
             
             LOGGER.info("OEPG Konten=" + lvOEPG_cnt );
+            lvOEPGBufferedReader.close();
         }
         catch (Exception e)
         {
@@ -628,12 +639,17 @@ public class FriscoNeu extends DefaultHandler {
                // lvDarlkq.ivQuelle = "DARLEHEN";
                   //System.out.println("Kontozustand: " + lvDarlline.substring(56, 57));
                   lvDarlkq.ivKontozustand = lvDarlline.substring(56, 57);
+                  lvDarlkq.ivManTilg = lvDarlline.substring(58, 59);
+                  //System.out.println("ManTilg: " + lvDarlkq.ivManTilg);
+                  lvDarlkq.ivManZins = lvDarlline.substring(60, 61);
+                  //System.out.println("ManZins: " + lvDarlkq.ivManZins);
                 
                 cvListeKontenQuelle.put(lvDarlkq.ivKey, lvDarlkq);
                 lvPFBG_cnt++;
             }  
             
             LOGGER.info("DARL Konten=" + lvPFBG_cnt );
+            lvDarlBufferedReader.close();
         }
         catch (Exception e)
         {
@@ -645,7 +661,7 @@ public class FriscoNeu extends DefaultHandler {
         //////////////////////////////////////////////////////////////////////////////////////////////
         // Pfad zur MAVIS Quellsystemdatei aus .ini lesen
         //////////////////////////////////////////////////////////////////////////////////////////////
-
+        /*
         lvMAVISPfad = lvReader.getPropertyString("MAVIS", "MAVISDIR", "Fehler");
         if (lvMAVISPfad.equals("Fehler"))
         {
@@ -699,7 +715,7 @@ public class FriscoNeu extends DefaultHandler {
         catch (Exception e)
         {
             LOGGER.error("Konnte MAVIS " + lvMAVISDatei + " nicht öffnen");
-        } 
+        }  */
         //////////////////////////////////////////////////////////////////////////////////////////////
         
         LOGGER.info("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
@@ -707,7 +723,7 @@ public class FriscoNeu extends DefaultHandler {
         //////////////////////////////////////////////////////////////////////////////////////////////
         // Name der DarlWP Quellsystemdatei aus .ini lesen
         //////////////////////////////////////////////////////////////////////////////////////////////
-        
+        /*
         // Name der DarlWP Quellsystemdatei aus .ini lesen
         lvDarlWPDatei = lvReader.getPropertyString("DarlWP", "DARLWPQUELL", "Fehler");
         if (lvDarlWPDatei.equals("Fehler"))
@@ -748,7 +764,7 @@ public class FriscoNeu extends DefaultHandler {
         catch (Exception e)
         {
             LOGGER.error("Konnte DarlWP " + lvDarlWPDatei + " nicht öffnen");
-        } 
+        } */
         //////////////////////////////////////////////////////////////////////////////////////////////
         
         LOGGER.info("<><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>");
@@ -896,8 +912,8 @@ public class FriscoNeu extends DefaultHandler {
         LOGGER.info("CF Konten nicht in Quellsystemdateien gefunden:" + lvKontonichtgefunden_cnt);
         
         LOGGER.info("ADARLPFBG - Summe Ablaufart 17: " + ivSummeAblaufart17ADARLPFBG);
-        LOGGER.info("ADARLFLUG - Summe Ablaufart 17: " + ivSummeAblaufart17ADARLFLUG);
-        LOGGER.info("ADARLSCHF - Summe Ablaufart 17: " + ivSummeAblaufart17ADARLSCHF);
+        //LOGGER.info("ADARLFLUG - Summe Ablaufart 17: " + ivSummeAblaufart17ADARLFLUG);
+        //LOGGER.info("ADARLSCHF - Summe Ablaufart 17: " + ivSummeAblaufart17ADARLSCHF);
         
         //handler.readList();
         
@@ -1016,6 +1032,8 @@ public class FriscoNeu extends DefaultHandler {
                  
                 //cv_proz = cvListeKontenQuelle.get(k).ivProz;
                 cv_proz = helpKeyQuelle.ivProz;
+                cv_mantilg = helpKeyQuelle.ivManTilg;
+                cv_manzins = helpKeyQuelle.ivManZins;
                 
                 lvKontogefunden = 1;
                 lvKontogefunden_cnt++;
@@ -1216,7 +1234,10 @@ public class FriscoNeu extends DefaultHandler {
             // vorhandenen Ablaufart 17 sind
             // alle Produkte ausser 02xx !
         	
-            if (!("02".equals(cv_stamm_prod.substring(0,2))))
+        	String lvManTilg = "0";
+        	String lvManZins = "0";
+ 
+        	if (!("02".equals(cv_stamm_prod.substring(0,2))))
             {
                 if (!("99991231".equals(cv_ABL17dat)))
                 {
@@ -1234,14 +1255,14 @@ public class FriscoNeu extends DefaultHandler {
                              {
                     	       ivSummeAblaufart17ADARLPFBG = ivSummeAblaufart17ADARLPFBG.add(StringKonverter.convertString2BigDecimal(lvAblaufelem.getAttributeValue("betrag")));
                              }
-                             if (helpKeyQuelle.ivQuelle.equals("ADARLFLUG"))
-                             {
-                    	       ivSummeAblaufart17ADARLFLUG = ivSummeAblaufart17ADARLFLUG.add(StringKonverter.convertString2BigDecimal(lvAblaufelem.getAttributeValue("betrag")));
-                             }
-                             if (helpKeyQuelle.ivQuelle.equals("ADARLSCHF"))
-                             {
-                    	       ivSummeAblaufart17ADARLSCHF = ivSummeAblaufart17ADARLSCHF.add(StringKonverter.convertString2BigDecimal(lvAblaufelem.getAttributeValue("betrag")));
-                             }
+                             //if (helpKeyQuelle.ivQuelle.equals("ADARLFLUG"))
+                             //{
+                    	     //  ivSummeAblaufart17ADARLFLUG = ivSummeAblaufart17ADARLFLUG.add(StringKonverter.convertString2BigDecimal(lvAblaufelem.getAttributeValue("betrag")));
+                             //}
+                             //if (helpKeyQuelle.ivQuelle.equals("ADARLSCHF"))
+                             //{
+                    	     //  ivSummeAblaufart17ADARLSCHF = ivSummeAblaufart17ADARLSCHF.add(StringKonverter.convertString2BigDecimal(lvAblaufelem.getAttributeValue("betrag")));
+                             //}
                            }
                        }
                        lvDatum3 =  (lvAblaufelem.getAttributeValue("datum")).replace("-","");
@@ -1304,7 +1325,7 @@ public class FriscoNeu extends DefaultHandler {
                     ("13".equals(lvAblaufelem.getAttributeValue("art"))) ||   // RK bei Zinsanpassung
                     ("14".equals(lvAblaufelem.getAttributeValue("art"))) ||   // vorgemerkte Sondertilgung
                     ("15".equals(lvAblaufelem.getAttributeValue("art"))) ||   // Abgelaufene ZAP
-                    ("17".equals(lvAblaufelem.getAttributeValue("art"))))     // RK zum Kündigungstermin
+                    ("17".equals(lvAblaufelem.getAttributeValue("art"))))     // RK zum Kündigungstermin */
                {
                  lvTbetragbd = BigDecimal.valueOf(Double.parseDouble(lvAblaufelem.getAttributeValue("betrag")));
                  
@@ -1326,7 +1347,7 @@ public class FriscoNeu extends DefaultHandler {
                }
                else
                {
-                 LOGGER.info(lvAblaufelem.getAttributeValue("cfkey") + "nicht verwendete Ablaufart " + lvAblaufelem.getAttributeValue("art"));  
+                 LOGGER.info(lvAblaufelem.getAttributeValue("cfkey") + " nicht verwendete Ablaufart " + lvAblaufelem.getAttributeValue("art"));  
                }
                
                // Gibt es ab hier weitere CFs zum selben Datum ?
@@ -1344,7 +1365,7 @@ public class FriscoNeu extends DefaultHandler {
                             ("12".equals(lvAblaufart2)) ||   // außerplanmäßige Tilgung
                             ("13".equals(lvAblaufart2)) ||   // RK bei Zinsanpassung
                             ("15".equals(lvAblaufart2)) ||   // Abgelaufene ZAP
-                            ("17".equals(lvAblaufart2)))     // RK zum Kündigungstermin
+                            ("17".equals(lvAblaufart2)))     // RK zum Kündigungstermin */
                        {
                           lvBufferbd = BigDecimal.valueOf(Double.parseDouble(lvAblaufelem2.getAttributeValue("betrag")));
                           
@@ -1412,7 +1433,18 @@ public class FriscoNeu extends DefaultHandler {
                
                lvElement_cfdaten_last.setAttribute("tbetrag",lvTbetragbd.toPlainString());  
                lvElement_cfdaten_last.setAttribute("zbetrag",lvZbetragbd.toPlainString());  
-                                                
+                     
+               // Es wird ueberprueft, ob Tilgung oder Zinsen geliefert werden
+               if (StringKonverter.convertString2Double(lvTbetragbd.toPlainString()) > 0.0)
+               {
+                	lvManTilg = "1";
+               }
+
+               if (StringKonverter.convertString2Double(lvZbetragbd.toPlainString()) > 0.0)
+               {
+                	lvManZins = "1";
+               }
+
                lvElement_cfdaten_last.setAttribute("whrg", lvAblaufelem.getAttributeValue("whrg"));
                
                // letzte cfdaten anhängen
@@ -1423,6 +1455,26 @@ public class FriscoNeu extends DefaultHandler {
             if ((cvQuellen+';').contains(cvElement_fg.getAttributeValue("quelle")))
             {
                lvMyrootelement.addContent(cvElement_fg);
+            //}
+            
+               // Stimmt 'mantilg' und 'manzins'
+               //if (ivQuellsystemDatenListe.get(pvListeCashflow.get(0).getKontonummer()) != null)
+               //{
+               if (cv_mantilg != null)
+               {
+            	   if (!cv_mantilg.equals(lvManTilg))
+            	   {
+            		   LOGGER.info("Unterschiedliche Tilgungsschalter:" + cv_stamm_nr + ";" + cvElement_fg.getAttributeValue("key") + ";" + cvElement_fg.getAttributeValue("quelle")  + ";" + lvManTilg + ";" + cv_mantilg);
+            	   }
+               }
+            
+               if (cv_manzins != null)
+               {
+            	   if (!cv_manzins.equals(lvManZins))
+            	   {
+            		   LOGGER.info("Unterschiedliche Zinsschalter:" + cv_stamm_nr + ";" + cvElement_fg.getAttributeValue("key")  + ";" + cvElement_fg.getAttributeValue("quelle")  + ";" + lvManZins + ";" + cv_manzins);
+            	   }
+               }
             }
         }  
     }

@@ -43,10 +43,18 @@ public class TXSVerzeichnisblattDaten implements TXSTransaktion
    private String ivKat;
    
   /**
-   *
+   * Konstruktor
    */
    public TXSVerzeichnisblattDaten() 
    {
+     initTXSVerzeichnisblattDaten();
+   }
+
+  /**
+   * Initialisierung der Instanzvariablen mit leeren Strings
+   */
+  public void initTXSVerzeichnisblattDaten()
+  {
      this.ivBand = new String();
      this.ivBlatt = new String();
      this.ivGbvon = new String();

@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-
 import nlb.txs.schnittstelle.Deckungspooling.OSPInstitut.OSPInstitutDaten;
 import nlb.txs.schnittstelle.Deckungspooling.OSPInstitut.OSPInstitutKundenStatistik;
 import nlb.txs.schnittstelle.Deckungspooling.OSPInstitut.OSPInstitutListe;
@@ -20,9 +19,9 @@ import nlb.txs.schnittstelle.Filtern.ListeObjekte;
 import nlb.txs.schnittstelle.Utilities.CalendarHelper;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.MappingDPP;
+import nlb.txs.schnittstelle.Utilities.MappingKunde;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
-
 import org.apache.log4j.Logger;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -36,6 +35,7 @@ import org.jdom2.output.XMLOutputter;
  * @author tepperc
  *
  */
+@Deprecated
 public class OSPKundenVerarbeitung 
 {
     /**
@@ -242,7 +242,7 @@ public class OSPKundenVerarbeitung
             if (ivListeQuellsysteme.containsKey(lvRegKz + lvOSPInst))
             {
                 // Die DarKaKuNr muss 10-stellig sein
-                lvDarKaKuNr = MappingDPP.extendKundennummer(lvNodeOSPInstitut.getAttributeValue("DarKaKuNr"));
+                lvDarKaKuNr = MappingKunde.extendKundennummer(lvNodeOSPInstitut.getAttributeValue("DarKaKuNr"), null);
              
                 OSPInstitutDaten lvDatenInst;
                 if (ivListeOSPInstitute.contains(lvRegKz, lvOSPInst))
@@ -255,7 +255,7 @@ public class OSPKundenVerarbeitung
                     ivListeOSPInstitute.add(lvDatenInst);
                 }
                 lvDatenInst.setKundenBestandsdatum(ivBestandsdatum);
-                // Die Statistik muss noch überarbeitet werden, da jetzt immer
+                // Die Statistik muss noch ï¿½berarbeitet werden, da jetzt immer
                 // die letzte eingelesene Statistik gewinnt und in jedes
                 // Institut geschrieben wird.
                 lvDatenInst.setKundenStatistik(lvKundenStatistik);
@@ -432,7 +432,7 @@ public class OSPKundenVerarbeitung
     }
     
     /**
-     * Ermittlung der Kundengruppe über die Kusyma 
+     * Ermittlung der Kundengruppe ï¿½ber die Kusyma 
      * @param pvKusyma
      * @return
      */
@@ -444,11 +444,11 @@ public class OSPKundenVerarbeitung
         lvKGruppe = "H"; /* Default */
     
         if (pvKusyma.startsWith("0"))
-        { /* Inländische Kreditinstitute */
+        { /* Inlï¿½ndische Kreditinstitute */
             lvKGruppe = "G";
-        } /* Inländische Kreditinstitute */
+        } /* Inlï¿½ndische Kreditinstitute */
         if (pvKusyma.startsWith("1"))
-        { /* Inländische öffentliche Haushalte */
+        { /* Inlï¿½ndische ï¿½ffentliche Haushalte */
             if (pvKusyma.equals("10000000"))
             { /* Bund */
               lvKGruppe = "B_1";
@@ -457,11 +457,11 @@ public class OSPKundenVerarbeitung
             { /* Nicht direkt Bund */
                 if (pvKusyma.equals("11000000") ||
                     pvKusyma.equals("12000000"))
-                { /* Bundesländer */
+                { /* Bundeslï¿½nder */
                     lvKGruppe = "C";
-                } /* Bundesländer */
+                } /* Bundeslï¿½nder */
                 else
-                { /* keine Bundesländer */
+                { /* keine Bundeslï¿½nder */
                     if (pvKusyma.equals("13000000") ||
                         pvKusyma.equals("14000000"))
                     { /* Gemeinden */
@@ -473,41 +473,41 @@ public class OSPKundenVerarbeitung
                             pvKusyma.startsWith("16") ||
                             pvKusyma.startsWith("17") ||
                             pvKusyma.startsWith("19"))
-                        { /* Öfftl.Untern/Zweck. */
+                        { /* ï¿½fftl.Untern/Zweck. */
                             lvKGruppe = "E";
-                        } /* Öfftl.Unternehmen/Zweckverbände */
+                        } /* ï¿½fftl.Unternehmen/Zweckverbï¿½nde */
                         else
-                        { /* Keine öfftl.Unternehmen/Zweckverbände */
+                        { /* Keine ï¿½fftl.Unternehmen/Zweckverbï¿½nde */
                             if (pvKusyma.equals("10000001") ||
                                 pvKusyma.startsWith("18"))
                             { /* Andere durch Bund */
                                 lvKGruppe = "B_2";
                             } /* Andere durch Bund abgesicherte */
-                        } /* Keine öfftl.Unternehmen/Zweckverbände */
+                        } /* Keine ï¿½fftl.Unternehmen/Zweckverbï¿½nde */
                     } /* keine Gemeinden */
-                } /* keine Bundesländer */
+                } /* keine Bundeslï¿½nder */
             } /* Nicht direkt Bund */
-        } /* Inländische öffentliche Haushalte */
+        } /* Inlï¿½ndische ï¿½ffentliche Haushalte */
     
         if (pvKusyma.startsWith("4"))
-        { /* Inländische Unternehmen.... */
+        { /* Inlï¿½ndische Unternehmen.... */
             if (pvKusyma.charAt(1) == '0' || pvKusyma.charAt(1) == '1' ||
                 pvKusyma.charAt(1) == '2' || pvKusyma.charAt(1) == '3' ||
                 pvKusyma.charAt(1) == '4' || pvKusyma.charAt(1) == '5')
-            { /* öffentlich */
+            { /* ï¿½ffentlich */
                 lvKGruppe = "F";
-            } /* mehrheitlich öffentlich */
-        } /* Inländische Unternehmen.... */
+            } /* mehrheitlich ï¿½ffentlich */
+        } /* Inlï¿½ndische Unternehmen.... */
         if (pvKusyma.startsWith("5"))
-        { /* Ausländische KI */
+        { /* Auslï¿½ndische KI */
             if (pvKusyma.charAt(2) == '0' || pvKusyma.charAt(2) == '1' ||
                 pvKusyma.charAt(2) == '2' || pvKusyma.charAt(2) == '3')
             { /* int. Inst. */
                 lvKGruppe = "A_2";
             } /* Internationale Institutionen */
-        } /* Ausländische KI */
+        } /* Auslï¿½ndische KI */
         if (pvKusyma.startsWith("6"))
-        { /* Ausländische öffentliche Haushalte */
+        { /* Auslï¿½ndische ï¿½ffentliche Haushalte */
             if (pvKusyma.charAt(1) == '0')
             { /* Zentralregierung */
                 lvKGruppe = "A_1";
@@ -515,11 +515,11 @@ public class OSPKundenVerarbeitung
             else
             { /* Keine Zentralregierung */
                 if (pvKusyma.charAt(1) == '2' || pvKusyma.charAt(1) == '4')
-                { /*Länder/Sonst*/
+                { /*Lï¿½nder/Sonst*/
                     lvKGruppe = "A_3";
-                } /* Länder/Sonstige.. */
+                } /* Lï¿½nder/Sonstige.. */
                 else
-                { /* Keine Länder .. */
+                { /* Keine Lï¿½nder .. */
                     if (pvKusyma.charAt(1) == '5' || pvKusyma.charAt(1) == '6')
                     { /* Andere ...*/
                         lvKGruppe = "A_6";
@@ -531,9 +531,9 @@ public class OSPKundenVerarbeitung
                             lvKGruppe = "A_4";
                         } /* Gemeinden .......... */
                     } /* Keine Anderen */
-                } /* Keine Länder .. */
+                } /* Keine Lï¿½nder .. */
             } /* Keine Zentralregierung */
-        } /* Ausländische öffentliche Haushalte */
+        } /* Auslï¿½ndische ï¿½ffentliche Haushalte */
         
         return lvKGruppe;
     }

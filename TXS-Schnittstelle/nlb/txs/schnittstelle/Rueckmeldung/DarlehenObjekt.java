@@ -7,11 +7,10 @@
 package nlb.txs.schnittstelle.Rueckmeldung;
 
 /**
+ * Diese Klasse enthaelt die Daten eines Darlehen-Objekts fuer die Rueckmeldung.
  * @author tepperc
- *
  */
-public class DarlehenObjekt 
-{
+public class DarlehenObjekt {
     /**
      * Ausplatzierungsmerkmal
      */
@@ -51,11 +50,11 @@ public class DarlehenObjekt
     
     /**
      * Konstruktor mit Parameter
-     * @param pvAusplatzierungsmerkmal 
-     * @param pvDeckungsstatus 
-     * @param pvOriginator 
-     * @param pvQuellsystem 
-     * @param pvSolldeckung 
+     * @param pvAusplatzierungsmerkmal Ausplatzierungsmerkmal
+     * @param pvDeckungsstatus Deckungsstatus
+     * @param pvOriginator Originator
+     * @param pvQuellsystem Quellsystem
+     * @param pvSolldeckung Solldeckung
      */
     public DarlehenObjekt(String pvAusplatzierungsmerkmal, String pvDeckungsstatus, String pvOriginator, String pvQuellsystem, String pvSolldeckung)
     {
@@ -67,6 +66,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Liefert das Ausplatzierungsmerkmal
      * @return the ausplatzierungsmerkmal
      */
     public String getAusplatzierungsmerkmal() {
@@ -74,6 +74,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Setzt das Ausplatzierungsmerkmal
      * @param pvAusplatzierungsmerkmal the ausplatzierungsmerkmal to set
      */
     public void setAusplatzierungsmerkmal(String pvAusplatzierungsmerkmal) {
@@ -81,6 +82,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Liefert den Deckungsstatus
      * @return the deckungsstatus
      */
     public String getDeckungsstatus() {
@@ -88,6 +90,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Setzt den Deckungsstatus
      * @param pvDeckungsstatus the deckungsstatus to set
      */
     public void setDeckungsstatus(String pvDeckungsstatus) {
@@ -95,6 +98,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Liefert den Originator
      * @return the originator
      */
     public String getOriginator() {
@@ -102,6 +106,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Setzt den Originator
      * @param pvOriginator the originator to set
      */
     public void setOriginator(String pvOriginator) {
@@ -109,6 +114,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Liefert das Quellsystem
      * @return the quellsystem
      */
     public String getQuellsystem() {
@@ -116,6 +122,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Setzt das Quellsystem
      * @param pvQuellsystem the quellsystem to set
      */
     public void setQuellsystem(String pvQuellsystem) {
@@ -123,6 +130,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Liefert die Solldeckung
      * @return the solldeckung
      */
     public String getSolldeckung() {
@@ -130,6 +138,7 @@ public class DarlehenObjekt
     }
 
     /**
+     * Setzt die Solldeckung
      * @param pvSolldeckung the solldeckung to set
      */
     public void setSolldeckung(String pvSolldeckung) {

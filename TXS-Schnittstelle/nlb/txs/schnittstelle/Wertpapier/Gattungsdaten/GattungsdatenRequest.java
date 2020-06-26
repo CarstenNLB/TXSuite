@@ -12,12 +12,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.IniReader;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
-
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.jdom2.Document;
@@ -32,8 +30,13 @@ import org.jdom2.output.XMLOutputter;
 public class GattungsdatenRequest 
 {
     // Logger fuer GattungsdatenRequest
-    private static Logger LOGGER_GDR = Logger.getLogger("TXSGattungsdatenRequestLogger");  
-    
+    private static Logger LOGGER_GDR = Logger.getLogger("TXSGattungsdatenRequestLogger");
+
+    /**
+     * Liste der ISIN
+     */
+    private ListeISIN ivListeISIN;
+
     /**
      * Institutsnummer
      */
@@ -53,16 +56,27 @@ public class GattungsdatenRequest
      * Wertpapier-Bestandsdaten Inputdatei
      */
     private String ivWertpapierBestandsdatenInputDatei;
-    
+
+    /**
+     * Importverzeichnis der Liste der ISIN
+     */
+    private String ivFilterImportVerzeichnis;
+
+    /**
+     * Dateiname der Liste der ISIN
+     */
+    private String ivFilterDatei;
+
     /**
      * Buchungsdatum aus Datei 'dp.txt'
      */
     private String ivDaypointerFileout;
     
     /** 
-     * Zaehlervariable
+     * Zaehlervariablen
      */
     private int ivWertpapierBestandsdatenZaehler = 0;
+    private int ivWertpapierBestandsdatenGesamt = 0;
     
     /**
      * Startroutine von GattungsdatenRequest
@@ -156,6 +170,28 @@ public class GattungsdatenRequest
             	LOGGER_GDR.info("Input-Datei: " + ivWertpapierBestandsdatenInputDatei);
             }
 
+            ivFilterImportVerzeichnis = pvReader.getPropertyString("WertpapiereMAVIS", "FilterImportVerzeichnis", "Fehler");
+            if (ivFilterImportVerzeichnis.equals("Fehler"))
+            {
+              LOGGER_GDR.error("Kein FilterImportVerzeichnis in der ini-Datei...");
+              System.exit(1);
+            }
+            else
+            {
+              LOGGER_GDR.info("FilterImportVerzeichnis: " + ivFilterImportVerzeichnis);
+            }
+
+            ivFilterDatei = pvReader.getPropertyString("WertpapiereMAVIS", "Filter-Datei", "Fehler");
+            if (ivFilterDatei.equals("Fehler"))
+            {
+                LOGGER_GDR.error("Kein Filter-Dateiname in der ini-Datei...");
+                System.exit(1);
+            }
+            else
+            {
+                LOGGER_GDR.info("Filter-Datei: " + ivFilterDatei);
+            }
+
             ivDaypointerFileout = pvReader.getPropertyString("Konfiguration", "DPFILE", "Fehler");
             if (ivDaypointerFileout.equals("Fehler"))
             {
@@ -211,8 +247,10 @@ public class GattungsdatenRequest
         lvMyElementRequest.addContent(lvMyElementInstitut);
         
         // Liste mit den ISIN
-        ListeISIN lvListeISIN = new ListeISIN();
-        
+        ivListeISIN = new ListeISIN();
+
+       readListeKontonummern(ivFilterImportVerzeichnis + "\\" + ivFilterDatei, lvMyElementInstitut);
+
     	// Einlesen des Buchungsdatum
         String lvBuchungsdatum = new String();
         
@@ -268,7 +306,7 @@ public class GattungsdatenRequest
         
         // Wertpapier-Bestandsdaten einlesen
         LOGGER_GDR.info("Einlesen: " + ivWertpapierBestandsdatenImportVerzeichnis + "\\" + ivWertpapierBestandsdatenInputDatei);	
-        readBestandsdaten(ivWertpapierBestandsdatenImportVerzeichnis + "\\" + ivWertpapierBestandsdatenInputDatei, lvListeISIN, lvMyElementInstitut);
+        readBestandsdaten(ivWertpapierBestandsdatenImportVerzeichnis + "\\" + ivWertpapierBestandsdatenInputDatei, lvMyElementInstitut);
           
         // Ausgabe
         FileOutputStream lvGDOS = null;
@@ -301,10 +339,9 @@ public class GattungsdatenRequest
     /**
      * Einlesen und Verarbeiten der Wertpapier-Bestandsdaten
      * @param pvDateiname
-     * @param pvListeISIN
      * @param pvMyElementInstitut
      */
-    private void readBestandsdaten(String pvDateiname, ListeISIN pvListeISIN, Element pvMyElementInstitut)
+    private void readBestandsdaten(String pvDateiname, Element pvMyElementInstitut)
     {
         String lvZeile = null;
               
@@ -337,18 +374,22 @@ public class GattungsdatenRequest
                     if (lvBestandsdaten.parseBestandsdaten(lvZeile, LOGGER_GDR)) // Parsen der Felder
                     {     
                     	if (lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("H") || lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("K") ||
-                    		lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("S") || lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("F"))
+                    		  lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("S") || lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("F") ||
+                    		  lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("O") ||
+                          lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("A0") || lvBestandsdaten.getAusplatzierungsmerkmal().startsWith("A1") ||
+                          lvBestandsdaten.getDepotNr().startsWith("SS")) // Workaround fuer KEV 28.10.2019
                     	{
-                            if (!pvListeISIN.containsISIN(lvBestandsdaten.getProdukt()))
+                            if (!ivListeISIN.containsISIN(lvBestandsdaten.getProdukt()))
                             {        
                               Element lvMyElementISIN = new Element("ISIN");
                               lvMyElementISIN.setAttribute("nr", lvBestandsdaten.getProdukt());
                               pvMyElementInstitut.addContent(lvMyElementISIN);
-                              pvListeISIN.addISIN(lvBestandsdaten.getProdukt());  
+                              ivListeISIN.addISIN(lvBestandsdaten.getProdukt());
                               ivWertpapierBestandsdatenZaehler++;
-                              LOGGER_GDR.info("Wertpapier-Bestandsdaten - Anforderung von Gattungsdaten: " + lvBestandsdaten.getProdukt());
+                              LOGGER_GDR.info("Wertpapier-Bestandsdaten - Anforderung von Gattungsdaten: " + lvBestandsdaten.getProdukt() + " - Ausplatzierungsmerkmal: " + lvBestandsdaten.getAusplatzierungsmerkmal());
                             }
                     	}
+                    	ivWertpapierBestandsdatenGesamt++;
                     }
                 }
             }
@@ -377,10 +418,59 @@ public class GattungsdatenRequest
     private String getStatistik()
     {
         StringBuilder lvOut = new StringBuilder();
-        
-        lvOut.append("Anzahl WertpapierBestandsdaten: " + ivWertpapierBestandsdatenZaehler + StringKonverter.lineSeparator); 
+
+        lvOut.append("Anzahl Wertpapier-Bestandsdaten Gesamt: " + ivWertpapierBestandsdatenGesamt + StringKonverter.lineSeparator);
+        lvOut.append("Anzahl Gattungsdaten-Request: " + ivWertpapierBestandsdatenZaehler + StringKonverter.lineSeparator);
         
         return lvOut.toString();
     }
 
+    /**
+     * Liest die Liste der ISIN ein
+     * @param pvDateiname Dateiname der ISIN-liste
+     * @param pvMyElementInstitut
+     */
+    private void readListeKontonummern(String pvDateiname, Element pvMyElementInstitut) {
+        LOGGER_GDR.info("Start - readListeKontonummern");
+        LOGGER_GDR.info("Datei: " + pvDateiname);
+        String lvZeile = null;
+
+        // Oeffnen der Dateien
+        FileInputStream lvFis = null;
+        File lvFileListeKontonummern = new File(pvDateiname);
+        try {
+            lvFis = new FileInputStream(lvFileListeKontonummern);
+        } catch (Exception e) {
+            LOGGER_GDR.error(
+                "Konnte die Kontonummernliste-Datei '" + pvDateiname + "' nicht oeffnen!");
+            return;
+        }
+
+        BufferedReader lvIn = new BufferedReader(new InputStreamReader(lvFis));
+
+        try {
+            while ((lvZeile = lvIn.readLine()) != null) // Lesen der ListeKontonummern-Datei
+            {
+                LOGGER_GDR.info("Verarbeite Kontonummer: " + lvZeile);
+                Element lvMyElementISIN = new Element("ISIN");
+                lvMyElementISIN.setAttribute("nr", lvZeile);
+                pvMyElementInstitut.addContent(lvMyElementISIN);
+                ivListeISIN.addISIN(lvZeile);
+                ivWertpapierBestandsdatenZaehler++;
+            }
+        } catch (Exception e) {
+            LOGGER_GDR.error("Fehler beim Verarbeiten einer Zeile!");
+            e.printStackTrace();
+        }
+
+        LOGGER_GDR.info(
+            "Anzahl von Kontonummern in der Liste: " + ivListeISIN.size());
+
+        try {
+            lvIn.close();
+        } catch (Exception e) {
+            LOGGER_GDR.error(
+                "Konnte die Kontonummernliste-Datei '" + pvDateiname + "' nicht schliessen!");
+        }
+    }
 }

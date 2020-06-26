@@ -73,7 +73,7 @@ public class LoanIQPassivVerarbeitung
     private String ivCashflowQuellsystemDatei;
     
     /**
-     * FileOutputStream für CashflowQuellsystem-Datei
+     * FileOutputStream fuer CashflowQuellsystem-Datei
      */
     private FileOutputStream ivFosCashflowQuellsystem;
     
@@ -85,7 +85,6 @@ public class LoanIQPassivVerarbeitung
     /**
      * 
      */
-    //private KundeRequestXML ivReqXML;
     private KundennummernOutput ivKundennummernOutput;
     
     /**
@@ -122,7 +121,6 @@ public class LoanIQPassivVerarbeitung
     
     // Transaktionen
     private TXSFinanzgeschaeft ivFinanzgeschaeft;
-    //private TXSSliceInDaten ivSliceInDaten;
     private TXSWertpapierposition ivWpposdaten;
     private TXSFinanzgeschaeftDaten ivFinanzgeschaeftDaten;
     private TXSKonditionenDaten ivKondDaten;
@@ -140,7 +138,6 @@ public class LoanIQPassivVerarbeitung
     public LoanIQPassivVerarbeitung(IniReader pvReader)
     {
         this.ivFinanzgeschaeft = new TXSFinanzgeschaeft();
-        //this.ivSliceInDaten = new TXSSliceInDaten();
         this.ivWpposdaten = new TXSWertpapierposition();
         this.ivFinanzgeschaeftDaten = new TXSFinanzgeschaeftDaten();
         this.ivKondDaten = new TXSKonditionenDaten();
@@ -245,7 +242,7 @@ public class LoanIQPassivVerarbeitung
         // Cashflow-Quellsystem
                 
         // Darlehen XML-Datei im TXS-Format
-        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivLoanIQOutputDatei);
+        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivLoanIQOutputDatei, LOGGER_LOANIQ_PASSIV);
         ivOutputDarlehenXML.openXML();
         ivOutputDarlehenXML.printXMLStart();
         ivOutputDarlehenXML.printTXSImportDatenStart();
@@ -324,7 +321,7 @@ public class LoanIQPassivVerarbeitung
         ivZaehlerVorlaufsatz = 0;
         ivZaehlerFinanzgeschaefte = 0;
         String lvZeile = null;
-        ivVorlaufsatz = new Vorlaufsatz();
+        ivVorlaufsatz = new Vorlaufsatz(LOGGER_LOANIQ_PASSIV);
         ivPassivDaten= new LoanIQPassivDaten(LOGGER_LOANIQ_PASSIV);
               
         // Oeffnen der Dateien
@@ -357,15 +354,7 @@ public class LoanIQPassivVerarbeitung
                     {
                       ivOutputDarlehenXML.printTXSHeader(DatumUtilities.changeDate(ivVorlaufsatz.getBuchungsdatum()));
                     
-                      // Kunde-Request XML-Datei oeffnen
-                      //ivReqXML = new KundeRequestXML(ivExportVerzeichnis + "\\" + ivKundeRequestDatei + "_" + DatumUtilities.changeDate(ivVorlaufsatz.getBuchungsdatum()).replace("-", "") + ".xml");
-                      //ivReqXML.openXML();
-                      // Kunde-Request XML-Start
-                      //ivReqXML.printXMLStart();
-
-                      //ivReqXML.printXMLHeader(DatumUtilities.changeDate(ivVorlaufsatz.getBuchungsdatum()).replace("-", ""), DatumUtilities.changeDate(ivVorlaufsatz.getBuchungsdatum()).replace("-", ""), "000000");
-                      //ivReqXML.printXMLRequestStart(ivVorlaufsatz.getInstitutsnummer());
-                      // KundeRequest-Datei oeffnen
+                       // KundeRequest-Datei oeffnen
                       ivKundennummernOutput = new KundennummernOutput(ivExportVerzeichnis + "\\" + ivKundeRequestDatei, LOGGER_LOANIQ_PASSIV);
                       ivKundennummernOutput.open();
                       ivKundennummernOutput.printVorlaufsatz(ivInstitutsnummer, "Pfandbrief");
@@ -472,7 +461,6 @@ public class LoanIQPassivVerarbeitung
     private void importPassivDaten2Transaktion()
     {
     	ivFinanzgeschaeft.initTXSFinanzgeschaeft();
-        //ivSliceInDaten.initTXSSliceInDaten();
         ivWpposdaten.initTXSWertpapierposition();
         ivFinanzgeschaeftDaten.initTXSFinanzgeschaeftDaten();
         ivKondDaten.initTXSKonditionenDaten();
@@ -481,22 +469,10 @@ public class LoanIQPassivVerarbeitung
         boolean lvOkayPassivDaten = true;
                          
         lvOkayPassivDaten = ivFinanzgeschaeft.importLoanIQPassiv(ivPassivDaten, ivVorlaufsatz.getInstitutsnummer());
-        System.out.println("Key: " + ivFinanzgeschaeft.getKey());
+        //System.out.println("Key: " + ivFinanzgeschaeft.getKey());
         
         if (lvOkayPassivDaten)
-        {
-    	   // Daten in CashflowQuellsystem-Datei schreiben 
-    	   try
-    	   {
-    	        System.out.println("Key: " + ivFinanzgeschaeft.getKey());
-    		   ivFosCashflowQuellsystem.write((ivPassivDaten.getKontonummer() + ";" + ivFinanzgeschaeft.getKey() + ";" + ivFinanzgeschaeft.getOriginator() + ";" + ivFinanzgeschaeft.getQuelle() + ";N;;" + StringKonverter.lineSeparator).getBytes());
-    	   }
-    	   catch (Exception e)
-    	   {
-    		   LOGGER_LOANIQ_PASSIV.error("Fehler bei der Ausgabe in die CashflowQuellsystem-Datei");
-    	   }
-    	   // Daten in CashflowQuellsystem-Datei schreiben
-              
+        {              
     	   //System.out.println("Suche: " + ivPassivDaten.getAktenzeichen());
     	   String lvNennbetrag = ivPassivDaten.getNennbetrag();
     	   ivPassivDaten.setNennbetrag(ivListeSummenbetraege.getSummenbetraege(ivPassivDaten.getAktenzeichen()).getNominalbetrag().toString());
@@ -514,7 +490,7 @@ public class LoanIQPassivVerarbeitung
           
         if (lvOkayPassivDaten)
         {
-        	lvOkayPassivDaten = ivWpposdaten.importLoanIQPassiv(ivPassivDaten, ivVorlaufsatz.getInstitutsnummer());
+        	lvOkayPassivDaten = ivWpposdaten.importLoanIQPassiv(ivPassivDaten, ivVorlaufsatz.getInstitutsnummer(), LOGGER_LOANIQ_PASSIV);
         }
           
         if (lvOkayPassivDaten)
@@ -525,6 +501,20 @@ public class LoanIQPassivVerarbeitung
         // Transaktionen in die Datei schreiben
         if (lvOkayPassivDaten)
         {
+     	   // Daten in CashflowQuellsystem-Datei schreiben 
+     	   try
+     	   {
+     	       //System.out.println("Key: " + ivFinanzgeschaeft.getKey());
+     		   ivFosCashflowQuellsystem.write((ivPassivDaten.getKontonummer() + ";" + ivFinanzgeschaeft.getKey() + ";" + ivFinanzgeschaeft.getOriginator() + ";" + 
+     	                                       ivFinanzgeschaeft.getQuelle() + ";N;;" + ivKondDaten.getMantilg() + ";" + ivKondDaten.getManzins() + ";" + ivKondDaten.getFaellig() + ";" + 
+     	                                       ivPassivDaten.getMerkmalZinssatz() + ";" + ivPassivDaten.getLeftAmortize() + ";" + ivPassivDaten.getNennbetrag() + ";" + ivPassivDaten.getRestkapital() + ";" + StringKonverter.lineSeparator).getBytes());
+     	   }
+     	   catch (Exception e)
+     	   {
+     		   LOGGER_LOANIQ_PASSIV.error("Fehler bei der Ausgabe in die CashflowQuellsystem-Datei");
+     	   }
+     	   // Daten in CashflowQuellsystem-Datei schreiben
+        	
         	ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeft.printTXSTransaktionStart());
    
         	ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionStart());

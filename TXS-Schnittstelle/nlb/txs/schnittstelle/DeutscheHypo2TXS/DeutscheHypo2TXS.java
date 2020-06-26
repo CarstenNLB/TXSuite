@@ -41,6 +41,7 @@ import nlb.txs.schnittstelle.Utilities.ValueMapping;
  * @author tepperc
  *
  */
+@Deprecated
 public class DeutscheHypo2TXS 
 {
     /**
@@ -61,7 +62,7 @@ public class DeutscheHypo2TXS
 
     /**
      * Startroutine DeutscheHypo2TXS
-     * @param argv 
+     * @param args
      */
     public static void main(String args[])
     { 
@@ -86,7 +87,7 @@ public class DeutscheHypo2TXS
     {
         System.out.println("Dateiname: " + pvDateiname);
         
-        ivOutputDarlehenXML = new OutputDarlehenXML("C:\\CT\\Kredite_DeutscheHypo_009_TXS.xml");
+        ivOutputDarlehenXML = new OutputDarlehenXML("C:\\CT\\Kredite_DeutscheHypo_009_TXS.xml", null);
    
         if (ivOutputDarlehenXML != null)
         {

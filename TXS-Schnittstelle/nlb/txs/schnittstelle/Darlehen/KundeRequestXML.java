@@ -8,9 +8,9 @@ package nlb.txs.schnittstelle.Darlehen;
 
 import java.io.File;
 import java.io.FileOutputStream;
-
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
+import org.apache.log4j.Logger;
 
 /**
  * @author tepperc
@@ -19,27 +19,28 @@ import nlb.txs.schnittstelle.Utilities.StringKonverter;
 public class KundeRequestXML 
 {
     /**
-     * 
+     * Name der Datei
      */
     private String ivFilename;
-    
+
     /**
-     * 
-     */
-    private File ivXmlFile;
-    
-    /**
-     * 
+     * FileOutputStream der XML-KundeRequest
      */
     private FileOutputStream ivXmlOS;
- 
-    /**
+
+  /**
+   * log4j-Logger
+   */
+  private Logger ivLogger;
+
+  /**
      * Konstruktor
      * @param pvFilename 
      */
-    public KundeRequestXML(String pvFilename)
+    public KundeRequestXML(String pvFilename, Logger pvLogger)
     {
         this.ivFilename = pvFilename;
+        this.ivLogger = pvLogger;
     }
     
     /**
@@ -47,14 +48,14 @@ public class KundeRequestXML
       */
     public void openXML()
     {
-      ivXmlFile = new File(ivFilename);
+      File ivXmlFile = new File(ivFilename);
       try
       {
         ivXmlOS = new FileOutputStream(ivXmlFile);
       }
       catch (Exception e)
       {
-        System.out.println("Konnte Kunde-Request XML-Datei nicht oeffnen!");
+        ivLogger.error("Konnte Kunde-Request XML-Datei nicht oeffnen!");
       }    
     }
 
@@ -69,7 +70,7 @@ public class KundeRequestXML
       }
       catch (Exception e)
       {
-          System.out.println("Konnte Kunde-Request XML-Datei nicht schliessen!");       
+          ivLogger.error("Konnte Kunde-Request XML-Datei nicht schliessen!");
       }
     }
 
@@ -86,7 +87,7 @@ public class KundeRequestXML
       }
       catch (Exception e)
       {
-        System.out.println("Start: Fehler bei Ausgabe in Kunde-Request XML-Datei");
+        ivLogger.error("Start: Fehler bei Ausgabe in Kunde-Request XML-Datei");
       }
     }
     
@@ -102,15 +103,15 @@ public class KundeRequestXML
       }
       catch (Exception e)
       {
-        System.out.println("Start: Fehler bei Ausgabe in Kunde-Request XML-Datei");
+        ivLogger.error("Ende: Fehler bei Ausgabe in Kunde-Request XML-Datei");
       }
     }
  
     /**
      * Ausgabe des XML-Headers
-     * @param pvBuchungsdatum
-     * @param pvDatum 
-     * @param pvUhrzeit 
+     * @param pvBuchungsdatum Buchungsdatum
+     * @param pvDatum Erstellungsdatum
+     * @param pvUhrzeit Erstellungsuhrzeit
      */
     public void printXMLHeader(String pvBuchungsdatum, String pvDatum, String pvUhrzeit)
     {   
@@ -126,13 +127,13 @@ public class KundeRequestXML
       }
       catch (Exception e)
       {
-        System.out.println("Start: Fehler bei Ausgabe in Kunde-Request XML-Datei");
+        ivLogger.error("XML-Header: Fehler bei Ausgabe in Kunde-Request XML-Datei");
       }
     }
 
     /**
-     * @param pvInstitut 
-     * 
+     * Schreibt den XML-RequestStart in die Datei
+     * @param pvInstitut Institutsnummer
      */
     public void printXMLRequestStart(String pvInstitut)
     {
@@ -144,13 +145,13 @@ public class KundeRequestXML
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe in Kunde-Request XML-Datei");
+          ivLogger.error("XML-RequestStart: Fehler bei Ausgabe in Kunde-Request XML-Datei");
         }
        
     }
 
     /**
-     * 
+     * Schreibt das XML-RequestEnde in die Datei
      */
     public void printXMLRequestEnde()
     {
@@ -162,13 +163,13 @@ public class KundeRequestXML
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe in Kunde-Request XML-Datei");
+          ivLogger.error("XML-RequestEnde: Fehler bei Ausgabe in Kunde-Request XML-Datei");
         }       
     }
   
     /**
      * Schreibt die Kunde-Request Datei
-     * @param pvKundennummer 
+     * @param pvKundennummer Kundennummer
      */
     public void printKundeRequest(String pvKundennummer)
     {
@@ -179,7 +180,7 @@ public class KundeRequestXML
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe in Kunde-Request XML-Datei");
+          ivLogger.error("KundeRequest: Fehler bei Ausgabe in Kunde-Request XML-Datei");
         }
     }
 

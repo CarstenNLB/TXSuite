@@ -17,11 +17,11 @@ public abstract class WPSuffix
 {
     /**
      * Ermittelt die Key-Endung von Wertpapieren aus MAVIS
-     * @param pvDepotKZ 
-     * @param pvWpArt 
-     * @param text
+     * @param pvDepotKZ Depotkennzeichen
+     * @param pvWpArt Wertpapierart
      * @return
      */
+    @Deprecated
     public static String getSuffixMAVIS(String pvDepotKZ, String pvWpArt)
     {
        String lvSuffix = new String();
@@ -75,8 +75,8 @@ public abstract class WPSuffix
 
     /**
      * Ermittelt die Key-Endung von Wertpapieren anhand des Ausplatzierungsmerkmals
-     * @param pvAusplatzierungsmerkmal
-     * @param pvLogger
+     * @param pvAusplatzierungsmerkmal Ausplatzierungsmerkmal
+     * @param pvLogger log4j-Logger
      * @return
      */
     public static String getSuffix(String pvAusplatzierungsmerkmal, Logger pvLogger)
@@ -118,6 +118,12 @@ public abstract class WPSuffix
        if (pvAusplatzierungsmerkmal.endsWith("3"))
        {
            lvSuffix.append("S");
+       }
+
+       // Sichernde Deckung Hyp. (O2) und Kom. (O4)
+       if (pvAusplatzierungsmerkmal.equals("O2") || pvAusplatzierungsmerkmal.equals("O4"))
+       {
+         lvSuffix.append("S");
        }
 
        if (lvSuffix.toString().isEmpty())

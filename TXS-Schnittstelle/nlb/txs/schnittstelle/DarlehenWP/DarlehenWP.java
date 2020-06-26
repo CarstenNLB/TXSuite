@@ -14,12 +14,13 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
 /**
  * @author Stefan Unnasch
  *
- * Dieses Programm liest Wertpapierdaten in XML-Form und gibt eine XML-Datei für die Schnittstelle der Anwendung TXS
+ * Dieses Programm liest Wertpapierdaten in XML-Form und gibt eine XML-Datei fï¿½r die Schnittstelle der Anwendung TXS
  * aus
  * 
  * Als Werkzeug zur XML-Verabrbeitung wird jdom benutzt
  *
  */
+@Deprecated
 public class DarlehenWP {
        
     /**

@@ -19,7 +19,7 @@ import nlb.txs.schnittstelle.Utilities.StringKonverter;
 public class ObjektZuweisungsbetragListe extends HashMap<String, ObjektZuweisungsbetrag>
 {
     /**
-     * 
+     * UID
      */
     private static final long serialVersionUID = 1L;
 

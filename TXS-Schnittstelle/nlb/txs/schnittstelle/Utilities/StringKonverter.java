@@ -128,12 +128,13 @@ public abstract class StringKonverter
     }
     
     /**
-     * Setzt in einem SAPCMS Wertfeld das Komma 
-     * SAPCMS Wertfeld -> Nachkommastellen setzen
+     * Setzt in einem Sicherheiten Wertfeld das Komma
+     * Sicherheiten Wertfeld -> Nachkommastellen setzen
      * @param pvValue 
      * @param pvNachkommastellen 
      * @return 
      */
+    @Deprecated
     public static String convertWertfeldSAPCMS(String pvValue, int pvNachkommastellen)
     {
         String lvHelpValue = new String();

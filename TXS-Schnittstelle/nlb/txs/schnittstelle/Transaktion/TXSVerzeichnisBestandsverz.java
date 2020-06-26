@@ -35,9 +35,17 @@ public class TXSVerzeichnisBestandsverz implements TXSTransaktion
     private String ivQuelle;
 
     /**
-     *
+     * Konstruktor
      */
     public TXSVerzeichnisBestandsverz() 
+    {
+      initTXSVerzeichnisBestandsverz();
+    }
+
+    /**
+     * Initialisierung der Instanzvariablen mit leeren Strings
+     */
+    public void initTXSVerzeichnisBestandsverz()
     {
         this.ivBvnr = new String();
         this.ivOrg = new String();

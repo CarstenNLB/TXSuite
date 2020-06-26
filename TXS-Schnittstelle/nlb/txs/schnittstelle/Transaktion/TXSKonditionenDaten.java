@@ -8,20 +8,19 @@ package nlb.txs.schnittstelle.Transaktion;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
-import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
+import nlb.txs.schnittstelle.Darlehen.DarlehenVerarbeiten;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.DarlehenPassiv.Daten.LoanIQPassivDaten;
+import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
+import nlb.txs.schnittstelle.Termingeld.Daten.Termingeld;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.MappingLoanIQ;
 import nlb.txs.schnittstelle.Utilities.MappingMIDAS;
+import nlb.txs.schnittstelle.Utilities.MappingWertpapiere;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
-import nlb.txs.schnittstelle.Utilities.ValueMapping;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
 import nlb.txs.schnittstelle.Wertpapier.Gattungsdaten.Gattung;
-
 import org.apache.log4j.Logger;
 
 
@@ -220,7 +219,12 @@ public class TXSKonditionenDaten implements TXSTransaktion
      * 
      */
     private String ivRefzins;
-    
+
+    /**
+     *
+     */
+    private String ivRefzinstxt;
+
     /**
      * 
      */
@@ -434,6 +438,7 @@ public class TXSKonditionenDaten implements TXSTransaktion
         this.ivRaten = new String();
         this.ivRefizins = new String();
         this.ivRefzins = new String();
+        this.ivRefzinstxt = new String();
         this.ivRkapfaell = new String();
         this.ivRkurs = new String();
         this.ivSondtilg = new String();
@@ -1007,6 +1012,20 @@ public class TXSKonditionenDaten implements TXSTransaktion
     }
 
     /**
+     * @return the refzinstxt
+     */
+    public String getRefzinstxt() {
+        return this.ivRefzinstxt;
+    }
+
+    /**
+     * @param pvRefzinstxt the refzinstxt to set
+     */
+    public void setRefzinstxt(String pvRefzinstxt) {
+        this.ivRefzinstxt = pvRefzinstxt;
+    }
+
+    /**
      * @return the rkapfaell
      */
     public String getRkapfaell() {
@@ -1175,14 +1194,14 @@ public class TXSKonditionenDaten implements TXSTransaktion
     }
 
     /**
-     * @return the vtilgdat
+     * @return the vztilgdat
      */
     public String getVztilgdat() {
         return this.ivVztilgdat;
     }
 
     /**
-     * @param pvVtilgdat the vtilgdat to set
+     * @param pvVztilgdat the vtilgdat to set
      */
     public void setVztilgdat(String pvVztilgdat) {
         this.ivVztilgdat = pvVztilgdat;
@@ -1623,6 +1642,9 @@ public class TXSKonditionenDaten implements TXSTransaktion
         if (this.ivRefzins.length() > 0)
             lvHelpXML.append("refzins=\"" + this.ivRefzins + "\" ");
 
+        if (this.ivRefzinstxt.length() > 0)
+            lvHelpXML.append("refzinstxt=\"" + this.ivRefzinstxt + "\" ");
+
         if (this.ivTilgabw.length() > 0)
         	lvHelpXML.append("tilgabw=\"" + this.ivTilgabw + "\" ");
         
@@ -1683,11 +1705,12 @@ public class TXSKonditionenDaten implements TXSTransaktion
 
     /**
      * Importiert die Darlehensinformationen von DarKa
+     * @param pvModus
      * @param pvDarlehen 
      * @param pvLogger 
      * @return 
      */
-    public boolean importDarlehen(Darlehen pvDarlehen, Logger pvLogger)
+    public boolean importDarlehen(int pvModus, nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen, Logger pvLogger)
     {     
         String lvNULLDat1 = "00000000";
 
@@ -2294,15 +2317,12 @@ public class TXSKonditionenDaten implements TXSTransaktion
         {
           lvRefZinssatz = lvRefZinssatz.replace("GBPLIBOR", "LIGBP");
         }
-        
-        /* Periodenende/-beginn ....................... */
-        //String cPE = "B";
-        // ToDo: Spaeter
-        //if (darlehen.getAnzahlKTOZB()  (sFITD.iAnzKtozb > iBuchDat) && (sFITD.iAnzKts < iBuchDat) )
-        //{
-        // cPE = 'E';
-        //}
-        
+
+        if (pvModus == DarlehenVerarbeiten.KEV)
+        {
+          ivFixrhyth = lvDauer;
+        }
+
         /* Kalenderkonventionen ....................... */
         String lvKalKonv = new String();
         lvKalKonv = "keine";
@@ -2458,7 +2478,7 @@ public class TXSKonditionenDaten implements TXSTransaktion
          } /* etwas da */
         } /* mit Buerge .. anteilig */
         
-        // BLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlüssel 'S' oder 'V' und das Produkt '0802' ist
+        // BLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlï¿½ssel 'S' oder 'V' und das Produkt '0802' ist
         if (pvDarlehen.getInstitutsnummer().equals("004"))
         {
             if ((pvDarlehen.getDeckungsschluessel().equals("S") || pvDarlehen.getDeckungsschluessel().equals("V")) && pvDarlehen.getProduktSchluessel().equals("00802"))
@@ -2468,7 +2488,7 @@ public class TXSKonditionenDaten implements TXSTransaktion
             }
         }
         
-        // NLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlüssel 'S' oder 'V' ist
+        // NLB - Buergschaftsprozentsatz nicht verwenden, wenn der Deckungsschlï¿½ssel 'S' oder 'V' ist
         if (pvDarlehen.getInstitutsnummer().equals("009"))
         {
             if (pvDarlehen.getDeckungsschluessel().equals("S") || pvDarlehen.getDeckungsschluessel().equals("V"))
@@ -2591,6 +2611,8 @@ public class TXSKonditionenDaten implements TXSTransaktion
         this.ivFixtagemod = "0";
         this.ivFixkalart = "1";
         this.ivRefzins = lvRefZinssatz;
+        // CT 27.05.2019 - Duplizierung des Referenzzins in 'ivRefzinstxt'
+        this.ivRefzinstxt = this.ivRefzins;
         this.ivTilgdat = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(lvTilgTerm));
         this.ivTilgbeg = DatumUtilities.changeDate(DatumUtilities.changeDatePoints(pvDarlehen.getTilgungsbeginn()));
         this.ivTilgver = "0";
@@ -2632,98 +2654,109 @@ public class TXSKonditionenDaten implements TXSTransaktion
     
     /**
      * Importiert die Darlehensinformationen von LoanIQ
-     * @param pvDarlehenLoanIQBlock
+     * @param pvDarlehenBlock
+     * @param pvVorlaufsatz
+     * @param pvLogger log4j-Logger
      * @return 
      */
-    public boolean importLoanIQ(DarlehenLoanIQBlock pvDarlehenLoanIQBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    public boolean importLoanIQ(DarlehenBlock pvDarlehenBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
     {
-    	DarlehenLoanIQ lvHelpDarlehenLoanIQ = pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto();
+    	Darlehen lvHelpDarlehen = pvDarlehenBlock.getDarlehenNetto();
     	
         // Buergschaftprozent
         BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
     			
-        String lvZinsrhythmusLoanIQ = MappingLoanIQ.changeZinsrythmus(lvHelpDarlehenLoanIQ.getZinszahlungsrythmus(), pvLogger);
-        this.ivAtkonv = MappingLoanIQ.changeArbeitskonvention(lvHelpDarlehenLoanIQ.getArbeitskonvention(), pvLogger);
+        String lvZinsrhythmusLoanIQ = MappingLoanIQ.changeZinsrythmus(lvHelpDarlehen.getZinszahlungsrythmus(), pvLogger);
+        this.ivAtkonv = MappingLoanIQ.changeArbeitskonvention(lvHelpDarlehen.getArbeitskonvention(), pvLogger);
         this.ivAtkonvtag = "0";
         this.ivBankkal = "DE";
         
-       	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+       	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
     	{
-    		this.ivBernom = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getBerechnungsnominale())).multiply(lvBuergschaftprozent).toPlainString();
+    		this.ivBernom = (StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getBerechnungsnominale())).multiply(lvBuergschaftprozent).toPlainString();
         }
     	else
     	{
-    		this.ivBernom = lvHelpDarlehenLoanIQ.getBerechnungsnominale();
+    		this.ivBernom = lvHelpDarlehen.getBerechnungsnominale();
         }  
-        this.ivDatltztanp = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getLetzteZinsanpassung());
-        this.ivDkv = lvHelpDarlehenLoanIQ.getDatumKonditionierung();
-        if (!lvHelpDarlehenLoanIQ.getLaufzeitZinsanpassung().equals("99Y"))
+        this.ivDatltztanp = DatumUtilities.changeDate(lvHelpDarlehen.getLetzteZinsanpassung());
+        this.ivDkv = lvHelpDarlehen.getDatumKonditionierung();
+        if (!lvHelpDarlehen.getLaufzeitZinsanpassung().equals("99Y"))
         {
-          this.ivDlz = lvHelpDarlehenLoanIQ.getLaufzeitZinsanpassung();
+          this.ivDlz = lvHelpDarlehen.getLaufzeitZinsanpassung();
         }
-        this.ivDlza = lvHelpDarlehenLoanIQ.getLetzteZinsanpassung();
-        this.ivDnz = lvHelpDarlehenLoanIQ.getZinsperiodenende();
-        this.ivDza = lvHelpDarlehenLoanIQ.getNaechsteZinsanpassung();
-        this.ivEnddat = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getLaufzeitende());
-        this.ivDatltzttilg = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getLaufzeitende());
+        this.ivDlza = lvHelpDarlehen.getLetzteZinsanpassung();
+        this.ivDnz = lvHelpDarlehen.getZinsperiodenende();
+        this.ivDza = lvHelpDarlehen.getNaechsteZinsanpassung();
+        this.ivEnddat = DatumUtilities.changeDate(lvHelpDarlehen.getLaufzeitende());
+        this.ivDatltzttilg = DatumUtilities.changeDate(lvHelpDarlehen.getLaufzeitende());
         
-        String lvFaelligkeit = lvHelpDarlehenLoanIQ.getFaelligkeit();
+        String lvFaelligkeit = lvHelpDarlehen.getFaelligkeit();
         
         if (lvFaelligkeit.equals("31.12.2099"))
         {
             lvFaelligkeit = DatumUtilities.changeDatePoints(DatumUtilities.berechneBuchungstagPlus2(pvVorlaufsatz.getBuchungsdatum()));
             this.ivEnddat = DatumUtilities.changeDate(lvFaelligkeit);
-            pvLogger.info("Konto " + pvDarlehenLoanIQBlock.getKontonummer() + ": 31.12.2099 -> " + lvFaelligkeit);
+            pvLogger.info("Konto " + pvDarlehenBlock.getKontonummer() + ": 31.12.2099 -> " + lvFaelligkeit);
         }
         
         this.ivFaellig = DatumUtilities.changeDate(lvFaelligkeit);
         this.ivFixkalart = "1";
         this.ivFixkonv = "1";
-        this.ivFixtage = lvHelpDarlehenLoanIQ.getVorfaelligkeitstage();
+        this.ivFixtage = lvHelpDarlehen.getVorfaelligkeitstage();
         
         this.ivKalfix = "DE";       
-        this.ivKalkonv = lvHelpDarlehenLoanIQ.getKalenderkonvention();
+        this.ivKalkonv = lvHelpDarlehen.getKalenderkonvention();
         this.ivKondkey = "1";
         
-       	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+       	if (lvBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
     	{
-    		this.ivLrate = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getRateFaelligkeit())).multiply(lvBuergschaftprozent).toPlainString();
+    		this.ivLrate = (StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getRateFaelligkeit())).multiply(lvBuergschaftprozent).toPlainString();
         }
     	else
     	{
-    		this.ivLrate = lvHelpDarlehenLoanIQ.getRateFaelligkeit();
+    		this.ivLrate = lvHelpDarlehen.getRateFaelligkeit();
         }
  
         this.ivMantilg = "1";
         this.ivManzins = "1";
-        this.ivMonendkonv = "1";
-        this.ivNomzins = lvHelpDarlehenLoanIQ.getNominalzinssatz();
-        this.ivRefzins = MappingLoanIQ.changeReferenzzins(lvHelpDarlehenLoanIQ.getReferenzzins(), lvHelpDarlehenLoanIQ.getLaufzeitZinsanpassung(), pvLogger);
+        // Wenn der Zinssatz == '0.0' ist, dann werden auch keine Zins-Cashflows angeliefert - CT 25.10.2018
+        if (StringKonverter.convertString2Double(lvHelpDarlehen.getNominalzinssatz()) == 0.0)
+        {
+        	this.ivManzins = "0";
+        }
         
-        this.ivSpread = lvHelpDarlehenLoanIQ.getSpread();
+        this.ivMonendkonv = "1";
+        this.ivNomzins = lvHelpDarlehen.getNominalzinssatz();
+        this.ivRefzins = MappingLoanIQ.changeReferenzzins(lvHelpDarlehen.getReferenzzins(), lvHelpDarlehen
+            .getLaufzeitZinsanpassung(), pvLogger);
+        // CT 27.05.2019 - Duplizierung des Referenzzins in 'ivRefzinstxt'
+        this.ivRefzinstxt = this.ivRefzins;
 
-        this.ivTilgbeg = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getTilgungsbeginn());
-        this.ivTilgdat = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getTilgungstermin());
-        //this.ivTilgryth = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(lvHelpDarlehenLoanIQ.getLaufzeitZinsanpassung());
-        this.ivTilgsatz = lvHelpDarlehenLoanIQ.getTilgungsprozentsatz();
+        this.ivSpread = lvHelpDarlehen.getSpread();
+
+        this.ivTilgbeg = DatumUtilities.changeDate(lvHelpDarlehen.getTilgungsbeginn());
+        this.ivTilgdat = DatumUtilities.changeDate(lvHelpDarlehen.getTilgungstermin());
+        //this.ivTilgryth = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(lvHelpDarlehen.getLaufzeitZinsanpassung());
+        this.ivTilgsatz = lvHelpDarlehen.getTilgungsprozentsatz();
         this.ivTilgver = "0";
-        this.ivVfaellig = lvHelpDarlehenLoanIQ.getVorfaelligkeitstage();
-        this.ivWhrg = lvHelpDarlehenLoanIQ.getBetragwaehrung();
-        this.ivZahltyp = lvHelpDarlehenLoanIQ.getTilgungsart();
-        if (lvHelpDarlehenLoanIQ.getTilgungsart().equals("7"))
+        this.ivVfaellig = lvHelpDarlehen.getVorfaelligkeitstage();
+        this.ivWhrg = lvHelpDarlehen.getBetragwaehrung();
+        this.ivZahltyp = lvHelpDarlehen.getTilgungsart();
+        if (lvHelpDarlehen.getTilgungsart().equals("7"))
         {
         	this.ivZahltyp = "1";
         }
  
-        this.ivZbkv = lvHelpDarlehenLoanIQ.getKonditionierungVon();
-        this.ivZinsbeg = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getBeginnErsteZinsperiode());
-        //System.out.println("Zinstermin: " + lvHelpDarlehenLoanIQ.getZinstermin());
-        //System.out.println("Zinsperiodenende: " + lvHelpDarlehenLoanIQ.getZinsperiodenende());
-        //System.out.println("Naechste Zinsanpassung: " + lvHelpDarlehenLoanIQ.getNaechsteZinsanpassung());
-        this.ivZinsdat = DatumUtilities.changeDate(lvHelpDarlehenLoanIQ.getZinstermin());
+        this.ivZbkv = lvHelpDarlehen.getKonditionierungVon();
+        this.ivZinsbeg = DatumUtilities.changeDate(lvHelpDarlehen.getBeginnErsteZinsperiode());
+        //System.out.println("Zinstermin: " + lvHelpDarlehen.getZinstermin());
+        //System.out.println("Zinsperiodenende: " + lvHelpDarlehen.getZinsperiodenende());
+        //System.out.println("Naechste Zinsanpassung: " + lvHelpDarlehen.getNaechsteZinsanpassung());
+        this.ivZinsdat = DatumUtilities.changeDate(lvHelpDarlehen.getZinstermin());
         this.ivZinsryth = lvZinsrhythmusLoanIQ;
-        this.ivZinstyp = MappingLoanIQ.changeZinstyp(lvHelpDarlehenLoanIQ.getZinstyp(), lvHelpDarlehenLoanIQ.getMerkmalAktivPassiv(), pvLogger);
+        this.ivZinstyp = MappingLoanIQ.changeZinstyp(lvHelpDarlehen.getZinstyp(), lvHelpDarlehen.getMerkmalAktivPassiv(), pvLogger);
                 
         return true;
     }
@@ -2775,32 +2808,48 @@ public class TXSKonditionenDaten implements TXSTransaktion
       // immer gleich
       this.setMonendkonv("1");
       
-      // passive Tilgungen werden in frisco.java abgeschnitten !
-      this.setMantilg("0");
       this.setNomzins(pvPassivDaten.getNominalzinssatz());
       
       // Referenzzins
       this.setRefzins(MappingLoanIQ.changeReferenzzins(pvPassivDaten.getReferenzzins(), pvPassivDaten.getZinszahlungsrhythmus(), pvLogger));
-      
+        // CT 27.05.2019 - Duplizierung des Referenzzins in 'ivRefzinstxt'
+        this.ivRefzinstxt = this.ivRefzins;
+
       this.setSpread(pvPassivDaten.getSpread());
       
       // immer kurz
       this.setTilgabw("1");
             
+      // Tilgung defaultmaessig auf 'Ja' (1)
+      this.setMantilg("1");
+
       // aufpassen, prolongierte
       // Sonderbehandlung Rollover
-      this.setManzins("1");  
-      if (("F".equals(pvPassivDaten.getRolloverKennzeichen())) || ("V".equals(pvPassivDaten.getRolloverKennzeichen())))  
+      this.setManzins("1"); 
+
+      ////CT 31.01.2019
+      // Fuer Zeros werden keine Zinsen angeliefert - CT 05.11.2018
+      ////if (pvPassivDaten.getMerkmalZinssatz().equals("ZERO"))
+      ////{
+    	////  this.setManzins("0");
+      ////}
+      ////CT 31.01.2019
+
+      if (("F".equals(pvPassivDaten.getRolloverKennzeichen())) || ("V".equals(pvPassivDaten.getRolloverKennzeichen())))
       {
         this.setManzins("0");
-      }              
+      }
       
       //if (ivVorlaufsatz.getInstitutsnummer().startsWith("009"))
       //{
-        this.setFaellig(DatumUtilities.changeDate(pvPassivDaten.getTilgungsbeginn()));
+        // Das Laufzeitende-Datum als Faelligkeit verwenden - CT 23.01.2019
+        this.setFaellig(DatumUtilities.changeDate(pvPassivDaten.getLaufzeitende()));
+        
         this.setTilgdat(DatumUtilities.changeDate(pvPassivDaten.getTilgungsbeginn()));
         this.setTilgbeg(DatumUtilities.changeDate(pvPassivDaten.getTilgungsbeginn()));
-        this.setEnddat(DatumUtilities.changeDate(pvPassivDaten.getTilgungsbeginn()));
+        
+        // Das Laufzeitende-Datum als Endedatum verwenden - CT 23.01.2019
+        this.setEnddat(DatumUtilities.changeDate(pvPassivDaten.getLaufzeitende()));
       //}
            
       
@@ -2856,11 +2905,17 @@ public class TXSKonditionenDaten implements TXSTransaktion
       this.setZinsperkonv("1");
       
       this.setZinsryth(MappingLoanIQ.changeZinsrythmus(pvPassivDaten.getZinszahlungsrhythmus(), pvLogger));
-      // Zeros immer Sonderfall (13)
-      if (pvPassivDaten.getMerkmalZinssatz().equals("ZERO"))
-      {
-    	  this.setZinsryth("13");
-      }
+    // Zeros immer Sonderfall (13) -> Aenderung auf 'taeglich' - CT 05.11.2018
+    //// CT 23.01.2019
+    if (pvPassivDaten.getMerkmalZinssatz().equals("ZERO"))
+    {
+      this.setZinsryth("13");
+    }
+      ////if (pvPassivDaten.getMerkmalZinssatz().equals("ZERO"))
+      ////{
+      ////	  this.setZinsryth("1000");
+      ////}
+      ////CT 23.01.2019
        
       if (pvPassivDaten.getMerkmalZinssatz().equals("FIXED"))
       {
@@ -2898,98 +2953,98 @@ public class TXSKonditionenDaten implements TXSTransaktion
 
     /**
      * Importiert die Darlehensinformationen von LoanIQ fuer das RefiRegister
-     * @param pvDarlehenLoanIQ
+     * @param pvDarlehen
      * @param pvLogger log4j-Logger
      * @return 
      */
-    public boolean importLoanIQRefiRegister(DarlehenLoanIQ pvDarlehenLoanIQ, Logger pvLogger)
+    public boolean importLoanIQRefiRegister(Darlehen pvDarlehen, Logger pvLogger)
     {    	
         // Buergschaftprozent
         BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
     			
-        String lvZinsrhythmusLoanIQ = MappingLoanIQ.changeZinsrythmus(pvDarlehenLoanIQ.getZinszahlungsrythmus(), pvLogger);
-        this.ivAtkonv = MappingLoanIQ.changeArbeitskonvention(pvDarlehenLoanIQ.getArbeitskonvention(), pvLogger);
+        String lvZinsrhythmusLoanIQ = MappingLoanIQ.changeZinsrythmus(pvDarlehen.getZinszahlungsrythmus(), pvLogger);
+        this.ivAtkonv = MappingLoanIQ.changeArbeitskonvention(pvDarlehen.getArbeitskonvention(), pvLogger);
         this.ivAtkonvtag = "0";
         this.ivBankkal = "DE";
         
-       	if (lvBuergschaftprozent.doubleValue() > 0.0 && pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+       	if (lvBuergschaftprozent.doubleValue() > 0.0 && pvDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
     	{
-    		this.ivBernom = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getBerechnungsnominale())).multiply(lvBuergschaftprozent).toPlainString();
+    		this.ivBernom = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBerechnungsnominale())).multiply(lvBuergschaftprozent).toPlainString();
         }
     	else
     	{
-    		this.ivBernom = pvDarlehenLoanIQ.getBerechnungsnominale();
+    		this.ivBernom = pvDarlehen.getBerechnungsnominale();
         }  
-        //this.ivDatltztanp = DatumUtilities.changeDate(pvDarlehenLoanIQ.getLetzteZinsanpassung());
-        this.ivDkv = pvDarlehenLoanIQ.getDatumKonditionierung();
-        if (!pvDarlehenLoanIQ.getLaufzeitZinsanpassung().equals("99Y"))
+        //this.ivDatltztanp = DatumUtilities.changeDate(pvDarlehen.getLetzteZinsanpassung());
+        this.ivDkv = pvDarlehen.getDatumKonditionierung();
+        if (!pvDarlehen.getLaufzeitZinsanpassung().equals("99Y"))
         {
-          this.ivDlz = pvDarlehenLoanIQ.getLaufzeitZinsanpassung();
+          this.ivDlz = pvDarlehen.getLaufzeitZinsanpassung();
         }
-        this.ivDlza = pvDarlehenLoanIQ.getLetzteZinsanpassung();
-        this.ivDnz = pvDarlehenLoanIQ.getZinsperiodenende();
-        this.ivDza = pvDarlehenLoanIQ.getNaechsteZinsanpassung();
-        this.ivEnddat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getLaufzeitende());
-        //this.ivDatltzttilg = DatumUtilities.changeDate(pvDarlehenLoanIQ.getLaufzeitende());
-        this.ivFaellig = DatumUtilities.changeDate(pvDarlehenLoanIQ.getFaelligkeit());
+        this.ivDlza = pvDarlehen.getLetzteZinsanpassung();
+        this.ivDnz = pvDarlehen.getZinsperiodenende();
+        this.ivDza = pvDarlehen.getNaechsteZinsanpassung();
+        this.ivEnddat = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+        //this.ivDatltzttilg = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+        this.ivFaellig = DatumUtilities.changeDate(pvDarlehen.getFaelligkeit());
         this.ivFixkalart = "1";
         this.ivFixkonv = "1";
-        this.ivFixtage = pvDarlehenLoanIQ.getVorfaelligkeitstage();
+        this.ivFixtage = pvDarlehen.getVorfaelligkeitstage();
         
         this.ivKalfix = "DE";       
-        this.ivKalkonv = pvDarlehenLoanIQ.getKalenderkonvention();
+        this.ivKalkonv = pvDarlehen.getKalenderkonvention();
         this.ivKondkey = "1";
         
-       	if (lvBuergschaftprozent.doubleValue() > 0.0 && pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+       	if (lvBuergschaftprozent.doubleValue() > 0.0 && pvDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
     	{
-    		this.ivLrate = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getRateFaelligkeit())).multiply(lvBuergschaftprozent).toPlainString();
+    		this.ivLrate = (StringKonverter.convertString2BigDecimal(pvDarlehen.getRateFaelligkeit())).multiply(lvBuergschaftprozent).toPlainString();
         }
     	else
     	{
-    		this.ivLrate = pvDarlehenLoanIQ.getRateFaelligkeit();
+    		this.ivLrate = pvDarlehen.getRateFaelligkeit();
         }
  
         this.ivMantilg = "1";
         this.ivManzins = "1";
         this.ivMonendkonv = "1";
-        this.ivNomzins = pvDarlehenLoanIQ.getNominalzinssatz();
-        this.ivRefzins = MappingLoanIQ.changeReferenzzins(pvDarlehenLoanIQ.getReferenzzins(), pvDarlehenLoanIQ.getLaufzeitZinsanpassung(), pvLogger);
-        
-        this.ivSpread = pvDarlehenLoanIQ.getSpread();
+        this.ivNomzins = pvDarlehen.getNominalzinssatz();
+        this.ivRefzins = MappingLoanIQ.changeReferenzzins(pvDarlehen.getReferenzzins(), pvDarlehen.getLaufzeitZinsanpassung(), pvLogger);
 
-        this.ivTilgbeg = DatumUtilities.changeDate(pvDarlehenLoanIQ.getTilgungsbeginn());
-        this.ivTilgdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getTilgungstermin());
+        this.ivSpread = pvDarlehen.getSpread();
+
+        this.ivTilgbeg = DatumUtilities.changeDate(pvDarlehen.getTilgungsbeginn());
+        this.ivTilgdat = DatumUtilities.changeDate(pvDarlehen.getTilgungstermin());
         //this.ivTilgryth = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(lvHelpDarlehenLoanIQ.getLaufzeitZinsanpassung());
-        this.ivTilgsatz = pvDarlehenLoanIQ.getTilgungsprozentsatz();
+        this.ivTilgsatz = pvDarlehen.getTilgungsprozentsatz();
         this.ivTilgver = "0";
-        this.ivVfaellig = pvDarlehenLoanIQ.getVorfaelligkeitstage();
-        this.ivWhrg = pvDarlehenLoanIQ.getBetragwaehrung();
-        this.ivZahltyp = pvDarlehenLoanIQ.getTilgungsart();
-        if (pvDarlehenLoanIQ.getTilgungsart().equals("7"))
+        this.ivVfaellig = pvDarlehen.getVorfaelligkeitstage();
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
+        this.ivZahltyp = pvDarlehen.getTilgungsart();
+        if (pvDarlehen.getTilgungsart().equals("7"))
         {
         	this.ivZahltyp = "1";
         }
         
-        this.ivZbkv = pvDarlehenLoanIQ.getKonditionierungVon();
-        this.ivZinsbeg = DatumUtilities.changeDate(pvDarlehenLoanIQ.getBeginnErsteZinsperiode());
+        this.ivZbkv = pvDarlehen.getKonditionierungVon();
+        this.ivZinsbeg = DatumUtilities.changeDate(pvDarlehen.getBeginnErsteZinsperiode());
         //System.out.println("Zinstermin: " + lvHelpDarlehenLoanIQ.getZinstermin());
         //System.out.println("Zinsperiodenende: " + lvHelpDarlehenLoanIQ.getZinsperiodenende());
         //System.out.println("Naechste Zinsanpassung: " + lvHelpDarlehenLoanIQ.getNaechsteZinsanpassung());
-        this.ivZinsdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getZinstermin());
+        this.ivZinsdat = DatumUtilities.changeDate(pvDarlehen.getZinstermin());
         this.ivZinsryth = lvZinsrhythmusLoanIQ;
-        this.ivZinstyp = MappingLoanIQ.changeZinstyp(pvDarlehenLoanIQ.getZinstyp(), pvDarlehenLoanIQ.getMerkmalAktivPassiv(), pvLogger);
+        this.ivZinstyp = MappingLoanIQ.changeZinstyp(pvDarlehen.getZinstyp(), pvDarlehen.getMerkmalAktivPassiv(), pvLogger);
                 
         return true;
     }
     
     /**
      * Importiert die Darlehensinformationen von MIDAS
-     * @param pvDarlehenLoanIQ
+     * @param pvDarlehen
      * @param pvLogger log4j-Logger
      * @return 
      */
-    public boolean importMIDAS(DarlehenLoanIQ pvDarlehenLoanIQ, Logger pvLogger)
+    public boolean importMIDAS(Darlehen pvDarlehen, Logger pvLogger)
     {
     	this.ivAtkonv = "1";
         this.ivAtkonvtag = "0";
@@ -2998,96 +3053,100 @@ public class TXSKonditionenDaten implements TXSTransaktion
         
         // Berechnungsnominale wird nicht beliefert
         
-        this.ivDatltztanp = DatumUtilities.changeDate(pvDarlehenLoanIQ.getLetzteZinsanpassung());
-        this.ivDkv = pvDarlehenLoanIQ.getDatumKonditionierung();
-        if (!pvDarlehenLoanIQ.getLaufzeitZinsanpassung().equals("99Y"))
+        this.ivDatltztanp = DatumUtilities.changeDate(pvDarlehen.getLetzteZinsanpassung());
+        this.ivDkv = pvDarlehen.getDatumKonditionierung();
+        if (!pvDarlehen.getLaufzeitZinsanpassung().equals("99Y"))
         {
-          this.ivDlz = pvDarlehenLoanIQ.getLaufzeitZinsanpassung();
+          this.ivDlz = pvDarlehen.getLaufzeitZinsanpassung();
         }
-        this.ivDlza = pvDarlehenLoanIQ.getLetzteZinsanpassung();
-        this.ivDnz = pvDarlehenLoanIQ.getZinsperiodenende();
-        this.ivDza = pvDarlehenLoanIQ.getNaechsteZinsanpassung();
-        this.ivEnddat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getLaufzeitende());
-        //this.ivFaellig = DatumUtilities.changeDate(pvDarlehenLoanIQ.getLaufzeitende());
-        this.ivDatltzttilg = DatumUtilities.changeDate(pvDarlehenLoanIQ.getLaufzeitende());
+        this.ivDlza = pvDarlehen.getLetzteZinsanpassung();
+        this.ivDnz = pvDarlehen.getZinsperiodenende();
+        this.ivDza = pvDarlehen.getNaechsteZinsanpassung();
+        this.ivEnddat = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+        //this.ivFaellig = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+        this.ivDatltzttilg = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
         
-        this.ivFaellig = DatumUtilities.changeDate(pvDarlehenLoanIQ.getFaelligkeit());
+        this.ivFaellig = DatumUtilities.changeDate(pvDarlehen.getFaelligkeit());
         this.ivFixkalart = "1";
         this.ivFixkonv = "1";
         this.ivFixtage = "2";	
         this.ivFixtagemod = "0";
         this.ivFixtagedir = "2";
         // Fixing-Rhythmus
-        if (pvDarlehenLoanIQ.getLaufzeitZinsanpassung().equals("1M"))
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("1M"))
         {
         	this.ivFixrhyth = "1";
         }
-        if (pvDarlehenLoanIQ.getLaufzeitZinsanpassung().equals("3M"))
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("3M"))
         {
         	this.ivFixrhyth = "3";
         }
-        if (pvDarlehenLoanIQ.getLaufzeitZinsanpassung().equals("6M"))
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("6M"))
         {
         	this.ivFixrhyth = "6";
         }
-        if (pvDarlehenLoanIQ.getLaufzeitZinsanpassung().equals("1Y"))
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("1Y"))
         {
         	this.ivFixrhyth = "12";
         }
         
         this.ivKalfix = "TARGET";
 
-        this.ivKalkonv = pvDarlehenLoanIQ.getKalenderkonvention();
+        this.ivKalkonv = pvDarlehen.getKalenderkonvention();
         this.ivKondkey = "1";
         
         // Leistungsrate wird nicht angeliefert
         // Buergschaftprozent
-    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getBuergschaftprozent())).divide(new BigDecimal("100.0"), 9, RoundingMode.HALF_UP);
+    	BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(new BigDecimal("100.0"), 9, RoundingMode.HALF_UP);
 
         if (lvBuergschaftprozent.doubleValue() > 0.0)
         {
-        	this.ivLrate = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getRateFaelligkeit())).multiply(lvBuergschaftprozent).toPlainString();
+        	this.ivLrate = (StringKonverter.convertString2BigDecimal(pvDarlehen.getRateFaelligkeit())).multiply(lvBuergschaftprozent).toPlainString();
         }
         else
         {
-        	this.ivLrate = pvDarlehenLoanIQ.getRateFaelligkeit();
+        	this.ivLrate = pvDarlehen.getRateFaelligkeit();
         }
 
         this.ivMantilg = "1";
         this.ivManzins = "0";        	        
         this.ivMonendkonv = "1";
-        this.ivNomzins = pvDarlehenLoanIQ.getNominalzinssatz();
-        this.ivRefzins = MappingMIDAS.changeReferenzzins(pvDarlehenLoanIQ.getReferenzzins(), pvDarlehenLoanIQ.getBetragwaehrung(), pvDarlehenLoanIQ.getLaufzeitZinsanpassung());
-        this.ivSpread = pvDarlehenLoanIQ.getSpread();
-        //this.ivTilgbeg = DatumUtilities.changeDate(pvDarlehenLoanIQ.getTilgungsbeginn()); -> Wird nicht beliefert
-        this.ivTilgdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getTilgungstermin());
-        //this.ivTilgryth = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(pvDarlehenLoanIQ.getLaufzeitZinsanpassung());
+        this.ivNomzins = pvDarlehen.getNominalzinssatz();
+        this.ivRefzins = MappingMIDAS.changeReferenzzins(pvDarlehen.getReferenzzins(), pvDarlehen.getBetragwaehrung(), pvDarlehen
+            .getLaufzeitZinsanpassung());
+        // CT 27.05.2019 - Duplizierung des Referenzzins in 'ivRefzinstxt'
+        this.ivRefzinstxt = this.ivRefzins;
+
+        this.ivSpread = pvDarlehen.getSpread();
+        //this.ivTilgbeg = DatumUtilities.changeDate(pvDarlehen.getTilgungsbeginn()); -> Wird nicht beliefert
+        this.ivTilgdat = DatumUtilities.changeDate(pvDarlehen.getTilgungstermin());
+        //this.ivTilgryth = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(pvDarlehen.getLaufzeitZinsanpassung());
         //this.ivTilgsatz = "";
         this.ivTilgver = "0";
-        this.ivWhrg = pvDarlehenLoanIQ.getBetragwaehrung();
-        this.ivZahltyp = pvDarlehenLoanIQ.getTilgungsart();
-        if (pvDarlehenLoanIQ.getTilgungsart().equals("7"))
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
+        this.ivZahltyp = pvDarlehen.getTilgungsart();
+        if (pvDarlehen.getTilgungsart().equals("7"))
         {
         	this.ivZahltyp = "1";
         }
         // MIDAS - erst einmal alle Konstant auf 'Raten'
-        if (pvDarlehenLoanIQ.getQuellsystem().startsWith("MID"))
+        if (pvDarlehen.getQuellsystem().startsWith("MID"))
         {
         	this.ivZahltyp = "2";
         }
 
-        this.ivZbkv = pvDarlehenLoanIQ.getKonditionierungVon();
-        this.ivZinsbeg = DatumUtilities.changeDate(pvDarlehenLoanIQ.getBeginnErsteZinsperiode());
-        this.ivZinsdat = DatumUtilities.changeDate(pvDarlehenLoanIQ.getZinsperiodenende());
+        this.ivZbkv = pvDarlehen.getKonditionierungVon();
+        this.ivZinsbeg = DatumUtilities.changeDate(pvDarlehen.getBeginnErsteZinsperiode());
+        this.ivZinsdat = DatumUtilities.changeDate(pvDarlehen.getZinsperiodenende());
 
-        //String lvZinsrhythmusMIDAS = MappingMIDAS.changeZinsrhythmus(pvDarlehenLoanIQ.getZinszahlungsrythmus());
-        String lvZinsrhythmusMIDAS = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(pvDarlehenLoanIQ.getLaufzeitZinsanpassung());
+        //String lvZinsrhythmusMIDAS = MappingMIDAS.changeZinsrhythmus(pvDarlehen.getZinszahlungsrythmus());
+        String lvZinsrhythmusMIDAS = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(pvDarlehen.getLaufzeitZinsanpassung());
         this.ivZinsryth = lvZinsrhythmusMIDAS;
-        this.ivZinstyp = MappingLoanIQ.changeZinstyp(pvDarlehenLoanIQ.getZinstyp(), pvDarlehenLoanIQ.getMerkmalAktivPassiv(), pvLogger);
+        this.ivZinstyp = MappingLoanIQ.changeZinstyp(pvDarlehen.getZinstyp(), pvDarlehen.getMerkmalAktivPassiv(), pvLogger);
 
         // MIDAS: Zinstyp 'fest', dann Reiter 'Zins variabel' nicht beliefern
-        //System.out.println("Zinstyp: " + pvDarlehenLoanIQ.getZinstyp());
-        if (pvDarlehenLoanIQ.getZinstyp().equals("FIXED"))
+        //System.out.println("Zinstyp: " + pvDarlehen.getZinstyp());
+        if (pvDarlehen.getZinstyp().equals("FIXED"))
         {
         	//System.out.println("Fest...");
         	this.ivFixtage = new String();
@@ -3124,8 +3183,13 @@ public class TXSKonditionenDaten implements TXSTransaktion
     	{
     		this.ivEdat = pvGattung.getGD322();
     	}
-    	
-    	this.ivAtkonv = "1"; // Konstant 'Danach'(1)
+
+        if (pvBestandsdaten.getAktivPassiv().equals("1")) // nur Aktiv
+        {
+            this.ivEnddat = pvGattung.getGD910();
+        }
+
+        this.ivAtkonv = "1"; // Konstant 'Danach'(1)
     	this.ivAtkonvmod = "0"; // Erst einmal Konstant '0' -> Problem MAVIS-Produkttyp
     	this.ivAtkonvtag = "0"; // Konstant '0'
     	this.ivBankkal = "DE";  // Konstant 'DE'
@@ -3137,22 +3201,22 @@ public class TXSKonditionenDaten implements TXSTransaktion
     	}
     			
     	this.ivFloor = pvGattung.getGD803E();
-    	if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
-    	{
+    	//if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+    	//{
     		
     		this.ivFaellig = pvGattung.getGD910();
-    	}
+    	//}
     	this.ivFixkalart = "1"; // Konstant 'Banktage'(1)
-    	this.ivFixkonv = ValueMapping.ermittleFixingKonvention(pvGattung.getGD809C());
+    	this.ivFixkonv = MappingWertpapiere.ermittleFixingKonvention(pvGattung.getGD809C());
     	if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
     	{
-    		this.ivFixrhyth = ValueMapping.ermittleZinsrythmus(pvGattung.getGD311A(), pvGattung.getGD811()); // Auch hier Zinsrythmus verwenden
+    		this.ivFixrhyth = MappingWertpapiere.ermittleZinsrythmus(pvGattung.getGD311A(), pvGattung.getGD811()); // Auch hier Zinsrythmus verwenden
     	}
     	this.ivFixtage = pvGattung.getGD809();
     	this.ivFixtagedir = "2"; // Konstant 'Davor'(2)
     	this.ivFixtagemod = "0"; // Konstant '0'
     	this.ivKalfix = "DE"; // Konstant 'DE'
-    	this.ivKalkonv = ValueMapping.ermittleKalenderkonvention(pvGattung.getGD821B());
+    	this.ivKalkonv = MappingWertpapiere.ermittleKalenderkonvention(pvGattung.getGD821B());
     	    	
     	if (pvBestandsdaten.getAktivPassiv().equals("1"))
     	{
@@ -3203,11 +3267,14 @@ public class TXSKonditionenDaten implements TXSTransaktion
     	this.ivMantilg = "1"; // Cashflows werden angeliefert - Aenderung zur alten Schnittstelle
     	this.ivManzins = "1"; // Cashflows werden angeliefert - Aenderung zur alten Schnittstelle
     	this.ivNomzins = pvGattung.getGD801A();
-    	this.ivRefzins = ValueMapping.ermittleReferenzzins(pvGattung.getGD808(), pvGattung.getGD808A(), pvGattung.getGD808B());
-    	if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
-    	{
+    	this.ivRefzins = MappingWertpapiere.ermittleReferenzzins(pvGattung.getGD808(), pvGattung.getGD808A(), pvGattung.getGD808B());
+    	// CT 27.05.2019 - Duplizierung des Referenzzins in 'ivRefzinstxt'
+        this.ivRefzinstxt = this.ivRefzins;
+
+        //if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+    	//{
     		this.ivRkurs = pvGattung.getGD861A();
-    	}
+    	//}
     	if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
     	{
     		this.ivTilgabw = "0"; // Konstant '0'
@@ -3266,19 +3333,19 @@ public class TXSKonditionenDaten implements TXSTransaktion
     	////}
     	this.ivTilgsatz = pvGattung.getGD861A();  
     	
-    	this.ivZahltyp = ValueMapping.ermittleZahlungstyp(pvGattung.getGD841());
+    	this.ivZahltyp = MappingWertpapiere.ermittleZahlungstyp(pvGattung.getGD841());
     	if (ivZahltyp.equals("3"))
     	{
     		this.ivTilgver = "0";
     	}
-    	this.ivZinsabw = ValueMapping.ermittleZinsabweichung(pvGattung.getGD321());
+    	this.ivZinsabw = MappingWertpapiere.ermittleZinsabweichung(pvGattung.getGD321());
     	this.ivZinsbeg = pvGattung.getGD322();
     	this.ivZinsdat = pvGattung.getGD290A();
     	this.ivZinsenddat = pvGattung.getGD910();
     	this.ivZinsperkonv = "1"; // Konstant 'anchor'(1)
-    	this.ivZinsryth = ValueMapping.ermittleZinsrythmus(pvGattung.getGD311A(), pvGattung.getGD811());
-    	this.ivZinstyp = ValueMapping.ermittleZinstyp(pvGattung.getGD805());
-    	this.ivZinszahlart = ValueMapping.ermittleZinszahlart(pvGattung.getGD805(), pvGattung.getGD312());
+    	this.ivZinsryth = MappingWertpapiere.ermittleZinsrythmus(pvGattung.getGD311A(), pvGattung.getGD811());
+    	this.ivZinstyp = MappingWertpapiere.ermittleZinstyp(pvGattung.getGD805());
+    	this.ivZinszahlart = MappingWertpapiere.ermittleZinszahlart(pvGattung.getGD805(), pvGattung.getGD312());
     	this.ivZinsfak = "1"; // Konstant '1'
     	this.ivVzinsdat = "0"; // Konstant '0'
     	this.ivVztilgdat = "0"; // Konstant '0'
@@ -3286,4 +3353,379 @@ public class TXSKonditionenDaten implements TXSTransaktion
     	
     	return true;
     }
+
+
+    /**
+     * Importiert die Wertpapier-Informationen fuer KEV
+     * @param pvBestandsdaten
+     * @param pvGattung
+     * @param pvLogger
+     * @return
+     */
+    public boolean importKEVWertpapier(Bestandsdaten pvBestandsdaten, Gattung pvGattung, Logger pvLogger)
+    {
+        this.ivKondkey = "1";
+        this.ivEkurs = pvGattung.getGD669();
+        if (!pvGattung.getGD660().isEmpty())
+        {
+            this.ivEdat = pvGattung.getGD660();
+        }
+        else
+        {
+            this.ivEdat = pvGattung.getGD322();
+        }
+        this.ivEnddat = pvGattung.getGD910();
+
+        this.ivAtkonv = "1"; // Konstant 'Danach'(1)
+        this.ivAtkonvmod = "0"; // Erst einmal Konstant '0' -> Problem MAVIS-Produkttyp
+        this.ivAtkonvtag = "0"; // Konstant '0'
+        this.ivBankkal = "DE";  // Konstant 'DE'
+        this.ivSpread = pvGattung.getGD808C();
+        if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+        {
+            this.ivDatltztfix = pvGattung.getGD815B();
+        }
+
+        if (MappingWertpapiere.ermittleZinstyp(pvGattung.getGD805()).equals("1"))
+        {
+            this.ivRefzins = "keine";
+        }
+        else
+        {
+            this.ivRefzins = MappingWertpapiere.ermittleReferenzzins(pvGattung.getGD808(), pvGattung.getGD808A(), pvGattung.getGD808B());
+        }
+
+        if (!MappingWertpapiere.ermittleZinstyp(pvGattung.getGD805()).equals("1"))
+        {
+            this.ivCap = pvGattung.getGD804E();
+            this.ivFloor = pvGattung.getGD803E();
+        }
+          //if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+        //{
+
+        this.ivFaellig = pvGattung.getGD910();
+        //}
+        this.ivFixkalart = "1"; // Konstant 'Banktage'(1)
+        this.ivFixkonv = MappingWertpapiere.ermittleFixingKonvention(pvGattung.getGD809C());
+        if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+        {
+            this.ivFixrhyth = MappingWertpapiere.ermittleZinsrythmus(pvGattung.getGD311A(), pvGattung.getGD811()); // Auch hier Zinsrythmus verwenden
+        }
+        this.ivFixtage = pvGattung.getGD809();
+        this.ivFixtagedir = "2"; // Konstant 'Davor'(2)
+        this.ivFixtagemod = "0"; // Konstant '0'
+        this.ivKalfix = "DE"; // Konstant 'DE'
+        this.ivKalkonv = MappingWertpapiere.ermittleKalenderkonvention(pvGattung.getGD821B());
+
+        if (pvBestandsdaten.getAktivPassiv().equals("1"))
+        {
+            if (pvGattung.getGD821B().equals("09") || pvGattung.getGD821B().equals("10"))
+            { // Ungerade(2)
+                this.ivKupbas = "2";
+                this.ivKupbasodd = "2";
+            }
+            else // Gerade(1)
+            {
+                this.ivKupbas = "1";
+                this.ivKupbasodd = "1";
+            }
+        }
+        if (pvBestandsdaten.getAktivPassiv().equals("2"))
+        {
+            // Anpassungen an TXS 4.03 wegen geaenderter Barwertberechnungen dort an variablen Papieren
+            if ("010202".equals(pvBestandsdaten.getWertpapierart()))
+            {
+                this.ivKupbas = "0";
+                this.ivKupbasodd = "0";
+                //this.ivDatltztfix = pvGattung.getGD815B(); // Hier noetig...
+                //lvEl_konddaten.setAttribute("fixrhyth",lvNodeSA01.getChildText("Zinszahlungstyp").trim());
+            }
+            else
+            {
+                if (pvGattung.getGD821B().equals("09") || pvGattung.getGD821B().equals("10"))
+                { // Ungerade(2)
+                    this.ivKupbas = "2";
+                    this.ivKupbasodd = "2";
+                }
+                else // Gerade(1)
+                {
+                    this.ivKupbas = "1";
+                    this.ivKupbasodd = "1";
+                }
+            }
+        }
+        if (pvGattung.getGD900().isEmpty())
+        {
+            this.ivLrate = pvBestandsdaten.getNominalbetrag();
+        }
+        else
+        {
+            this.ivLrate = pvGattung.getGD921B();
+        }
+        this.ivMonendkonv = "1"; // Konstant 'gleich'(1)
+        this.ivMantilg = "1"; // Cashflows werden angeliefert - Aenderung zur alten Schnittstelle
+        this.ivManzins = "1"; // Cashflows werden angeliefert - Aenderung zur alten Schnittstelle
+        this.ivNomzins = pvGattung.getGD801A();
+        // CT 27.05.2019 - Duplizierung des Referenzzins in 'ivRefzinstxt'
+        //this.ivRefzinstxt = this.ivRefzins;
+
+        //if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+        //{
+        this.ivRkurs = pvGattung.getGD861A();
+        //}
+        if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+        {
+            this.ivTilgabw = "0"; // Konstant '0'
+        }
+        if (pvBestandsdaten.getAktivPassiv().equals("2")) // nur Passiv
+        {
+            this.ivTilgbeg = pvGattung.getGD910();
+        }
+        this.ivTilgdat = pvGattung.getGD910();
+        this.ivTilgperkonv = "1"; // Konstant 'anchor'(1)
+
+        // Tilgungsrythmus defaultmaessig auf 'bullet' (0) setzen - CT 11.08.2015
+        //if (pvBestandsdaten.getAktivPassiv().equals("2"))
+        //{
+        this.ivTilgryth = "0";
+        //}
+    	/* else
+    	{
+      		// GD842     	TXS-Wert
+    		// 1            12
+    		// 3            6
+    		// 4            3
+    		// A            1
+    		// <> blank     13
+
+    		// Defaultwert '0'
+    		this.ivTilgryth = "0";
+    		if (!(pvGattung.getGD842().equals("1") || pvGattung.getGD842().equals("3") || pvGattung.getGD842().equals("4") || pvGattung.getGD842().equals("A")))
+    		{
+    			this.ivTilgryth = "13";
+    		}
+    		else
+    		{
+    		  if (pvGattung.getGD842().equals("1"))
+    		  {
+    			this.ivTilgryth = "12";
+    		  }
+    		  if (pvGattung.getGD842().equals("3"))
+    		  {
+    			this.ivTilgryth = "6";
+    		  }
+    		  if (pvGattung.getGD842().equals("4"))
+    		  {
+    			this.ivTilgryth = "3";
+    		  }
+    		  if (pvGattung.getGD842().equals("A"))
+    		  {
+    			this.ivTilgryth = "1";
+    		  }
+    		}
+    	} */
+        ////this.ivTilgsatz = "0";
+        ////if (pvGattung.getGD841().equals("3") || pvGattung.getGD841().equals("4") || pvGattung.getGD841().equals("E") || pvGattung.getGD841().equals("B"))
+        ////{
+        ////	this.ivTilgsatz = "100";
+        ////}
+        this.ivTilgsatz = pvGattung.getGD861A();
+
+        this.ivZahltyp = MappingWertpapiere.ermittleZahlungstyp(pvGattung.getGD841());
+        if (ivZahltyp.equals("3"))
+        {
+            this.ivTilgver = "0";
+        }
+        this.ivZinsabw = MappingWertpapiere.ermittleZinsabweichung(pvGattung.getGD321());
+        this.ivZinsbeg = pvGattung.getGD322();
+        this.ivZinsdat = pvGattung.getGD290A();
+        this.ivZinsenddat = pvGattung.getGD910();
+        this.ivZinsperkonv = "1"; // Konstant 'anchor'(1)
+        this.ivZinsryth = MappingWertpapiere.ermittleZinsrythmus(pvGattung.getGD311A(), pvGattung.getGD811());
+        this.ivZinstyp = MappingWertpapiere.ermittleZinstyp(pvGattung.getGD805());
+        this.ivZinszahlart = MappingWertpapiere.ermittleZinszahlart(pvGattung.getGD805(), pvGattung.getGD312());
+        this.ivZinsfak = "1"; // Konstant '1'
+        this.ivVzinsdat = "0"; // Konstant '0'
+        this.ivVztilgdat = "0"; // Konstant '0'
+        this.ivWhrg = pvBestandsdaten.getNominalbetragWaehrung();
+
+        return true;
+    }
+
+    /**
+     * Importiert die Darlehensinformationen aus LoanIQ fuer KEV
+     * @param pvDarlehen
+     * @param pvLogger log4j-Logger
+     * @return
+     */
+    public boolean importKEVLoanIQ(Darlehen pvDarlehen, Logger pvLogger)
+    {
+        this.ivAtkonv = "1";
+        this.ivAtkonvtag = "0";
+
+        // this.ivBankkal = "TARGET"; // Wird nicht beliefert
+
+        // Berechnungsnominale wird nicht beliefert
+
+        this.ivDatltztanp = DatumUtilities.changeDate(pvDarlehen.getLetzteZinsanpassung());
+        this.ivDkv = pvDarlehen.getDatumKonditionierung();
+        if (!pvDarlehen.getLaufzeitZinsanpassung().equals("99Y"))
+        {
+            this.ivDlz = pvDarlehen.getLaufzeitZinsanpassung();
+        }
+        this.ivDlza = pvDarlehen.getLetzteZinsanpassung();
+        this.ivDnz = pvDarlehen.getZinsperiodenende();
+        this.ivDza = pvDarlehen.getNaechsteZinsanpassung();
+        this.ivEnddat = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+        //this.ivFaellig = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+        this.ivDatltzttilg = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+
+        this.ivFaellig = DatumUtilities.changeDate(pvDarlehen.getFaelligkeit());
+        this.ivFixkalart = "1";
+        this.ivFixkonv = "1";
+        this.ivFixtage = "2";
+        this.ivFixtagemod = "0";
+        this.ivFixtagedir = "2";
+        // Fixing-Rhythmus
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("1M"))
+        {
+            this.ivFixrhyth = "1";
+        }
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("3M"))
+        {
+            this.ivFixrhyth = "3";
+        }
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("6M"))
+        {
+            this.ivFixrhyth = "6";
+        }
+        if (pvDarlehen.getLaufzeitZinsanpassung().equals("1Y"))
+        {
+            this.ivFixrhyth = "12";
+        }
+
+        this.ivKalfix = "TARGET";
+
+        this.ivKalkonv = pvDarlehen.getKalenderkonvention();
+        this.ivKondkey = "1";
+
+        // Leistungsrate wird nicht angeliefert
+        // Buergschaftprozent
+        BigDecimal lvBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(new BigDecimal("100.0"), 9, RoundingMode.HALF_UP);
+
+        if (lvBuergschaftprozent.doubleValue() > 0.0)
+        {
+            this.ivLrate = (StringKonverter.convertString2BigDecimal(pvDarlehen.getRateFaelligkeit())).multiply(lvBuergschaftprozent).toPlainString();
+        }
+        else
+        {
+            this.ivLrate = pvDarlehen.getRateFaelligkeit();
+        }
+
+        this.ivMantilg = "1";
+        this.ivManzins = "0";
+        this.ivMonendkonv = "1";
+        this.ivNomzins = pvDarlehen.getNominalzinssatz();
+        this.ivRefzins = MappingMIDAS.changeReferenzzins(pvDarlehen.getReferenzzins(), pvDarlehen.getBetragwaehrung(), pvDarlehen
+            .getLaufzeitZinsanpassung());
+        // CT 27.05.2019 - Duplizierung des Referenzzins in 'ivRefzinstxt'
+        //this.ivRefzinstxt = this.ivRefzins;
+
+        pvLogger.info("Refzins;" + pvDarlehen.getKontonummer() + ";" + pvDarlehen.getAusplatzierungsmerkmal() + ";" + pvDarlehen
+            .getReferenzzins() + ";" + pvDarlehen.getLaufzeitZinsanpassung() + ";" + this.ivRefzins);
+        this.ivSpread = pvDarlehen.getSpread();
+        //this.ivTilgbeg = DatumUtilities.changeDate(pvDarlehen.getTilgungsbeginn()); -> Wird nicht beliefert
+        this.ivTilgdat = DatumUtilities.changeDate(pvDarlehen.getTilgungstermin());
+        //this.ivTilgryth = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(pvDarlehen.getLaufzeitZinsanpassung());
+        //this.ivTilgsatz = "";
+        this.ivTilgver = "0";
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
+        this.ivZahltyp = pvDarlehen.getTilgungsart();
+        if (pvDarlehen.getTilgungsart().equals("7"))
+        {
+            this.ivZahltyp = "1";
+        }
+        // MIDAS - erst einmal alle Konstant auf 'Raten'
+        if (pvDarlehen.getQuellsystem().startsWith("MID"))
+        {
+            this.ivZahltyp = "2";
+        }
+
+        this.ivZbkv = pvDarlehen.getKonditionierungVon();
+        this.ivZinsbeg = DatumUtilities.changeDate(pvDarlehen.getBeginnErsteZinsperiode());
+        this.ivZinsdat = DatumUtilities.changeDate(pvDarlehen.getZinsperiodenende());
+
+        //String lvZinsrhythmusMIDAS = MappingMIDAS.changeZinsrhythmus(pvDarlehen.getZinszahlungsrythmus());
+        String lvZinsrhythmusMIDAS = MappingMIDAS.changeZinsrhythmusTilgungsrhythmus(pvDarlehen.getLaufzeitZinsanpassung());
+        this.ivZinsryth = lvZinsrhythmusMIDAS;
+        this.ivZinstyp = MappingLoanIQ.changeZinstyp(pvDarlehen.getZinstyp(), pvDarlehen.getMerkmalAktivPassiv(), pvLogger);
+
+        // MIDAS: Zinstyp 'fest', dann Reiter 'Zins variabel' nicht beliefern
+        //System.out.println("Zinstyp: " + pvDarlehen.getZinstyp());
+        if (pvDarlehen.getZinstyp().equals("FIXED"))
+        {
+            //System.out.println("Fest...");
+            this.ivFixtage = new String();
+            this.ivFixtagedir = new String();
+            this.ivFixtagemod = new String();
+            this.ivKalfix = new String();
+            this.ivFixrhyth = new String();
+            this.ivRefizins = new String();
+
+            this.ivSpread = new String();
+            this.ivFixkalart = new String();
+            this.ivFixkonv = new String();
+        }
+
+        return true;
+    }
+
+    /**
+     * Importiert die Termingeldinformationen
+     * @param pvTermingeld Termingeld
+     * @param pvLogger log4j-Logger
+     * @return
+     */
+    public boolean importTermingeld(Termingeld pvTermingeld, Logger pvLogger)
+    {
+        // this.ivBankkal = "TARGET"; // Wird nicht beliefert
+
+        // Berechnungsnominale wird nicht beliefert
+
+        //this.ivDatltztanp = DatumUtilities.changeDate(pvDarlehen.getLetzteZinsanpassung());
+        //this.ivDkv = pvDarlehen.getDatumKonditionierung();
+        //if (!pvDarlehen.getLaufzeitZinsanpassung().equals("99Y"))
+        //{
+        //    this.ivDlz = pvDarlehen.getLaufzeitZinsanpassung();
+        //}
+        //this.ivDlza = pvDarlehen.getLetzteZinsanpassung();
+        //this.ivDnz = pvDarlehen.getZinsperiodenende();
+        //this.ivDza = pvDarlehen.getNaechsteZinsanpassung();
+        this.ivEnddat = DatumUtilities.changeDate(pvTermingeld.getFaelligkeit());
+        this.ivEdat = DatumUtilities.changeDate(pvTermingeld.getEmissionsdatum());
+        //this.ivDatltzttilg = DatumUtilities.changeDate(pvDarlehen.getLaufzeitende());
+
+        this.ivFaellig = DatumUtilities.changeDate(pvTermingeld.getFaelligkeit());
+
+        this.ivKalkonv = pvTermingeld.getKalenderkonvention();
+        this.ivKondkey = "1";
+
+        //this.ivMantilg = "1";
+        //this.ivManzins = "0";
+
+        this.ivNomzins = pvTermingeld.getZinssatz();
+
+        this.ivTilgbeg = DatumUtilities.changeDate(pvTermingeld.getTilgungsbeginn());
+        this.ivTilgdat = DatumUtilities.changeDate(pvTermingeld.getTilgungsbeginn());
+
+        this.ivWhrg = pvTermingeld.getWaehrung();
+
+        this.ivZinsbeg = DatumUtilities.changeDate(pvTermingeld.getZinsbeginn());
+        this.ivZinsdat = DatumUtilities.changeDate(pvTermingeld.getZinsende());
+
+        this.ivZinstyp = MappingLoanIQ.changeZinstyp(pvTermingeld.getZinstyp(), "A", pvLogger);
+
+        return true;
+    }
+
 }

@@ -18,6 +18,7 @@ import org.jdom2.Element;
  * @author Stefan Unnasch
  * Erzeugt die TXS Transaktionen fuer aktive Finanzgeschaefte aus MAVIS
  */
+@Deprecated
 public class Aktiv {
     
 	/**
@@ -170,7 +171,7 @@ public class Aktiv {
         List<Element> lvListSA01 = pvAktiv.getChildren("SATZSA01");
         Element lvNodeSA01 = (Element) lvListSA01.get(0);
        
-        // element slicedaten für die Ausgabe
+        // element slicedaten fï¿½r die Ausgabe
         Element lvEl_slicedaten = new Element("slicedaten");
         
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +222,7 @@ public class Aktiv {
             }
          
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       // Liquiditätsreserve, setattribute unten !
+       // Liquiditï¿½tsreserve, setattribute unten !
        String lvMynliqui ="";
        // Ausplatzierungsmerkmal wird verwendet - CT 16.06.2016
        if (("K4".equals(lvNodeSA01.getChildText("AusplazMM"))) ||  // Kommunal
@@ -229,16 +230,16 @@ public class Aktiv {
            ("S4".equals(lvNodeSA01.getChildText("AusplazMM"))) ||  // Schiffe
            ("F4".equals(lvNodeSA01.getChildText("AusplazMM")))   ) // Flugzeuge
        {
-    	   lvMynliqui = "1"; // hier gleichzeitig Liquidtätsreserve
+    	   lvMynliqui = "1"; // hier gleichzeitig Liquidtï¿½tsreserve
        }
        else 
        {     
-    	   lvMynliqui = "0"; // keine Liquidtätsreserve
+    	   lvMynliqui = "0"; // keine Liquidtï¿½tsreserve
        }
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       //// An dieser Stelle die Umsetzung auf die "neuen" Transaktionen/pools Schiffe/Flugzeuge/ÖPG 
+       //// An dieser Stelle die Umsetzung auf die "neuen" Transaktionen/pools Schiffe/Flugzeuge/ï¿½PG 
        String lvmytx="";
        String lvmypool="";
        String ivneuesTxsprojekt;  
@@ -254,8 +255,8 @@ public class Aktiv {
        //}
        //else if (lvNodeSA03.getChildText("WPArt").substring(2, 4).equals("02"))
        //     {
-       //     	lvmytx = "Öffentlicher Pfandbrief";
-       //     	lvmypool = "Öffentlicher Pfandbrief";
+       //     	lvmytx = "ï¿½ffentlicher Pfandbrief";
+       //     	lvmypool = "ï¿½ffentlicher Pfandbrief";
        //     }
        if (lvNodeSA01.getChildText("AusplazMM").startsWith("H"))
        {
@@ -265,8 +266,8 @@ public class Aktiv {
        
        if (lvNodeSA01.getChildText("AusplazMM").startsWith("K"))
        {
-    	   lvmytx = "Öffentlicher Pfandbrief";
-    	   lvmypool = "Öffentlicher Pfandbrief";
+    	   lvmytx = "ï¿½ffentlicher Pfandbrief";
+    	   lvmypool = "ï¿½ffentlicher Pfandbrief";
        }
        
        // Umstellung vom Deckungsschluessel auf das Ausplatzierungsmerkmal - CT 16.06.2016
@@ -285,9 +286,9 @@ public class Aktiv {
             else if (lvNodeSA01.getChildText("AusplazMM").startsWith("O"))
                  {
             	    // OEPG kann nur Oeffentlich sein...
-            		lvmytx = "Öffentlicher Pfandbrief";
-            		lvmypool = "Öffentlicher Pfandbrief";
-            	   	ivneuesTxsprojekt = "ÖPG";   
+            		lvmytx = "ï¿½ffentlicher Pfandbrief";
+            		lvmypool = "ï¿½ffentlicher Pfandbrief";
+            	   	ivneuesTxsprojekt = "ï¿½PG";   
                  }
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
               
@@ -326,7 +327,7 @@ public class Aktiv {
      * Fuellen der TXS Transaktion slicedaten, enthaelt Daten des Finanzgeschaeftes zum Deckungsregister 
      * @param pvAktiv 
      * @param pvKey 
-     * @return Element zum einhängen in die XML-Ausgabe
+     * @return Element zum einhï¿½ngen in die XML-Ausgabe
      */
    public Element slicedaten_aktiv_old(Element pvAktiv, Element pvKey)
     {
@@ -338,7 +339,7 @@ public class Aktiv {
         List<Element> lvListSA01 = pvAktiv.getChildren("SATZSA01");
         Element lvNodeSA01 = (Element) lvListSA01.get(0);
        
-        // element slicedaten für die Ausgabe
+        // element slicedaten fï¿½r die Ausgabe
         Element lvEl_slicedaten = new Element("slicedaten");
         
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -348,13 +349,13 @@ public class Aktiv {
        /* Umstellung vom Deckungsschluessel auf das Ausplatzierungsmerkmal - CT 16.06.2016
        if (("S".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||
            ("V".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||
-           ("3".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // sichernde ÜD Schiffe
+           ("3".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // sichernde ï¿½D Schiffe
            ("7".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // Liqui Schiffe
            ("U".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||
            ("W".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) || 
-           ("4".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // sichernde ÜD Flugzeuge
+           ("4".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // sichernde ï¿½D Flugzeuge
            ("8".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // Liqui Flugzeuge
-           ("A".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||   // auch für die Altdeckung
+           ("A".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||   // auch fï¿½r die Altdeckung
            ("0".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||
            ("9".equals(lvNodeSA01.getChildText("Deckungsschluessel")))   )                                                                        
            
@@ -393,7 +394,7 @@ public class Aktiv {
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       // Deckungstyp ermitteln (für PfandBG aus dem Suffix, sonst direkt aus dem Deckungskennzeichen
+       // Deckungstyp ermitteln (fï¿½r PfandBG aus dem Suffix, sonst direkt aus dem Deckungskennzeichen
        // setattribute unten !
        String lvMydecktyp = "";
        String lvAusserDeckungsschluessel = WPSuffix.getSuffixMAVIS(lvNodeSA03.getChildText("Ersatzdeckungstyp"), lvNodeSA03.getChildText("WPArt"));
@@ -410,7 +411,7 @@ public class Aktiv {
             ("O2".equals(lvNodeSA01.getChildText("AusplazMM"))))
             //("9".equals(lvNodeSA01.getChildText("Deckungsschluessel")))   ) // OEPG HYPO
        {
-           lvMydecktyp = "2"; // Sichernde Überdeckung
+           lvMydecktyp = "2"; // Sichernde ï¿½berdeckung
        }
        else if (lvAusserDeckungsschluessel.equals("KO") ||
                 lvAusserDeckungsschluessel.equals("PO")   ) 
@@ -440,7 +441,7 @@ public class Aktiv {
        } 
 
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       // Liquiditätsreserve, setattribute unten !
+       // Liquiditï¿½tsreserve, setattribute unten !
        String lvMynliqui ="";
        /* Umstellung vom Deckungsschluessel auf das Ausplatzierungsmerkmal - CT 16.06.2016
         if (("5".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // Kommunal
@@ -448,11 +449,11 @@ public class Aktiv {
             ("7".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||  // Schiffe
             ("8".equals(lvNodeSA01.getChildText("Deckungsschluessel")))   ) // Flugzeuge
        {
-            lvMynliqui = "1"; // hier gleichzeitig Liquidtätsreserve
+            lvMynliqui = "1"; // hier gleichzeitig Liquidtï¿½tsreserve
        }
        else 
        {    
-            lvMynliqui = "0"; // keine Liquidtätsreserve
+            lvMynliqui = "0"; // keine Liquidtï¿½tsreserve
        } */
        	// Ausplatzierungsmerkmal wird verwendet - CT 16.06.2016
        	if (("K4".equals(lvNodeSA01.getChildText("AusplazMM"))) ||  // Kommunal
@@ -460,21 +461,21 @@ public class Aktiv {
             ("S4".equals(lvNodeSA01.getChildText("AusplazMM"))) ||  // Schiffe
             ("F4".equals(lvNodeSA01.getChildText("AusplazMM")))   ) // Flugzeuge
           {
-               lvMynliqui = "1"; // hier gleichzeitig Liquidtätsreserve
+               lvMynliqui = "1"; // hier gleichzeitig Liquidtï¿½tsreserve
           }
           else 
           {    
-               lvMynliqui = "0"; // keine Liquidtätsreserve
+               lvMynliqui = "0"; // keine Liquidtï¿½tsreserve
           }
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       //// An dieser Stelle die Umsetzung auf die "neuen" Transaktionen/pools Schiffe/Flugzeuge/ÖPG 
+       //// An dieser Stelle die Umsetzung auf die "neuen" Transaktionen/pools Schiffe/Flugzeuge/ï¿½PG 
        String lvmytx="";
        String lvmypool="";
        String ivneuesTxsprojekt;  
        
-       // kommt noch aus MAVIS mit, da PfandBG BLB oder NLB im Namen trägt 
+       // kommt noch aus MAVIS mit, da PfandBG BLB oder NLB im Namen trï¿½gt 
        // die "neuen" Projekte tragen das Institut aber nicht im Namen
        ivneuesTxsprojekt = ivTxsprojekt; 
        
@@ -485,16 +486,16 @@ public class Aktiv {
        }
        else if (lvNodeSA03.getChildText("WPArt").substring(2, 4).equals("02"))
        {
-            lvmytx = "Öffentlicher Pfandbrief";
-            lvmypool = "Öffentlicher Pfandbrief";
+            lvmytx = "ï¿½ffentlicher Pfandbrief";
+            lvmypool = "ï¿½ffentlicher Pfandbrief";
        }
        
-       // ÖPG kommt über die WPART, hier nur S/U/B
+       // ï¿½PG kommt ï¿½ber die WPART, hier nur S/U/B
        
        // Umstellung vom Deckungsschluessel auf das Ausplatzierungsmerkmal - CT 16.06.2016
        //if (("S".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||
        //    ("V".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||
-       //    ("3".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||     // sichernde ÜD Schiffe
+       //    ("3".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||     // sichernde ï¿½D Schiffe
        //    ("7".equals(lvNodeSA01.getChildText("Deckungsschluessel")))   )    // Liqui Schiffe
        if (lvNodeSA01.getChildText("AusplazMM").startsWith("S"))
        {
@@ -504,7 +505,7 @@ public class Aktiv {
        }
        else //if (("U".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) ||
             //    ("W".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) || 
-            //    ("4".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) || // sichernde ÜD Flugzeuge
+            //    ("4".equals(lvNodeSA01.getChildText("Deckungsschluessel"))) || // sichernde ï¿½D Flugzeuge
             //    ("8".equals(lvNodeSA01.getChildText("Deckungsschluessel")))   ) // Liqui Flugzeuge
            if (lvNodeSA01.getChildText("AusplazMM").startsWith("F"))
        {
@@ -525,7 +526,7 @@ public class Aktiv {
             if (lvNodeSA01.getChildText("AusplazMM").startsWith("O"))
  
        {
-           ivneuesTxsprojekt="ÖPG";   
+           ivneuesTxsprojekt="ï¿½PG";   
        }
        // Abgegangen herausgenommen - CT 16.06.2016
        //else if ("N".equals(lvNodeSA01.getChildText("Deckungsschluessel")))
@@ -540,41 +541,41 @@ public class Aktiv {
        // Sonderloesungen fuer die BLB 
        if (ivTxsprojekt.startsWith("BLB"))
        {
-           // dieses Papier für die Sichernde Überdeckung Hypo, projekt muss nicht umgesetzt werden
+           // dieses Papier fï¿½r die Sichernde ï¿½berdeckung Hypo, projekt muss nicht umgesetzt werden
            if ("XS0493444060".equals(pvKey.getChildText("Produkt")))
            {
-               lvMydecktyp = "2"; // Sichernde Überdeckung
+               lvMydecktyp = "2"; // Sichernde ï¿½berdeckung
                lvmypool="Hypothekenpfandbrief";
                lvmytx = "Hypothekenpfandbrief";
            }
-           // dieses Papier für die weitere Deckung Schiffe, projekt,pool und tx müssen nicht umgesetzt werden
+           // dieses Papier fï¿½r die weitere Deckung Schiffe, projekt,pool und tx mï¿½ssen nicht umgesetzt werden
            if ("DE000A0B1QY7".equals(pvKey.getChildText("Produkt")))
            {
                lvMydecktyp = "3"; // Weitere Deckung
            }
-           // dieses Papier für die sichernde Deckung Schiffe, projekt,pool und tx müssen nicht umgesetzt werden
+           // dieses Papier fï¿½r die sichernde Deckung Schiffe, projekt,pool und tx mï¿½ssen nicht umgesetzt werden
            if ("XS0194605506".equals(pvKey.getChildText("Produkt")))
            {
-               lvMydecktyp = "2"; // Sichernde Überdeckung
+               lvMydecktyp = "2"; // Sichernde ï¿½berdeckung
            }
-           // Dieses Papier für die weitere Deckung Schiffe; projekt, pool und tx muessen nicht umgesetzt werden
+           // Dieses Papier fï¿½r die weitere Deckung Schiffe; projekt, pool und tx muessen nicht umgesetzt werden
            if ("DE000LFA1610".equals(pvKey.getChildText("Produkt")))
            {
                lvMydecktyp = "3"; // Weitere Deckung
            }
            
            // Wieder herausgenommen - 08.12.2014 Frau Vierling
-           // dieses Papier für die sichernde Deckung ÖPG
+           // dieses Papier fï¿½r die sichernde Deckung ï¿½PG
            //if ("DE000A1REW10".equals(pvKey.getChildText("Produkt")))
            //{
-           //    ivneuesTxsprojekt="ÖPG";
-           //    lvmytx = "Öffentlicher Pfandbrief";
-           //    lvmypool = "Öffentlicher Pfandbrief";
+           //    ivneuesTxsprojekt="ï¿½PG";
+           //    lvmytx = "ï¿½ffentlicher Pfandbrief";
+           //    lvmypool = "ï¿½ffentlicher Pfandbrief";
            //    
-           //    lvMydecktyp = "2"; // Sichernde Überdeckung
+           //    lvMydecktyp = "2"; // Sichernde ï¿½berdeckung
            //}
             
-           // dieses Papier für die weitere Deckung Schiffspfandbriefe SU 20140627
+           // dieses Papier fï¿½r die weitere Deckung Schiffspfandbriefe SU 20140627
            if ("DE000A1MATC7".equals(pvKey.getChildText("Produkt")))
            {
                ivneuesTxsprojekt="Schiffspfandbrief";
@@ -584,10 +585,10 @@ public class Aktiv {
                lvMydecktyp = "3"; // Weitere Deckung
            }
            
-           // dieses Papier für die sichernde Deckung ÖPG hypo / SU 20150309
+           // dieses Papier fï¿½r die sichernde Deckung ï¿½PG hypo / SU 20150309
            if ("DE000A0H5VC8".equals(pvKey.getChildText("Produkt")))
            {
-               ivneuesTxsprojekt="ÖPG";
+               ivneuesTxsprojekt="ï¿½PG";
                lvmytx = "Hypothekenpfandbrief";
                lvmypool = "Hypothekenpfandbrief";
            }
@@ -641,7 +642,7 @@ public class Aktiv {
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       // Währung
+       // Wï¿½hrung
        lvEl_slicedaten.setAttribute("whrg", lvNodeSA03.getChildText("Waehrung"));
        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
        
@@ -776,7 +777,7 @@ public class Aktiv {
             lvEl_konddaten.setAttribute("zinsbeg", DatumUtilities.FormatDatum(lvNodeSA01.getChildText("Zinsbeginn")));
        }
          
-       // spezial für zeros ?!?!
+       // spezial fï¿½r zeros ?!?!
         if ("0".equals(lvNodeSA01.getChildText("Zinstermin")))
        {
             if (!("0".equals(lvNodeSA01.getChildText("Zinsbeginn"))))
@@ -872,7 +873,7 @@ public class Aktiv {
               
        lvEl_persdaten.setAttribute("kundennummereigen", lvNodeZUSATZ.getChildText("KDNR"));
        
-       // persdaten unter kredkunde hängen
+       // persdaten unter kredkunde hï¿½ngen
        lvEl_kredkunde.addContent(lvEl_persdaten);
        
        return (lvEl_kredkunde);

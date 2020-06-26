@@ -8,46 +8,59 @@ package nlb.txs.schnittstelle.Rueckmeldung;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import org.apache.log4j.Logger;
 
 /**
+ * Diese Klasse schreibt eine Rueckmeldedatei.
  * @author tepperc
- *
  */
 public class OutputRueckmeldung 
 {
-    private String ivFilename;
-    
-    private File ivFile;
-    private FileOutputStream ivFos;
+
+  /**
+   * Name der Datei
+   */
+  private String ivFilename;
+
+  /**
+   * log4j-Logger
+   */
+  private Logger ivLogger;
+
+  /**
+   * FileOutputStream der Rueckmeldedatei
+   */
+  private FileOutputStream ivFos;
     
     /**
      * Konstruktor
-     * @param pvFilename  
+     * @param pvFilename Name der Datei
+     * @param pvLogger log4j-Logger
      */
-    public OutputRueckmeldung(String pvFilename)
+    public OutputRueckmeldung(String pvFilename, Logger pvLogger)
     {
         this.ivFilename = pvFilename;
+        this.ivLogger = pvLogger;
     }
     
     /**
-      * Oeffnen der Rueckmelde-Datei fuer SAPCMS
+      * Oeffnen der Rueckmelde-Datei
       */
     public void open()
     {
-      //System.out.println(filename);
-      ivFile = new File(ivFilename);
+      File ivFile = new File(ivFilename);
       try
       {
         ivFos = new FileOutputStream(ivFile);
       }
       catch (Exception e)
       {
-        System.out.println("Konnte Rueckmelde-Datei nicht oeffnen!");
+        ivLogger.error("Konnte Rueckmelde-Datei nicht oeffnen!");
       }    
     }
 
     /**
-      * Schliessen der XML-Datei
+      * Schliessen der Rueckmelde-Datei
       */
     public void close()
     {
@@ -57,25 +70,23 @@ public class OutputRueckmeldung
       }
       catch (Exception e)
       {
-          System.out.println("Konnte Rueckmelde-Datei nicht schliessen!");       
+          ivLogger.error("Konnte Rueckmelde-Datei nicht schliessen!");
       }
     }
     
     /**
-     * Schreibt eine Rueckmeldezeile raus
+     * Schreibt eine Rueckmeldezeile in die Datei
      * @param pvZeile Rueckmeldezeile
      */
     public void printRueckmeldezeile(String pvZeile)
     {
-        //System.out.println(zeile);
         try
         {
            ivFos.write(pvZeile.getBytes());
         }
         catch (Exception e)
         {
-          //e.printStackTrace();
-          System.out.println("Start: Fehler bei Ausgabe der Rueckmeldezeile in die Datei");
+           ivLogger.error("Fehler bei Ausgabe der Rueckmeldezeile in die Datei");
         }
     }
 }

@@ -10,6 +10,7 @@ package nlb.txs.schnittstelle.Utilities;
  * @author tepperc
  *
  */
+@Deprecated
 public class MappingDPP 
 {
     /**
@@ -69,7 +70,7 @@ public class MappingDPP
         if (!lvGefunden)
             System.out.println("Unbekannte Grundbuchart: " + pvText);
 
-        // Die Länge der Kundengruppe darf maximal 40 Zeichen sein
+        // Die Lï¿½nge der Kundengruppe darf maximal 40 Zeichen sein
         //if (text.length() > 39)
         //{
         //    text = text.substring(0, 39);
@@ -273,6 +274,7 @@ public class MappingDPP
      * @return 
      * 
      */
+    /*
     public static String extendKundennummer(String pvKundennr)
     {
         switch (pvKundennr.length())
@@ -312,5 +314,5 @@ public class MappingDPP
         }
         
         return pvKundennr;   
-    }
+    } */
 }

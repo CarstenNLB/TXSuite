@@ -43,7 +43,14 @@ public class TXSTriebwerkDaten implements TXSTransaktion
      */
     public TXSTriebwerkDaten()
     {
-        super();
+      initTXSTriebwerkDaten();
+    }
+
+    /**
+     * Initialisierung der Instanzvariablen mit leeren Strings
+     */
+    public void initTXSTriebwerkDaten()
+    {
         this.ivBstatus = new String();
         this.ivSn = new String();
         this.ivTwkey = new String();

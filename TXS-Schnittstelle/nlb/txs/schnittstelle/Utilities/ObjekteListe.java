@@ -5,11 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-public class ObjekteListe extends HashSet<String>
+public class ObjekteListe extends HashMap<String, String>
 {
 	/**
 	 * Default-ID
@@ -22,25 +24,28 @@ public class ObjekteListe extends HashSet<String>
 	private String ivDateiname;
 	
 	/**
-	 * Logger
+	 * log4j-Logger
 	 */
 	private Logger ivLogger;
 	
 	/**
 	 * Konstruktor
-	 * @param pvDateiname
-	 * @param pvLogger
+	 * @param pvDateiname Name der Datei
+	 * @param pvLogger log4j-logger
 	 */
 	public ObjekteListe(String pvDateiname, Logger pvLogger)
 	{
 		ivDateiname = pvDateiname;
 		ivLogger = pvLogger;
+
+		ivLogger.info("Dateiname: " + ivDateiname);
 	}
 	
     /**
      * Liest eine Liste von Objekten (String-Objekten) aus einer Datei
+     * @param pvValueFilterListe In der Liste von Objekten landen nur Werte, die in dieser Liste enthalten sind.
      */
-    public void leseObjekteListe()
+    public void leseObjekteListe(List<String> pvValueFilterListe)
     {
         ivLogger.info("Start - readListeObjekte");
         String lvZeile = null;
@@ -54,7 +59,7 @@ public class ObjekteListe extends HashSet<String>
         }
         catch (Exception e)
         {
-            ivLogger.error("Konnte die Datei " + ivDateiname + " nicht oeffnen!");
+            ivLogger.error("Konnte die Datei '" + ivDateiname + "' nicht oeffnen!");
             return;
         }
     
@@ -64,8 +69,29 @@ public class ObjekteListe extends HashSet<String>
         {
             while ((lvZeile = lvIn.readLine()) != null)  // Einlesen einer Zeile 
             {
-                ivLogger.info("Verarbeite: " + lvZeile);
-                this.add(lvZeile);
+            	if (lvZeile.contains(";"))
+            	{
+            		String lvKey = lvZeile.substring(0, lvZeile.indexOf(";"));
+            		String lvValue = lvZeile.substring(lvZeile.indexOf(";") + 1);
+            		if (pvValueFilterListe == null)
+            		{
+            			this.put(lvKey, lvValue);
+            			ivLogger.info("Key: " + lvKey + " - Value: " + lvValue);
+            		}
+            		else
+            		{
+            			if (pvValueFilterListe.contains(lvValue))
+            			{
+            				this.put(lvKey, lvValue);
+            				ivLogger.info("Key: " + lvKey + " - Value: " + lvValue);
+            			}
+            		}
+            	}
+            	else
+            	{
+    				    this.put(lvZeile, new String());
+    				    ivLogger.info("Key: " + lvZeile);
+            	}
             }
         }
         catch (Exception e)
@@ -82,7 +108,7 @@ public class ObjekteListe extends HashSet<String>
         }
         catch (Exception e)
         {
-            ivLogger.error("Konnte die Datei " + ivDateiname + " nicht schliessen!");
+            ivLogger.error("Konnte die Datei '" + ivDateiname + "' nicht schliessen!");
         }     
      }
     
@@ -103,20 +129,27 @@ public class ObjekteListe extends HashSet<String>
         }
         catch (Exception e)
         {
-            ivLogger.error("Konnte die Datei " + ivDateiname + " nicht oeffnen!");
+            ivLogger.error("Konnte die Datei '" + ivDateiname + "' nicht oeffnen!");
             return;
         }
     
-       	for (String lvObjekt:this)
-    	{
+        for (Map.Entry<String, String> lvMap: this.entrySet())
+        {
        		try
        		{
-         		lvFos.write((lvObjekt + StringKonverter.lineSeparator).getBytes());
+       			if (lvMap.getValue().isEmpty())
+       			{
+       				lvFos.write((lvMap.getKey() + StringKonverter.lineSeparator).getBytes());       				
+       			}
+       			else
+       			{
+       				lvFos.write((lvMap.getKey() + ";" + lvMap.getValue() + StringKonverter.lineSeparator).getBytes());
+       			}
          		lvAnzahlObjekte++;
         	}
        		catch (Exception e)
        		{
-       			ivLogger.error("Fehler beim Schreiben eines Objektes: " + lvObjekt);
+       			ivLogger.error("Fehler beim Schreiben von: " + lvMap.getKey() + " - " + lvMap.getValue());
        			e.printStackTrace();
        		}
     	}
@@ -129,7 +162,7 @@ public class ObjekteListe extends HashSet<String>
         }
         catch (Exception e)
         {
-            ivLogger.error("Konnte die Datei " + ivDateiname + " nicht schliessen!");
+            ivLogger.error("Konnte die Datei '" + ivDateiname + "' nicht schliessen!");
         }     
      }
 }

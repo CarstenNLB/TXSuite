@@ -4,6 +4,7 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
 
 import org.apache.log4j.xml.DOMConfigurator;
 
+@Deprecated
 public class RefiRegisterLettreDeGage 
 {
 	
@@ -45,7 +46,7 @@ public class RefiRegisterLettreDeGage
             }            
             
             // Aufruf des Konstruktors der RefiRegister-Verarbeitung
-            new RefiRegisterVerarbeitung(lvReader, RefiRegisterVerarbeitung.LETTRE_DE_GAGE);
+            //new RefiRegisterVerarbeitung(lvReader, RefiRegisterVerarbeitung.LETTRE_DE_GAGE);
         }
         System.exit(0);
     }

@@ -9,17 +9,19 @@ package nlb.txs.schnittstelle.Rueckmeldung;
 import java.util.HashMap;
 
 /**
+ * Diese Klasse wurde in der alten Ruckmeldung an SAP CMS verwendet.
+ * An ihre Stelle wird in der neuen Rueckmeldung an SAP CMS die Klasse 'RueckmeldeTripelListe' verwendet.
  * @author tepperc
- *
  */
-public class SicherungsobjektListe extends HashMap<String, Sicherungsobjekt>
-{
+@Deprecated
+public class SicherungsobjektListe extends HashMap<String, Sicherungsobjekt> {
     /**
-     * 
+     * UID
      */
     private static final long serialVersionUID = 1L;
 
     /**
+     * Setzt den Deckungsstatus
      * @param pvShpo
      * @param pvDeckungsstatus 
      * 
@@ -33,7 +35,7 @@ public class SicherungsobjektListe extends HashMap<String, Sicherungsobjekt>
         // Sicherheit merken und abschneiden
         String lvShKey = pvShpo.substring(0, pvShpo.indexOf(","));        
         pvShpo = pvShpo.substring(pvShpo.indexOf(",") + 1);
-        String lvShStatus = pvShpo.substring(0, pvShpo.indexOf(","));
+        //String lvShStatus = pvShpo.substring(0, pvShpo.indexOf(","));
         pvShpo = pvShpo.substring(pvShpo.indexOf(",") + 1);
         //System.out.println("lvShkey: " + lvShKey);
         //System.out.println("lvShStatus: " + lvShStatus);
@@ -97,8 +99,9 @@ public class SicherungsobjektListe extends HashMap<String, Sicherungsobjekt>
      }
 
     /**
-     * @param pvSicherungsobjektID 
-     * @return 
+     * Liefert das Sicherungsobjekt fuer die uebergebene ID
+     * @param pvSicherungsobjektID ID des Sicherungsobjekts
+     * @return Sicherungsobjekt
      * 
      */
     public Sicherungsobjekt getSHPO(String pvSicherungsobjektID)

@@ -50,7 +50,7 @@ public class RefiRegisterFilterElement
     private String ivPassivKontonummer;
 
     /**
-     * Konstruktor
+     * Konstruktor mit Initialisierung der Instanzvariablen
      */
     public RefiRegisterFilterElement() 
     {
@@ -65,13 +65,14 @@ public class RefiRegisterFilterElement
     }
 
     /**
-     * @param pvKontonummer
-     * @param pvDeckungskennzeichen
-     * @param pvKompensationsschluessel
-     * @param pvProduktschluessel 
-     * @param pvKonsortialHauptkontonummer 
-     * @param pvPassivKontonummer
-     * @param pvRestkapital 
+     * Konstruktor mit Parameteruebergabe
+     * @param pvKontonummer Kontonummer
+     * @param pvDeckungskennzeichen Deckungskennzeichen
+     * @param pvKompensationsschluessel Kompensationsschluessel
+     * @param pvProduktschluessel Produktschluessel
+     * @param pvKonsortialHauptkontonummer Konsortial-Hauptkontonummer
+     * @param pvPassivKontonummer Passivkontonummer
+     * @param pvRestkapital Restkapital
      */
     public RefiRegisterFilterElement(String pvKontonummer, String pvDeckungskennzeichen, String pvKompensationsschluessel, String pvProduktschluessel, String pvKonsortialHauptkontonummer, String pvPassivKontonummer, String pvRestkapital) 
     {
@@ -86,6 +87,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Liefert die Kontonummer
      * @return the kontonummer
      */
     public String getKontonummer() {
@@ -93,6 +95,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Setzt die Kontonummer
      * @param pvKontonummer the kontonummer to set
      */
     public void setKontonummer(String pvKontonummer) {
@@ -100,6 +103,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Liefert das Deckungskennzeichen
      * @return the deckungskennzeichen
      */
     public String getDeckungskennzeichen() {
@@ -107,6 +111,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Setzt das Deckungskennzeichen
      * @param pvDeckungskennzeichen the deckungskennzeichen to set
      */
     public void setDeckungskennzeichen(String pvDeckungskennzeichen) {
@@ -114,6 +119,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Liefert den Kompensationsschluessel
      * @return the kompensationsschluessel
      */
     public String getKompensationsschluessel() {
@@ -121,6 +127,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Setzt den Kompensationsschluessel
      * @param pvKompensationsschluessel the kompensationsschluessel to set
      */
     public void setKompensationsschluessel(String pvKompensationsschluessel) {
@@ -128,6 +135,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Liefert die Passivkontonummer
      * @return the passivKontonummer
      */
     public String getPassivKontonummer() {
@@ -135,6 +143,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Setzt die Passivkontonummer
      * @param pvPassivKontonummer the passivKontonummer to set
      */
     public void setPassivKontonummer(String pvPassivKontonummer) {
@@ -142,6 +151,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Liefert den Produktschluessel
      * @return the produktschluessel
      */
     public String getProduktschluessel() {
@@ -149,6 +159,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Setzt den Produktschluessel
      * @param pvProduktschluessel the produktschluessel to set
      */
     public void setProduktschluessel(String pvProduktschluessel) {
@@ -156,6 +167,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Liefert die Konsortial-Hauptkontonummer
      * @return the konsortialHauptkontonummer
      */
     public String getKonsortialHauptkontonummer() {
@@ -163,6 +175,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Setzt die Konsortial-Hauptkontonummer
      * @param pvKonsortialHauptkontonummer the konsortialHauptkontonummer to set
      */
     public void setKonsortialHauptkontonummer(String pvKonsortialHauptkontonummer) {
@@ -170,6 +183,7 @@ public class RefiRegisterFilterElement
     } 
     
     /**
+     * Liefert das Restkapital
      * @return the restkapital
      */
     public String getRestkapital() {
@@ -177,6 +191,7 @@ public class RefiRegisterFilterElement
     }
 
     /**
+     * Setzt das Restkapital
      * @param pvRestkapital the restkapital to set
      */
     public void setRestkapital(String pvRestkapital) {
@@ -184,18 +199,16 @@ public class RefiRegisterFilterElement
     }
 
     /**
-     * @param pvZeile 
-     * @return 
-     * 
+     * Zerlegt eine Zeile in die verschiedenen Daten/Felder
+     * @param pvZeile die zu zerlegende Zeile
      */
-    public boolean parseRefiRegisterFilterElement(String pvZeile)
+    public void parseRefiRegisterFilterElement(String pvZeile)
     {
      String lvTemp = new String(); // arbeitsbereich/zwischenspeicher feld
      int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
-     int    lvZzStr=0;              // pointer fuer satzbereich
-     
+
      // steuerung/iteration eingabesatz
-     for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
+     for (int lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
      {
 
        // wenn Semikolon erkannt
@@ -217,9 +230,7 @@ public class RefiRegisterFilterElement
      } // ende for
      
      // Letzte Feld auch noch setzen
-     this.setRefiRegisterFilterElement(lvLfd, lvTemp);     
-     
-     return true;
+     this.setRefiRegisterFilterElement(lvLfd, lvTemp);
    }
     
     /**

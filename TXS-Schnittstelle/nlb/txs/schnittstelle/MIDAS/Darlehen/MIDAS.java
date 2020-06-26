@@ -53,7 +53,6 @@ public class MIDAS
             
             new MIDASVerarbeitung(lvReader);
         }
-        System.exit(0);
     }
 
 }

@@ -10,6 +10,7 @@ package nlb.txs.schnittstelle.FRISCO2TXS;
  * @author tepperc
  *
  */
+@Deprecated
 public class Schiff extends ObjektDaten
 {
     /**
@@ -350,7 +351,7 @@ public class Schiff extends ObjektDaten
                 this.setRegOrtFlagge(pvWert);
                 break;
             case 37:
-                this.setGroeßenklasse(pvWert);
+                this.setGroeï¿½enklasse(pvWert);
                 break;
             case 38:
                 this.setDeckMMAnw(pvWert);

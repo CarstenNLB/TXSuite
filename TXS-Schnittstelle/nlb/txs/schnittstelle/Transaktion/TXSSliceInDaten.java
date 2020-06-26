@@ -8,19 +8,17 @@ package nlb.txs.schnittstelle.Transaktion;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
-import org.apache.log4j.Logger;
-
 import nlb.txs.schnittstelle.Darlehen.DarlehenVerarbeiten;
-import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
+import nlb.txs.schnittstelle.Termingeld.Daten.Termingeld;
 import nlb.txs.schnittstelle.Utilities.MappingMIDAS;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
 import nlb.txs.schnittstelle.Utilities.WPSuffix;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
+import org.apache.log4j.Logger;
 
 /**
  * @author tepperc
@@ -89,7 +87,7 @@ public class TXSSliceInDaten implements TXSTransaktion
     private String ivStorno;
     
     /**
-     * Wird gefuellt, wenn für ein Finanzgeschaeft ein spezielles Tilgungsmodell gelten soll. 
+     * Wird gefuellt, wenn fï¿½r ein Finanzgeschaeft ein spezielles Tilgungsmodell gelten soll. 
      * Tilgungsmodelle werden sonst ueber spezielle Regeln innerhalb von TXSuite gesetzt.
      */
     private String ivTilgmod;
@@ -106,9 +104,9 @@ public class TXSSliceInDaten implements TXSTransaktion
     
     /**
      * Waehrung der gemeldeten Betraege dieser Transaktion.
-     * Definition gemaeß ISO-Standard. z.B. "EUR"
+     * Definition gemaeï¿½ ISO-Standard. z.B. "EUR"
      * Haben die verschiedenen betrachteten Konditionspositionen unterschiedliche Waehrungen, 
-     * so werden die gemeldeten Betraege in eine gemeinsame Waehrung gemaeß angegebener Priorisierung stichtagsbezogen umgerechnet.
+     * so werden die gemeldeten Betraege in eine gemeinsame Waehrung gemaeï¿½ angegebener Priorisierung stichtagsbezogen umgerechnet.
      */
     private String ivWhrg;
 
@@ -121,7 +119,7 @@ public class TXSSliceInDaten implements TXSTransaktion
     }
     
     /**
-     * Initialisierung
+     * Initialisierung der Instanzvariablen mit leeren Strings
      */
     public void initTXSSliceInDaten() 
     {
@@ -434,7 +432,7 @@ public class TXSSliceInDaten implements TXSTransaktion
      * @param pvLogger 
      * @return 
      */
-    public boolean importDarlehen(int pvModus, Darlehen pvDarlehen, Logger pvLogger)
+    public boolean importDarlehen(int pvModus, nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen, Logger pvLogger)
     {
         this.ivKey = pvDarlehen.getKontonummer();
         if (pvDarlehen.getKennzeichenAktPas().equals("A"))
@@ -546,6 +544,12 @@ public class TXSSliceInDaten implements TXSTransaktion
                 this.ivTx = "&#214;ffentlicher Pfandbrief";
                 this.ivPool = "&#214;ffentlicher Pfandbrief";                      
                 break;
+            case DarlehenVerarbeiten.KEV:
+                this.ivPrj ="KEV";
+                //this.ivKey = this.ivKey + "KEV";
+                this.ivTx = "KEV";
+                this.ivPool = "KEV";
+                break;
             default:
                 pvLogger.error("TXSSliceInDaten - Unbekannter Modus");       
         }
@@ -654,14 +658,22 @@ public class TXSSliceInDaten implements TXSTransaktion
         {
             this.ivBis = "0.0";
         }
-        
-        if (lvSolldeckung.doubleValue() > 0.0)
+
+        if (pvModus == DarlehenVerarbeiten.KEV)
         {
-          this.ivNbetrag = lvSolldeckung.toString();
+            this.ivNbetrag = pvDarlehen.getUrsprungsKapital();
+            this.ivBis = pvDarlehen.getUrsprungsKapital();
         }
         else
         {
+          if (lvSolldeckung.doubleValue() > 0.0)
+          {
+            this.ivNbetrag = lvSolldeckung.toString();
+          }
+          else
+          {
             this.ivNbetrag = "0.0";
+          }
         }
         
         // CT 20.12.2011 - NurLiq-Kennzeichen setzen
@@ -683,33 +695,34 @@ public class TXSSliceInDaten implements TXSTransaktion
 
     /**
      * Importiert die Darlehensinformationen aus LoanIQ
-     * @param pvDarlehenLoanIQBlock 
+     * @param pvDarlehenBlock
      * @param pvVorlaufsatz 
      * @param pvLogger
      * @return 
      */
-    public boolean importLoanIQ(DarlehenLoanIQBlock pvDarlehenLoanIQBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    public boolean importLoanIQ(DarlehenBlock pvDarlehenBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
     {    	
-    	DarlehenLoanIQ lvHelpDarlehenLoanIQ;
-    	lvHelpDarlehenLoanIQ = pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto();
+    	Darlehen lvHelpDarlehen;
+    	lvHelpDarlehen = pvDarlehenBlock.getDarlehenNetto();
 
-        pvLogger.info("Darlehen " + lvHelpDarlehenLoanIQ.getKontonummer() + " - Ausplatzierungsmerkmal " + lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal());
+        pvLogger.info("Darlehen " + lvHelpDarlehen.getKontonummer() + " - Ausplatzierungsmerkmal " + lvHelpDarlehen
+            .getAusplatzierungsmerkmal());
 
         // CT 22.03.2016 - Erst einmal auskommentiert, da das Ausplatzierungsmerkmal noch nicht korrekt befuellt wird 
-        //if (!(lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("H") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K") ||
-        //	    lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("F") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("S") ||
-        //      lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("O")))
+        //if (!(lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("H") || lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K") ||
+        //	    lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("F") || lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("S") ||
+        //      lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("O")))
         //{
-        //    pvLogger.error("Darlehen " + lvHelpDarlehenLoanIQ.getKontonummer() + " - Ungueltiges Ausplatzierungsmerkmal " + lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal());
+        //    pvLogger.error("Darlehen " + lvHelpDarlehen.getKontonummer() + " - Ungueltiges Ausplatzierungsmerkmal " + lvHelpDarlehen.getAusplatzierungsmerkmal());
         //    return false;
         //}
         // CT 22.03.2016
     	
         // 07.04.2014 - Slice-Typ ueber das Ausplatzierungsmerkmal ermitteln
     	// Hypothekenpfandbrief
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("H"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("H"))
         { 
-            this.ivKey = lvHelpDarlehenLoanIQ.getKontonummer() + "P";
+            this.ivKey = lvHelpDarlehen.getKontonummer() + "P";
             this.ivTx = "Hypothekenpfandbrief";
             this.ivPool = "Hypothekenpfandbrief"; 
             //if (pvVorlaufsatz.getInstitutsnummer().equals("004"))
@@ -723,9 +736,9 @@ public class TXSSliceInDaten implements TXSTransaktion
         }
         
         // Oeffentlicher Pfandbrief
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
         {
-            this.ivKey = lvHelpDarlehenLoanIQ.getKontonummer() + "K";
+            this.ivKey = lvHelpDarlehen.getKontonummer() + "K";
             this.ivTx = "&#214;ffentlicher Pfandbrief";
             this.ivPool = "&#214;ffentlicher Pfandbrief";
             //if (pvVorlaufsatz.getInstitutsnummer().equals("004"))
@@ -739,18 +752,18 @@ public class TXSSliceInDaten implements TXSTransaktion
         }
         
         // Flugzeugpfandbrief
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("F"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("F"))
         { 
-            this.ivKey = lvHelpDarlehenLoanIQ.getKontonummer() + "F";
+            this.ivKey = lvHelpDarlehen.getKontonummer() + "F";
             this.ivTx = "Flugzeugpfandbrief";
             this.ivPool = "Flugzeugpfandbrief";
             this.ivPrj = "Flugzeugpfandbrief";                       
         }
         
         // Schiffspfandbrief
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("S"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("S"))
         {        
-            this.ivKey = lvHelpDarlehenLoanIQ.getKontonummer() + "S";
+            this.ivKey = lvHelpDarlehen.getKontonummer() + "S";
             this.ivTx = "Schiffspfandbrief";
             this.ivPool = "Schiffspfandbrief";
             this.ivPrj = "Schiffspfandbrief";                       
@@ -758,17 +771,18 @@ public class TXSSliceInDaten implements TXSTransaktion
         }
         
         // OEPG
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("O"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("O"))
         {
-        	this.ivKey = lvHelpDarlehenLoanIQ.getKontonummer() + "O";
+        	this.ivKey = lvHelpDarlehen.getKontonummer() + "O";
         	this.ivTx = "&#214;ffentlicher Pfandbrief";
         	this.ivPool = "&#214;ffentlicher Pfandbrief"; 
         	this.ivPrj = "&#214;PG";
         }
 
-        if (!lvHelpDarlehenLoanIQ.getMerkmalAktivPassiv().equals("A"))
+        if (!lvHelpDarlehen.getMerkmalAktivPassiv().equals("A"))
         {
-            pvLogger.error("Konto " + lvHelpDarlehenLoanIQ.getKontonummer() + " - MerkmalAktivPassiv => " + lvHelpDarlehenLoanIQ.getMerkmalAktivPassiv());
+            pvLogger.error("Konto " + lvHelpDarlehen.getKontonummer() + " - MerkmalAktivPassiv => " + lvHelpDarlehen
+                .getMerkmalAktivPassiv());
             return false;
         } 
         this.ivAktivpassiv = "1";
@@ -778,13 +792,13 @@ public class TXSSliceInDaten implements TXSTransaktion
         // 2 -> Sichernde Ueberdeckung
         // 3 -> Weitere Deckung
         this.ivDecktyp = "1";
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("2") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("O4"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().endsWith("2") || lvHelpDarlehen.getAusplatzierungsmerkmal().equals("O4"))
         {
             this.ivDecktyp = "2";
         }
-        if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("3") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("4"))
+        if (lvHelpDarlehen.getAusplatzierungsmerkmal().endsWith("3") || lvHelpDarlehen.getAusplatzierungsmerkmal().endsWith("4"))
         {
-          if (!lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("O3") && !lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("O4"))
+          if (!lvHelpDarlehen.getAusplatzierungsmerkmal().equals("O3") && !lvHelpDarlehen.getAusplatzierungsmerkmal().equals("O4"))
           {
         	this.ivDecktyp = "3";
           }
@@ -794,44 +808,45 @@ public class TXSSliceInDaten implements TXSTransaktion
         
         this.ivVon = "0.0";
          
-        BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-        BigDecimal lvHelpBuergschaftprozent = (StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
-        BigDecimal lvHelpSolldeckung;
+        /////BigDecimal lvHelpFaktor = new BigDecimal("100.0");
+        ////BigDecimal lvHelpBuergschaftprozent = (StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+        ////BigDecimal lvHelpSolldeckung;
 
-        if (StringKonverter.convertString2Double(lvHelpDarlehenLoanIQ.getSolldeckung()) > 0.0)
+        if (StringKonverter.convertString2Double(lvHelpDarlehen.getSolldeckung()) > 0.0)
         {
-            //if (lvHelpDarlehenLoanIQ.getKennzeichenKonsortialkredit().equals("J"))
+            //if (lvHelpDarlehen.getKennzeichenKonsortialkredit().equals("J"))
             //{
             	// Fremde Fuehrung
-            //	if (pvDarlehenLoanIQBlock.isListeDarlehenLoanIQFremdEmpty())
+            //	if (pvDarlehenBlock.isListeDarlehenLoanIQFremdEmpty())
             //	{
-            //		lvHelpSolldeckung = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getSolldeckung());
+            //		lvHelpSolldeckung = StringKonverter.convertString2BigDecimal(pvDarlehenBlock.getDarlehenLoanIQBrutto().getSolldeckung());
             //	}
             //	else // Eigene Fuehrung
             //	{
-            //		lvHelpSolldeckung = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getSolldeckung());        		
+            //		lvHelpSolldeckung = StringKonverter.convertString2BigDecimal(pvDarlehenBlock.getDarlehenLoanIQNetto().getSolldeckung());
             //	}
             //}
             //else
             //{
-            	lvHelpSolldeckung = StringKonverter.convertString2BigDecimal(lvHelpDarlehenLoanIQ.getSolldeckung());
+         ////   	lvHelpSolldeckung = StringKonverter.convertString2BigDecimal(lvHelpDarlehen.getSolldeckung());
             //}
         
-            if (lvHelpBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
-            {
-            	this.ivBis = (lvHelpSolldeckung.multiply(lvHelpBuergschaftprozent)).toPlainString();
-            }
-            else
-            {
-            	this.ivBis = lvHelpSolldeckung.toPlainString();
-            }
+         ////   if (lvHelpBuergschaftprozent.doubleValue() > 0.0 && lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
+         ////   {
+         ////   	this.ivBis = (lvHelpSolldeckung.multiply(lvHelpBuergschaftprozent)).toPlainString();
+         ////   }
+         ////   else
+         ////   {
+         ////   	this.ivBis = lvHelpSolldeckung.toPlainString();
+            this.ivBis = pvDarlehenBlock.getDarlehenNetto().getSolldeckung();
+         ////   }
         }
         else
         {
             this.ivBis = "0.0";
         }
                         
-        if (StringKonverter.convertString2Double(lvHelpDarlehenLoanIQ.getSolldeckung()) > 0.0)
+        if (StringKonverter.convertString2Double(lvHelpDarlehen.getSolldeckung()) > 0.0)
         {
         	this.ivNbetrag = this.ivBis;
         }
@@ -844,13 +859,13 @@ public class TXSSliceInDaten implements TXSTransaktion
         // Defaultmaessig erst einmal auf "0" (false) setzen
         // 07.04.2014 - Spaeter Umstellung auf Ausplatzierungsmerkmal
         this.ivNliqui = "0";
-        if (lvHelpDarlehenLoanIQ.getDeckungsschluessel().equals("5") || lvHelpDarlehenLoanIQ.getDeckungsschluessel().equals("6") ||
-            lvHelpDarlehenLoanIQ.getDeckungsschluessel().equals("7") || lvHelpDarlehenLoanIQ.getDeckungsschluessel().equals("8"))
+        if (lvHelpDarlehen.getDeckungsschluessel().equals("5") || lvHelpDarlehen.getDeckungsschluessel().equals("6") ||
+            lvHelpDarlehen.getDeckungsschluessel().equals("7") || lvHelpDarlehen.getDeckungsschluessel().equals("8"))
         {
             this.ivNliqui = "1";
         }
         
-        this.ivWhrg = lvHelpDarlehenLoanIQ.getBetragwaehrung();
+        this.ivWhrg = lvHelpDarlehen.getBetragwaehrung();
         
         return true;
         
@@ -858,29 +873,31 @@ public class TXSSliceInDaten implements TXSTransaktion
 
     /**
      * Importiert die Darlehensinformationen aus MIDAS
-     * @param pvDarlehenLoanIQ 
+     * @param pvDarlehen
      * @param pvVorlaufsatz 
      * @param pvLogger
      * @return 
      */
-    public boolean importMIDAS(DarlehenLoanIQ pvDarlehenLoanIQ, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    public boolean importMIDAS(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
     {    	
-        pvLogger.info("Darlehen " + pvDarlehenLoanIQ.getKontonummer() + " - Ausplatzierungsmerkmal " + pvDarlehenLoanIQ.getAusplatzierungsmerkmal());
+        pvLogger.info("Darlehen " + pvDarlehen.getKontonummer() + " - Ausplatzierungsmerkmal " + pvDarlehen
+            .getAusplatzierungsmerkmal());
 
         // CT 22.03.2016 - Erst einmal auskommentiert, da das Ausplatzierungsmerkmal noch nicht korrekt befuellt wird 
-        //if (!(pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("H") || pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K") ||
-        //	  pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("F") || pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("S")))
+        //if (!(pvDarlehen.getAusplatzierungsmerkmal().startsWith("H") || pvDarlehen.getAusplatzierungsmerkmal().startsWith("K") ||
+        //	  pvDarlehen.getAusplatzierungsmerkmal().startsWith("F") || pvDarlehen.getAusplatzierungsmerkmal().startsWith("S")))
         //{
-        //    pvLogger.error("Darlehen " + pvDarlehenLoanIQ.getKontonummer() + " - Ungueltiges Ausplatzierungsmerkmal " + pvDarlehenLoanIQ.getAusplatzierungsmerkmal());
+        //    pvLogger.error("Darlehen " + pvDarlehen.getKontonummer() + " - Ungueltiges Ausplatzierungsmerkmal " + pvDarlehen.getAusplatzierungsmerkmal());
         //    return false;
         //}
         // CT 22.03.2016
     	
         // 07.04.2014 - Slice-Typ ueber das Ausplatzierungsmerkmal ermitteln
     	// Hypothekenpfandbrief
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("H"))
-        { 
-            this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer()) + "P";
+        if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("H"))
+        {
+            this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen.getKontonummer()) + "P";
+
             this.ivTx = "Hypothekenpfandbrief";
             this.ivPool = "Hypothekenpfandbrief"; 
             //if (lvHelpDarlehenLoanIQ.getDeckungsschluessel().equals("A"))
@@ -894,9 +911,10 @@ public class TXSSliceInDaten implements TXSTransaktion
         }
         
         // Oeffentlicher Pfandbrief
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
         {
-        	this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer()) + "K";                
+            this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen.getKontonummer()) + "K";
+
             this.ivTx = "&#214;ffentlicher Pfandbrief";
             this.ivPool = "&#214;ffentlicher Pfandbrief";
             //if (lvHelpDarlehenLoanIQ.getDeckungsschluessel().equals("A"))
@@ -910,18 +928,19 @@ public class TXSSliceInDaten implements TXSTransaktion
         }
         
         // Flugzeugpfandbrief
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("F"))
-        { 
-        	this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer()) + "F";                
+        if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("F"))
+        {
+            this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen.getKontonummer()) + "F";
+
             this.ivTx = "Flugzeugpfandbrief";
             this.ivPool = "Flugzeugpfandbrief";
             this.ivPrj = "Flugzeugpfandbrief";                       
         }
         
         // Schiffspfandbrief
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("S"))
-        {        
-            this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer()) + "S";
+        if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("S"))
+        {
+            this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen.getKontonummer()) + "S";
             this.ivTx = "Schiffspfandbrief";
             this.ivPool = "Schiffspfandbrief";
             this.ivPrj = "Schiffspfandbrief";                       
@@ -929,27 +948,32 @@ public class TXSSliceInDaten implements TXSTransaktion
         }
 
         // Sonderbehandlung MIDAS aber nur, wenn es kein Ausplatzierungsmerkmal gibt. 
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().trim().isEmpty())
+        if (pvDarlehen.getAusplatzierungsmerkmal().trim().isEmpty())
         {
-        	if (pvDarlehenLoanIQ.getDeckungsschluessel().equals("D") || pvDarlehenLoanIQ.getDeckungsschluessel().equals("F"))
+        	if (pvDarlehen.getDeckungsschluessel().equals("D") || pvDarlehen.getDeckungsschluessel().equals("F"))
         	{
-        		this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer()) + "K";                
+        	    this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen
+                      .getKontonummer()) + "K";
+
         		this.ivTx = "&#214;ffentlicher Pfandbrief";
         		this.ivPool = "&#214;ffentlicher Pfandbrief";
         		this.ivPrj = "NLB-PfandBG";                       
         	}
-        	if (pvDarlehenLoanIQ.getDeckungsschluessel().equals("U"))
+        	if (pvDarlehen.getDeckungsschluessel().equals("U"))
         	{
-        		this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer()) + "F";                
+        	    this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen
+                      .getKontonummer()) + "F";
+
         		this.ivTx = "Flugzeugpfandbrief";
         		this.ivPool = "Flugzeugpfandbrief";
         		this.ivPrj = "Flugzeugpfandbrief";                       
         	}
         }
           
-        if (!pvDarlehenLoanIQ.getMerkmalAktivPassiv().equals("A"))
+        if (!pvDarlehen.getMerkmalAktivPassiv().equals("A"))
         {
-            pvLogger.error("Konto " + pvDarlehenLoanIQ.getKontonummer() + " - MerkmalAktivPassiv => " + pvDarlehenLoanIQ.getMerkmalAktivPassiv());
+            pvLogger.error("Konto " + pvDarlehen.getKontonummer() + " - MerkmalAktivPassiv => " + pvDarlehen
+                .getMerkmalAktivPassiv());
             return false;
         } 
         this.ivAktivpassiv = "1";
@@ -959,11 +983,11 @@ public class TXSSliceInDaten implements TXSTransaktion
         // 2 -> Sichernde Ueberdeckung
         // 3 -> Weitere Deckung
         this.ivDecktyp = "1";
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("2"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("2"))
         {
             this.ivDecktyp = "2";
         }
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("3"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("3"))
         {
         	this.ivDecktyp = "3";
         }
@@ -973,12 +997,12 @@ public class TXSSliceInDaten implements TXSTransaktion
         this.ivVon = "0.0";
                  
         BigDecimal lvHelpFaktor = new BigDecimal("100.0");
-        BigDecimal lvHelpRestkapital = StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getRestkapital());
-        System.out.println("Buergschaftprozent: " + pvDarlehenLoanIQ.getBuergschaftprozent() + " - Restkapital: " + lvHelpRestkapital.toString());
-        BigDecimal lvHelpBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehenLoanIQ.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
-        System.out.println("Bis-Betrag errechnet: " + (lvHelpRestkapital.multiply(lvHelpBuergschaftprozent)).toString());
+        BigDecimal lvHelpRestkapital = StringKonverter.convertString2BigDecimal(pvDarlehen.getRestkapital());
+        pvLogger.info("Buergschaftprozent: " + pvDarlehen.getBuergschaftprozent() + " - Restkapital: " + lvHelpRestkapital.toString());
+        BigDecimal lvHelpBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftprozent())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+        pvLogger.info("Bis-Betrag errechnet: " + (lvHelpRestkapital.multiply(lvHelpBuergschaftprozent)).toString());
 
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("0"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("0"))
         {
         	if (lvHelpBuergschaftprozent.doubleValue() > 0.0)
         	{
@@ -999,7 +1023,7 @@ public class TXSSliceInDaten implements TXSTransaktion
             this.ivNbetrag = "0.0";
         }
             
-       	if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("F1"))
+       	if (pvDarlehen.getAusplatzierungsmerkmal().equals("F1"))
        	{
        		this.ivBis = new String();
        		this.ivNbetrag = new String();
@@ -1008,15 +1032,15 @@ public class TXSSliceInDaten implements TXSTransaktion
         // CT 20.12.2011 - NurLiq-Kennzeichen setzen
         // Defaultmaessig erst einmal auf "0" (false) setzen
         this.ivNliqui = "0";
-        if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().endsWith("4"))
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("4"))
         {
-        	if (!pvDarlehenLoanIQ.getAusplatzierungsmerkmal().equals("O4")) // OEPG bei MIDAS eigentlich nicht moeglich, aber...
+        	if (!pvDarlehen.getAusplatzierungsmerkmal().equals("O4")) // OEPG bei MIDAS eigentlich nicht moeglich, aber...
         	{
               this.ivNliqui = "1";
         	}
         }
         
-        this.ivWhrg = pvDarlehenLoanIQ.getBetragwaehrung();
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
         
         return true;
         
@@ -1025,7 +1049,7 @@ public class TXSSliceInDaten implements TXSTransaktion
     /**
      * Importiert die Wertpapier-Informationen
      * @param pvBestandsdaten
-     * @param pvGattung
+     * @param pvInstitutsnummer
      * @param pvLogger
      * @return 
      */
@@ -1034,7 +1058,8 @@ public class TXSSliceInDaten implements TXSTransaktion
         pvLogger.info("Wertpapier " + pvBestandsdaten.getProdukt() + " - Ausplatzierungsmerkmal " + pvBestandsdaten.getAusplatzierungsmerkmal());
 
         if (!(pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("H") || pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("K") ||
-              pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("F") || pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("S")))
+              pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("F") || pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("S") ||
+              pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("O")))
         {
             pvLogger.error("Wertpapier " + pvBestandsdaten.getProdukt() + " - Ungueltiges Ausplatzierungsmerkmal " + pvBestandsdaten.getAusplatzierungsmerkmal());
             return false;
@@ -1106,6 +1131,16 @@ public class TXSSliceInDaten implements TXSTransaktion
 
         }
         
+        // OEPG
+        if (pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("O"))
+        {
+        	this.ivKey = pvBestandsdaten.getProdukt() + WPSuffix.getSuffix(pvBestandsdaten.getAusplatzierungsmerkmal(), pvLogger);
+        	this.ivTx = "&#214;ffentlicher Pfandbrief";
+        	this.ivPool = "&#214;ffentlicher Pfandbrief"; 
+        	this.ivPrj = "&#214;PG";
+        }
+
+        
         this.ivAktivpassiv = "1"; // Slice immer Aktiv
         
         // Erst einmal Deckungstyp auf "1" setzen - CT 13.01.2012
@@ -1113,14 +1148,15 @@ public class TXSSliceInDaten implements TXSTransaktion
         // 2 -> Sichernde Ueberdeckung
         // 3 -> Weitere Deckung
         this.ivDecktyp = "1";
-       if (pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("2"))
+        if (pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("2") || pvBestandsdaten.getAusplatzierungsmerkmal().equals("O4"))
         {
             this.ivDecktyp = "2";
         }
-        if (pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("3"))
-        {
-        	this.ivDecktyp = "3";
-        }
+        else if (!pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("O") &&
+                 (pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("3") || pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("4")))
+                {
+        	          this.ivDecktyp = "3";
+                }
         
         this.ivVon = "0.0";
         this.ivBis = pvBestandsdaten.getNominalbetrag();
@@ -1148,5 +1184,221 @@ public class TXSSliceInDaten implements TXSTransaktion
         this.ivWhrg = pvBestandsdaten.getNominalbetragWaehrung();
         
     	return true;
-    }    
+    }
+
+    /**
+     * Importiert die Wertpapier-Informationen fuer KEV
+     * @param pvBestandsdaten
+     * @param pvInstitutsnummer
+     * @param pvLogger
+     * @return
+     */
+    public boolean importKEVWertpapier(Bestandsdaten pvBestandsdaten, String pvInstitutsnummer, Logger pvLogger)
+    {
+        pvLogger.info("Wertpapier " + pvBestandsdaten.getProdukt() + " - Ausplatzierungsmerkmal " + pvBestandsdaten.getAusplatzierungsmerkmal());
+
+        //if (!(pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("A0") || pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("A1") ||
+        //      pvBestandsdaten.getDepotNr().startsWith("SS")))
+        //{
+        //    pvLogger.error("Wertpapier " + pvBestandsdaten.getProdukt() + " - Ungueltiges Ausplatzierungsmerkmal " + pvBestandsdaten.getAusplatzierungsmerkmal());
+        //    return false;
+        //}
+
+        this.ivKey = pvBestandsdaten.getProdukt(); // + WPSuffix.getSuffix(pvBestandsdaten.getAusplatzierungsmerkmal(), pvLogger);
+        this.ivTx = "KEV";
+        this.ivPool = "KEV";
+        this.ivPrj = "KEV";
+
+        this.ivAktivpassiv = "1"; // Slice immer Aktiv
+
+        // Erst einmal Deckungstyp auf "1" setzen - CT 13.01.2012
+        // 1 -> Ordentl. gattungsklassische Deckung
+        // 2 -> Sichernde Ueberdeckung
+        // 3 -> Weitere Deckung
+        this.ivDecktyp = "1";
+        //if (pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("2") || pvBestandsdaten.getAusplatzierungsmerkmal().equals("O4"))
+        //{
+        //    this.ivDecktyp = "2";
+        //}
+        //else if (!pvBestandsdaten.getAusplatzierungsmerkmal().startsWith("O") &&
+        //    (pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("3") || pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("4")))
+        //{
+        //    this.ivDecktyp = "3";
+        //}
+
+        this.ivVon = "0.0";
+        this.ivBis = pvBestandsdaten.getNominalbetrag();
+
+        //if (StringKonverter.convertString2Double(ivBis) > 0.0)
+        //{
+        //    this.ivNbetrag = this.ivBis;
+        //}
+        //else
+        //{
+        //    this.ivNbetrag = "0.0";
+        //}
+
+        // CT 20.12.2011 - NurLiq-Kennzeichen setzen
+        // Defaultmaessig erst einmal auf "0" (false) setzen
+        this.ivNliqui = "0";
+        //if (pvBestandsdaten.getAusplatzierungsmerkmal().endsWith("4"))
+        //{
+        //    if (!pvBestandsdaten.getAusplatzierungsmerkmal().equals("O4")) // OEPG - 'O4' nicht
+        //    {
+        //        this.ivNliqui = "1";
+        //    }
+        //}
+        // Defaultmaessig Wasserfall (1)
+        this.ivTilgmod = "1";
+        this.ivWhrg = pvBestandsdaten.getNominalbetragWaehrung();
+
+        return true;
+    }
+
+    /**
+     * Importiert die Darlehensinformationen aus LoanIQ fuer KEV
+     * @param pvDarlehen
+     * @param pvVorlaufsatz
+     * @param pvLogger
+     * @return
+     */
+    public boolean importKEVLoanIQ(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    {
+        pvLogger.info("Darlehen " + pvDarlehen.getKontonummer() + " - Ausplatzierungsmerkmal " + pvDarlehen
+            .getAusplatzierungsmerkmal());
+
+        // 07.04.2014 - Slice-Typ ueber das Ausplatzierungsmerkmal ermitteln
+            this.ivKey = pvDarlehen.getKontonummer(); // + "P";
+            this.ivTx = "KEV";
+            this.ivPool = "KEV";
+            this.ivPrj = "KEV";
+
+
+        if (!pvDarlehen.getMerkmalAktivPassiv().equals("A"))
+        {
+            pvLogger.error("Konto " + pvDarlehen.getKontonummer() + " - MerkmalAktivPassiv => " + pvDarlehen
+                .getMerkmalAktivPassiv());
+            return false;
+        }
+        this.ivAktivpassiv = "1";
+
+        // Erst einmal Deckungstyp auf "1" setzen - CT 13.01.2012
+        // 1 -> Ordentl. gattungsklassische Deckung
+        // 2 -> Sichernde Ueberdeckung
+        // 3 -> Weitere Deckung
+        this.ivDecktyp = "1";
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("2"))
+        {
+            this.ivDecktyp = "2";
+        }
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("3"))
+        {
+            this.ivDecktyp = "3";
+        }
+
+        this.ivTilgmod = "1";
+
+        this.ivVon = "0.0";
+
+        this.ivBis = pvDarlehen.getRestkapital();
+        //if (StringKonverter.convertString2Double(ivBis) > 0.0)
+        //{
+        //    this.ivNbetrag = this.ivBis;
+        //}
+        //else
+        //{
+        //    this.ivNbetrag = "0.0";
+        //}
+
+        // CT 20.12.2011 - NurLiq-Kennzeichen setzen
+        // Defaultmaessig erst einmal auf "0" (false) setzen
+        this.ivNliqui = "0";
+        if (pvDarlehen.getAusplatzierungsmerkmal().endsWith("4"))
+        {
+            if (!pvDarlehen.getAusplatzierungsmerkmal().equals("O4")) // OEPG bei MIDAS eigentlich nicht moeglich, aber...
+            {
+                this.ivNliqui = "1";
+            }
+        }
+
+        this.ivWhrg = pvDarlehen.getBetragwaehrung();
+
+        return true;
+
+    }
+
+    /**
+     * Importiert die Termingeldinformationen
+     * @param pvTermingeld Termingeld
+     * @param pvVorlaufsatz Vorlaufsatz
+     * @param pvLogger log4j-Logger
+     * @return
+     */
+    public boolean importTermingeld(Termingeld pvTermingeld, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    {
+        pvLogger.info("Darlehen " + pvTermingeld.getKontonummer() + " - Ausplatzierungsmerkmal " + pvTermingeld
+            .getAusplatzierungsmerkmal());
+
+        this.ivKey = pvTermingeld.getKontonummer();
+
+        // 07.04.2014 - Slice-Typ ueber das Ausplatzierungsmerkmal ermitteln
+        // Hypothekenpfandbrief
+        //if (pvTermingeld.getAusplatzierungsmerkmal().startsWith("H"))
+        //{
+            this.ivTx = "Hypothekenpfandbrief";
+            this.ivPool = "Hypothekenpfandbrief";
+            this.ivPrj = "NLB-PfandBG";
+        //}
+
+        // Oeffentlicher Pfandbrief
+        if (pvTermingeld.getAusplatzierungsmerkmal().startsWith("K"))
+        {
+            this.ivTx = "&#214;ffentlicher Pfandbrief";
+            this.ivPool = "&#214;ffentlicher Pfandbrief";
+            this.ivPrj = "NLB-PfandBG";
+        }
+
+        // Schiffspfandbrief
+        if (pvTermingeld.getAusplatzierungsmerkmal().startsWith("S"))
+        {
+            this.ivTx = "Schiffspfandbrief";
+            this.ivPool = "Schiffspfandbrief";
+            this.ivPrj = "Schiffspfandbrief";
+        }
+
+        // OEPG
+        if (pvTermingeld.getAusplatzierungsmerkmal().startsWith("O"))
+        {
+            this.ivTx = "&#214;ffentlicher Pfandbrief";
+            this.ivPool = "&#214;ffentlicher Pfandbrief";
+            this.ivPrj = "&#214;PG";
+        }
+
+        this.ivAktivpassiv = "1";
+
+        // Erst einmal Deckungstyp auf "1" setzen - CT 13.01.2012
+        // 1 -> Ordentl. gattungsklassische Deckung
+        // 2 -> Sichernde Ueberdeckung
+        // 3 -> Weitere Deckung
+        this.ivDecktyp = "3";
+        if (pvTermingeld.getAusplatzierungsmerkmal().endsWith("2"))
+        {
+            this.ivDecktyp = "2";
+        }
+        if (pvTermingeld.getAusplatzierungsmerkmal().endsWith("3"))
+        {
+            this.ivDecktyp = "3";
+        }
+
+        this.ivTilgmod = "1";
+
+        this.ivVon = "0.0";
+
+        this.ivBis = pvTermingeld.getSaldo();
+
+        this.ivWhrg = pvTermingeld.getWaehrung();
+
+        return true;
+    }
+
 }

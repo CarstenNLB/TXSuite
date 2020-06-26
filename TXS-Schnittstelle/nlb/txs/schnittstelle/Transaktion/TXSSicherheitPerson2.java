@@ -39,11 +39,11 @@ public class TXSSicherheitPerson2 implements TXSTransaktion
     {
         initTXSSicherheitPerson2();
     }
-    
+
     /**
-      *
-      */
-    public void initTXSSicherheitPerson2() 
+     * Initialisiert die Instanzvariablen mit leeren Strings
+     */
+    public void initTXSSicherheitPerson2()
     {
         this.ivKdnr = new String();
         this.ivOrg = new String();

@@ -52,7 +52,7 @@ public class KundeRequestVorlaufsatz
     private Logger ivLogger;
     
     /**
-     * Konstruktor 
+     * Konstruktor - Setzt den Logger und Initialisierung mit leeren Strings
      */
     public KundeRequestVorlaufsatz(Logger pvLogger)
     {
@@ -67,8 +67,8 @@ public class KundeRequestVorlaufsatz
     
     /**
      * Konstruktor - mit Parametern
-     * @param pvInstitutsnummer
-     * @param pvZielsystem
+     * @param pvInstitutsnummer Institutsnummer
+     * @param pvZielsystem Zielsystem
      */
     public KundeRequestVorlaufsatz(String pvInstitutsnummer, String pvZielsystem)
     {
@@ -94,7 +94,7 @@ public class KundeRequestVorlaufsatz
 
     /**
      * Liefert die Institutsnummer
-     * @return the institutsnummer
+     * @return Die Institutsnummer
      */
     public String getInstitutsnummer() {
         return this.ivInstitutsnummer;
@@ -102,7 +102,7 @@ public class KundeRequestVorlaufsatz
 
     /**
      * Setzt die Institutsnummer
-     * @param pvInstitutsnummer the institutsnummer to set
+     * @param pvInstitutsnummer Die zu setzende Institutsnummer
      */
     public void setInstitutsnummer(String pvInstitutsnummer) {
         this.ivInstitutsnummer = pvInstitutsnummer;
@@ -111,7 +111,7 @@ public class KundeRequestVorlaufsatz
      
     /**
      * Liefert den Systemnamen
-	 * @return the ivSystemname
+	 * @return Der Systemname
 	 */
 	public String getSystemname() 
 	{
@@ -120,7 +120,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Setzt den Systemnamen
-	 * @param pvSystemname the ivSystemname to set
+	 * @param pvSystemname Der zu setzende Systemname
 	 */
 	public void setSystemname(String pvSystemname) 
 	{
@@ -129,7 +129,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Liefert den Systembenutzer
-	 * @return the ivSystembenutzer
+	 * @return Der Systembenutzer
 	 */
 	public String getSystembenutzer() 
 	{
@@ -138,7 +138,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Setzt den Systembenutzer
-	 * @param pvSystembenutzer the ivSystembenutzer to set
+	 * @param pvSystembenutzer Der zu setzende Systembenutzer
 	 */
 	public void setSystembenutzer(String pvSystembenutzer) 
 	{
@@ -147,7 +147,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Liefert das (Erstellungs)Datum
-	 * @return the ivDatum
+	 * @return Das (Erstellungs)Datum
 	 */
 	public String getDatum() 
 	{
@@ -156,7 +156,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Setzt das (Erstellungs)Datum
-	 * @param pvDatum the ivDatum to set
+	 * @param pvDatum Das zu setzende (Erstellungs)Datum
 	 */
 	public void setDatum(String pvDatum) 
 	{
@@ -165,7 +165,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Liefert die (Erstellungs)Zeit
-	 * @return the ivZeit
+	 * @return Die (Erstellungs)Zeit
 	 */
 	public String getZeit() 
 	{
@@ -174,7 +174,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Setzt die (Erstellungs)Zeit
-	 * @param pvZeit the ivZeit to set
+	 * @param pvZeit Die zu setzende (Erstellungs)Zeit
 	 */
 	public void setZeit(String pvZeit) 
 	{
@@ -183,7 +183,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Liefert das Zuelsystem
-	 * @return the ivZielsystem
+	 * @return Das Zielsystem
 	 */
 	public String getZielsystem() 
 	{
@@ -192,7 +192,7 @@ public class KundeRequestVorlaufsatz
 
 	/**
 	 * Setzt das Zielsystem
-	 * @param pvZielsystem the ivZielsystem to set
+	 * @param pvZielsystem Das zu setzende Zielsystem
 	 */
 	public void setZielsystem(String pvZielsystem) 
 	{
@@ -200,10 +200,10 @@ public class KundeRequestVorlaufsatz
 	}
 
 	/**
-     * Zerlegt die Zeichenkette in einzelne Felder
-     * @param pvZeile 
-     * @return 
-     */
+	 * Zerlegt die Zeichenkette in einzelne Felder
+	 * @param pvZeile Die zu zerlegende Zeile/Zeichenkette
+	 * @return
+	 */
    public boolean parseVorlaufsatz(String pvZeile)
    {
      String lvTemp = new String(); // arbeitsbereich/zwischenspeicher feld
@@ -268,19 +268,26 @@ public class KundeRequestVorlaufsatz
     }
     
     /**
-     * Liefert einen String mit den Inhalten der Instanz zurueck
-     * @return 
+     * Liefert einen String mit den Inhalten aller Instanzvariablen zurueck
+     * @return String mit allen Inhalten der Instanzvariablen
      */
     public String toString()
     {
     	StringBuilder lvHelpString = new StringBuilder();
     	
-    	lvHelpString.append(ivInstitutsnummer + ";");
-    	lvHelpString.append(ivSystemname + ";");
-    	lvHelpString.append(ivSystembenutzer + ";");
-    	lvHelpString.append(ivDatum + ";");
-    	lvHelpString.append(ivZeit + ";");
-    	lvHelpString.append(ivZielsystem + ";" + StringKonverter.lineSeparator);
+    	lvHelpString.append(ivInstitutsnummer);
+    	lvHelpString.append(";");
+    	lvHelpString.append(ivSystemname);
+    	lvHelpString.append(";");
+    	lvHelpString.append(ivSystembenutzer);
+    	lvHelpString.append(";");
+    	lvHelpString.append(ivDatum);
+    	lvHelpString.append(";");
+    	lvHelpString.append(ivZeit);
+    	lvHelpString.append(";");
+    	lvHelpString.append(ivZielsystem);
+    	lvHelpString.append(";");
+    	lvHelpString.append(StringKonverter.lineSeparator);
     	
     	return lvHelpString.toString();
     }

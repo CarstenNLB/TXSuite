@@ -226,7 +226,7 @@ public class DarlehenKomplett
     }
 
     /**
-     * Fügt ein INF-Segment hinzu
+     * Fï¿½gt ein INF-Segment hinzu
      * @param pvInf
      */
     public void addINF(INF pvInf)
@@ -316,7 +316,7 @@ public class DarlehenKomplett
                         // anzahlDatum <= heute ...
                         if (lvInf != null)
                         {
-                            // Wer ist jünger?
+                            // Wer ist jï¿½nger?
                             if (lvInf.getAnzahlDatum() <= lvHelpINF.getAnzahlDatum())
                             {
                                 lvInf = lvHelpINF;
@@ -332,7 +332,7 @@ public class DarlehenKomplett
     }
     
     /**
-     * Fügt ein KON-Segment hinzu
+     * Fï¿½gt ein KON-Segment hinzu
      * @param pvKon
      */
     public void addKON(KON pvKon)
@@ -364,7 +364,7 @@ public class DarlehenKomplett
                     if (lvKon != null)
                     {
                         //System.out.println(kon.getAnzahlDatum() + " <= " + helpKON.getAnzahlDatum());
-                        // Wer ist jünger?
+                        // Wer ist jï¿½nger?
                         if (lvKon.getAnzahlDatum() <= lvHelpKON.getAnzahlDatum())
                         {
                             lvKon = lvHelpKON;
@@ -380,7 +380,7 @@ public class DarlehenKomplett
     }
     
     /**
-     * Liefert das nächste KON-Segment nach dem Buchungsdatum
+     * Liefert das nï¿½chste KON-Segment nach dem Buchungsdatum
      * @return 
      */
     public KON getKONNextBuchungsdatum()
@@ -413,7 +413,7 @@ public class DarlehenKomplett
 
     
     /**
-     * Fügt ein KONTS-Segment hinzu
+     * Fï¿½gt ein KONTS-Segment hinzu
      * @param pvKonts
      */
     public void addKONTS(KONTS pvKonts)
@@ -443,7 +443,7 @@ public class DarlehenKomplett
                     // anzahlDatum <= heute ...
                     if (lvKontszi != null)
                     {
-                        // Wer ist jünger?
+                        // Wer ist jï¿½nger?
                         if (lvKontszi.getAnzahlDatum() <= lvHelpKONTSZI.getAnzahlDatum())
                         {
                             lvKontszi = lvHelpKONTSZI;
@@ -480,7 +480,7 @@ public class DarlehenKomplett
                     // anzahlDatum <= heute ...
                     if (lvKontsti != null)
                     {
-                        // Wer ist jünger?
+                        // Wer ist jï¿½nger?
                         if (lvKontsti.getAnzahlDatum() <= lvHelpKONTSTI.getAnzahlDatum())
                         {
                             lvKontsti = lvHelpKONTSTI;
@@ -496,7 +496,7 @@ public class DarlehenKomplett
     }
 
     /**
-     * Fügt ein KTOZB-Segment hinzu
+     * Fï¿½gt ein KTOZB-Segment hinzu
      * @param pvKtozb
      */
     public void addKTOZB(KTOZB pvKtozb)
@@ -525,7 +525,7 @@ public class DarlehenKomplett
                 { // anzahlDatum <= heute ...
                     if (lvKtozb != null)
                     {
-                        // Wer ist jünger?
+                        // Wer ist jï¿½nger?
                         if (lvKtozb.getAnzahlDatum() <= lvHelpKTOZB.getAnzahlDatum())
                         {
                             lvKtozb = lvHelpKTOZB;
@@ -544,7 +544,7 @@ public class DarlehenKomplett
     }
 
     /**
-     * Liefert das nächste KTOZB-Segment nach dem Buchungsdatum
+     * Liefert das nï¿½chste KTOZB-Segment nach dem Buchungsdatum
      * @return 
      */
     public KTOZB getKTOZBNextBuchungsdatum()
@@ -561,7 +561,7 @@ public class DarlehenKomplett
                 { // in der Zunkunft
                     if (lvKtozb != null)
                     {
-                        // Wer liegt näher am Buchungsdatum?
+                        // Wer liegt nï¿½her am Buchungsdatum?
                         if (lvKtozb.getAnzahlDatum() > lvHelpKTOZB.getAnzahlDatum())
                         {
                             lvKtozb = lvHelpKTOZB;
@@ -708,7 +708,7 @@ public class DarlehenKomplett
     }
 
     /**
-     * Prüft auf ZukunftsKONTSTI
+     * Prï¿½ft auf ZukunftsKONTSTI
      * @return 
      */
     public boolean existsZukunftsKONTSTI()
@@ -733,7 +733,7 @@ public class DarlehenKomplett
     }
     
     /**
-     * Prüft auf ZukunftsKONTSZI
+     * Prï¿½ft auf ZukunftsKONTSZI
      * @return 
      */
     public boolean existsZukunftsKONTSZI()
@@ -758,7 +758,7 @@ public class DarlehenKomplett
     }
     
     /**
-     * Prüft auf ein Dummy-Segment
+     * Prï¿½ft auf ein Dummy-Segment
      * @return 
      */
     public boolean existsDummySegment()
@@ -813,6 +813,7 @@ public class DarlehenKomplett
             lvHelpKTOZB = ivListKTOZB.get(i);
             if (lvHelpKTOZB.getKopf().getsDwhtdb().equals("DUMMY"))
             {
+                ivLogger.error("KTOZB - Dummysegment");
                 return true;
             }
         }
@@ -866,7 +867,7 @@ public class DarlehenKomplett
     }
     
     /**
-     * Es wird geprüft, ob alle Pflichtsegmente vorhanden sind
+     * Es wird geprï¿½ft, ob alle Pflichtsegmente vorhanden sind
      * @return 
      */
     public boolean existsPflichtsegmente()

@@ -6,6 +6,7 @@
 
 package nlb.txs.schnittstelle.Darlehen;
 
+import de.nordlbit.prost.Utilities.StringKonverter;
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -16,23 +17,18 @@ import java.io.FileOutputStream;
 public class OutputKontonummern 
 {
     /**
-     * 
+     * Name der Datei
      */
     private String ivFilename;
-    
+
     /**
-     * 
-     */
-    private File ivKtoFile;
-    
-    /**
-     * 
+     * FileOutputStream fuer die Kontonummern
      */
     private FileOutputStream ivKtoOS;
  
     /**
      * Konstruktor
-     * @param pvFilename 
+     * @param pvFilename Name der Datei
      */
     public OutputKontonummern(String pvFilename)
     {
@@ -44,7 +40,7 @@ public class OutputKontonummern
       */
     public void open()
     {
-      ivKtoFile = new File(ivFilename);
+      File ivKtoFile = new File(ivFilename);
       try
       {
         ivKtoOS = new FileOutputStream(ivKtoFile);
@@ -72,18 +68,17 @@ public class OutputKontonummern
     
     /**
      * Schreibt die Kontonummer in die Datei
-     * @param pvKontonummer 
+     * @param pvKontonummer Kontonummern
      */
     public void printKontonummer(String pvKontonummer)
     {
-        // Header der XML-Datei schreiben
         try
         {
-           ivKtoOS.write((new String(pvKontonummer + "\n")).getBytes());
+           ivKtoOS.write((pvKontonummer + StringKonverter.lineSeparator).getBytes());
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe der Kontonummer in die Datei");
+          System.out.println("Fehler bei Ausgabe der Kontonummer in die Datei '" + ivFilename + "'");
         }
     }
 

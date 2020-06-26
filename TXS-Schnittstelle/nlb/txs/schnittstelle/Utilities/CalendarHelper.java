@@ -24,9 +24,7 @@ public class CalendarHelper
     private HashMap <Integer , Vector<Calendar> > ivMapFreeDays = new HashMap <Integer, Vector<Calendar>> (); 
            
     /** 
-     *  Ermittelt ob das uebergebene Datum 
-     *  ein Arbeitstag ist 
-     * 
+     *  Ermittelt ob das uebergebene Datum ein Arbeitstag ist
      * @param pvCal zu untersuchendes Datum 
      * @return <code> true </code> wenn das Datum ein Werktag ist 
      */ 
@@ -118,7 +116,7 @@ public class CalendarHelper
         lvVec.add(lvTemp); 
         lvTemp = (GregorianCalendar)lvTemp.clone(); 
         
-        // Christi Himmelfahrt ausschließen 
+        // Christi Himmelfahrt ausschlieï¿½en 
         // 40 Tage nach Ostersonntag 
         lvTemp.add(Calendar.DAY_OF_MONTH, 38); 
         //System.out.println("Christi Himmelfahrt "); 
@@ -126,22 +124,22 @@ public class CalendarHelper
         lvVec.add(lvTemp); 
         lvTemp = (GregorianCalendar)lvTemp.clone(); 
         
-        // Pfingsmontag ausschließen 
+        // Pfingsmontag ausschlieï¿½en 
         lvTemp.add(Calendar.DAY_OF_MONTH, 11); 
         //System.out.println("Pfingsmontag "); 
         printDate (lvTemp); 
         lvVec.add(lvTemp); 
         lvTemp = (GregorianCalendar)lvTemp.clone(); 
         
-        // den ersten Mai ausschließen 
+        // den ersten Mai ausschlieï¿½en 
         lvTemp = new GregorianCalendar(pvYear, 4, 1); 
         lvVec.add(lvTemp); 
         
-        // den dritten Oktober ausschließen 
+        // den dritten Oktober ausschlieï¿½en 
         lvTemp = new GregorianCalendar(pvYear, 9, 3); 
         lvVec.add(lvTemp); 
         
-        // Weihnachtsfeiertage ausschließen 
+        // Weihnachtsfeiertage ausschlieï¿½en 
         lvTemp = new GregorianCalendar(pvYear, 11, 24); 
         lvVec.add(lvTemp); 
         lvTemp = new GregorianCalendar(pvYear, 11, 25); 
@@ -149,7 +147,7 @@ public class CalendarHelper
         lvTemp = new GregorianCalendar(pvYear, 11, 26); 
         lvVec.add(lvTemp); 
                 
-        // Silvester und Neujahr ausschließen 
+        // Silvester und Neujahr ausschlieï¿½en 
         lvTemp = new GregorianCalendar(pvYear, 11, 31); 
         lvVec.add(lvTemp); 
         lvTemp = new GregorianCalendar(pvYear, 0, 1); 
@@ -159,9 +157,9 @@ public class CalendarHelper
     } 
           
     /**
-     * 
-     * @param pvCal
-     * @return
+     * Formatiert das Datum (Calendar-Objekt)
+     * @param pvCal Datum (Calendar-Objekt)
+     * @return formatiertes Datum als String
      */
     public String printDate(Calendar pvCal)
     { 

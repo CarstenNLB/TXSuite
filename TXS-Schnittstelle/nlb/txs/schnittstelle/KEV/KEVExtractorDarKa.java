@@ -5,10 +5,11 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
 
 import org.apache.log4j.xml.DOMConfigurator;
 
+@Deprecated
 public class KEVExtractorDarKa 
 {
-	// aus DarKa (NLB&BLB) eine Liste erstellen – Selektionsmerkmal Ausplatzierungsmerkmal = A0/A1
-	//		InstNr;KtoNr;DZR;ZBBG;DLZ;DHZI;DNZI;
+	  // aus DarKa (NLB&BLB) eine Liste erstellen. Selektionsmerkmal Ausplatzierungsmerkmal = A0/A1
+	  // InstNr;KtoNr;DZR;ZBBG;DLZ;DHZI;DNZI;
 
     /**
      * Startroutine KEVExtractorDarKa
@@ -19,7 +20,7 @@ public class KEVExtractorDarKa
         if (!argv[argv.length - 1].endsWith(".ini"))
         {
             System.out.println("Starten:");
-            System.out.println("LoanIQ <ini-Datei>");
+            System.out.println("KEVExtractorDarKa <ini-Datei>");
             System.exit(1);
         }
         else

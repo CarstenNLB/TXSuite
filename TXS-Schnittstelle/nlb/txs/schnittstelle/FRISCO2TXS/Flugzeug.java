@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * @author tepperc
  *
  */
+@Deprecated
 public class Flugzeug extends ObjektDaten
 {
     /**

@@ -116,9 +116,17 @@ public class TXSVerzeichnisDaten implements TXSTransaktion
     private String ivZins;
 
     /**
-     *
+     * Konstruktor
      */
     public TXSVerzeichnisDaten() 
+    {
+      initTXSVerzeichnisDaten();
+    }
+
+   /**
+    * Initialisierung der Instanzvariablen mit leeren Strings
+    */
+    public void initTXSVerzeichnisDaten()
     {
         this.ivAbt = new String();
         this.ivArt = new String();
@@ -471,12 +479,12 @@ public class TXSVerzeichnisDaten implements TXSTransaktion
         BigDecimal lvKonEigenRKAP_Fakt = new BigDecimal("1.0");
         
         if (pvDarlehen.getKredittyp().equals("4"))
-        { /* mit Bürge .. anteilig */
+        { /* mit Bï¿½rge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) != 0.0)
          { /* nichts da */
           lvBuerge_Fakt = lvBtrDivHd.multiply(StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftProzent()));
          } /* etwas da */
-        } /* mit Bürge .. anteilig */
+        } /* mit Bï¿½rge .. anteilig */
         /* Konsortiale ..... Summe der anderen, nur bei korrektem Schl.... */
         if (StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) > 0 &&
                 StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) < 20)
@@ -516,12 +524,12 @@ public class TXSVerzeichnisDaten implements TXSTransaktion
         //BigDecimal lvZuwBetragBu = new BigDecimal("0.0");
         //BigDecimal lvZuwBetragRe = new BigDecimal("0.0");
         if (pvDarlehen.getKredittyp().equals("1"))
-        { /* ohne Bürge .. alles */
+        { /* ohne Bï¿½rge .. alles */
          lvVerfBetragRe = lvVerfBetrag;
          //lvZuwBetragRe  = lvZuwBetrag;
-        } /* ohne Bürge .. alles */
+        } /* ohne Bï¿½rge .. alles */
         if (pvDarlehen.getKredittyp().equals("2"))
-        { /* mit Bürge .. anteilig */
+        { /* mit Bï¿½rge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) == 0.0)
          { /* nichts da */
           lvVerfBetragRe = lvVerfBetrag;
@@ -536,7 +544,7 @@ public class TXSVerzeichnisDaten implements TXSTransaktion
             //                StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftProzent()));
             //lvZuwBetragRe  = lvZuwBetrag.subtract(lvZuwBetragBu);
          } /* etwas da */
-        } /* mit Bürge .. anteilig */
+        } /* mit Bï¿½rge .. anteilig */
         
       this.ivAbt = "3";
       this.ivGbart = "1"; 

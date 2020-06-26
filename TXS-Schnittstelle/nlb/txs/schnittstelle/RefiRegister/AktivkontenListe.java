@@ -16,9 +16,8 @@ public class AktivkontenListe extends HashMap<String, AktivkontenDaten>
 {
     /**
      * Ueberprueft, ob es zu der Kontonummer AktivkontenDaten gibt
-     * @param pvNr 
-     * @return 
-     * 
+     * @param pvNr Kontonummer
+     * @return true -> Es gibt Daten; false -> Keine Daten vorhanden
      */
     public boolean containsAktivkontenDaten(String pvNr)
     {
@@ -27,8 +26,8 @@ public class AktivkontenListe extends HashMap<String, AktivkontenDaten>
     
     /**
      * Fuegt AktivkontenDaten hinzu
-     * @param pvNr 
-     * @param pvAktivkontenDaten 
+     * @param pvNr Kontonummer
+     * @param pvAktivkontenDaten AktivkontenDaten
      */
     public void addAktivkontenDaten(String pvNr, AktivkontenDaten pvAktivkontenDaten)
     {
@@ -37,8 +36,8 @@ public class AktivkontenListe extends HashMap<String, AktivkontenDaten>
 
     /**
      * Liefert die AktivkontenDaten zur Kontonummer
-     * @param pvNr 
-     * @return 
+     * @param pvNr Kontonummer
+     * @return AktivkontenDaten
      */
     public AktivkontenDaten getAktivkontenDaten(String pvNr)
     {

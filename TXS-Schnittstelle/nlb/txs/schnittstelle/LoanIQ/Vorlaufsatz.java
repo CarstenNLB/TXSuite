@@ -7,6 +7,7 @@
 package nlb.txs.schnittstelle.LoanIQ;
 
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
+import org.apache.log4j.Logger;
 
 /**
  * @author tepperc
@@ -34,15 +35,17 @@ public class Vorlaufsatz
      */
     private String ivTimestamp;
 
-    /**
+  /**
+   * log4j-Logger
+   */
+  private Logger ivLogger;
+
+  /**
      * Konstruktor - Initialisiert die Instanzvariablen
-     * @param pvInstitutsnummer
-     * @param pvBuchungsdatum
-     * @param pvAnzahlFinanzgeschaefte
-     * @param pvTimestamp
      */
-    public Vorlaufsatz()
+    public Vorlaufsatz(Logger pvLogger)
     {
+      this.ivLogger = pvLogger;
         this.ivInstitutsnummer = new String();
         this.ivBuchungsdatum = new String();
         this.ivAnzahlFinanzgeschaefte = 0;
@@ -115,17 +118,15 @@ public class Vorlaufsatz
     
     /**
      * Zerlegt die Zeichenkette in einzelne Felder
-     * @param pvZeile 
-     * @return 
+     * @param pvZeile die zu zerlegende Zeile
      */
-   public boolean parseVorlaufsatz(String pvZeile)
+   public void parseVorlaufsatz(String pvZeile)
    {
      String lvTemp = new String(); // arbeitsbereich/zwischenspeicher feld
      int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
-     int    lvZzStr=0;              // pointer fuer satzbereich
-     
+
      // steuerung/iteration eingabesatz
-     for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
+     for (int lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
      {
 
        // wenn semikolon erkannt
@@ -149,7 +150,6 @@ public class Vorlaufsatz
      //if (stemp.equals("E"))
      //    System.out.println("Vorlaufsatz: Endekennzeichen erreicht.");
 
-     return true;
    }
     
     /**
@@ -174,7 +174,7 @@ public class Vorlaufsatz
               this.setTimestamp(pvWert);
               break;
            default:
-              System.out.println("Vorlaufsatz: undefiniert");
+              ivLogger.error("RefiRegister - Vorlaufsatz: undefiniert");
         }
     }
     
@@ -184,12 +184,20 @@ public class Vorlaufsatz
      */
     public String toString()
     {
-        StringBuffer lvHelpString = new StringBuffer();
+        StringBuilder lvHelpString = new StringBuilder();
         
-        lvHelpString.append("Institutsnummer: " + ivInstitutsnummer + StringKonverter.lineSeparator);
-        lvHelpString.append("Buchungsdatum: " + ivBuchungsdatum + StringKonverter.lineSeparator);
-        lvHelpString.append("Anzahl Finanzgeschaefte: " + ivAnzahlFinanzgeschaefte + StringKonverter.lineSeparator);
-        lvHelpString.append("Timestamp: " + ivTimestamp + StringKonverter.lineSeparator);
+        lvHelpString.append("Institutsnummer: ");
+        lvHelpString.append(ivInstitutsnummer);
+        lvHelpString.append(StringKonverter.lineSeparator);
+        lvHelpString.append("Buchungsdatum: ");
+        lvHelpString.append(ivBuchungsdatum);
+        lvHelpString.append(StringKonverter.lineSeparator);
+        lvHelpString.append("Anzahl Finanzgeschaefte: ");
+        lvHelpString.append(ivAnzahlFinanzgeschaefte);
+        lvHelpString.append(StringKonverter.lineSeparator);
+        lvHelpString.append("Timestamp: ");
+        lvHelpString.append(ivTimestamp);
+        lvHelpString.append(StringKonverter.lineSeparator);
         
         return lvHelpString.toString(); 
     }

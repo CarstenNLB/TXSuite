@@ -32,7 +32,7 @@ public class KundennummernOutput
     
     /**
      * Konstruktor
-     * @param pvFilename 
+     * @param pvFilename Filename
      */
     public KundennummernOutput(String pvFilename, Logger pvLogger)
     {
@@ -73,7 +73,7 @@ public class KundennummernOutput
     
     /**
      * Schreibt eine Kundennummer in die Datei
-     * @param pvKundenummer
+     * @param pvKundennummer Kundennummer
      */
     public void printKundennummer(String pvKundennummer)
     {
@@ -89,8 +89,8 @@ public class KundennummernOutput
     
     /**
      * Schreibt den Vorlaufsatz in die Datei
-     * @param pvInstitut
-     * @param pvZielsystem
+     * @param pvInstitut Institutsnummer
+     * @param pvZielsystem Zielsystem
      */
     public void printVorlaufsatz(String pvInstitut, String pvZielsystem)
     {

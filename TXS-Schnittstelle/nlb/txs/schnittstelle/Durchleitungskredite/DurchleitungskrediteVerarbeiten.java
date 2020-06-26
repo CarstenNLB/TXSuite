@@ -42,6 +42,7 @@ import org.jdom2.input.SAXBuilder;
  * @author tepperc
  *
  */
+@Deprecated
 public class DurchleitungskrediteVerarbeiten 
 {
 

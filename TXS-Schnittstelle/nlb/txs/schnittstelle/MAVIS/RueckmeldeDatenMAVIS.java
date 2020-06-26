@@ -323,20 +323,17 @@ public class RueckmeldeDatenMAVIS
 	}	
 
 	/**
-	 * Parst eine Zeile der RueckmeldeDatenMAVIS
+	 * Zerlegt eine Zeile der RueckmeldeDatenMAVIS
      * @param pvZeile
-     * @param pvLogger 
-     * @return 
-     *       
+     * @param pvLogger
      */
-	public boolean parseRueckmeldeDaten(String pvZeile, Logger pvLogger)
+	public void parseRueckmeldeDaten(String pvZeile, Logger pvLogger)
 	{                 
       String lvTemp = new String();  // Arbeitsbereich/Zwischenspeicher Feld
       int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
-      int    lvZzStr=0;              // pointer fuer satzbereich
-         
+
       // Steuerung/Iteration Eingabesatz
-      for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
+      for (int lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
       {
 
         // wenn Semikolon erkannt
@@ -358,8 +355,6 @@ public class RueckmeldeDatenMAVIS
       
       // Letzten Wert auch noch setzen
       this.setRueckmeldeDaten(lvLfd, lvTemp, pvLogger);
-      
-      return true; 
    }
 
     /**

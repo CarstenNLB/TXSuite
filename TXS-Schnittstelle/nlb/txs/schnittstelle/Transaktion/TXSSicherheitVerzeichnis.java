@@ -36,9 +36,17 @@ public class TXSSicherheitVerzeichnis implements TXSTransaktion
     private String ivQuelle;
 
     /**
-     *
+     * Konstruktor
      */
     public TXSSicherheitVerzeichnis() 
+    {
+        initTXSSicherheitVerzeichnis();
+    }
+
+    /**
+     * Initialisiert die Instanzvariablen mit leeren Strings
+     */
+    public void initTXSSicherheitVerzeichnis()
     {
         this.ivVenr = new String();
         this.ivOrg = new String();

@@ -23,7 +23,7 @@ public class KuendigungTermin
     private String ivKuendPer;
 
     /**
-     * Konstruktor
+     * Konstruktor - Initialisierung mit leeren Strings
      */
     public KuendigungTermin()
     {
@@ -32,8 +32,9 @@ public class KuendigungTermin
     }
     
     /**
-     * @param pvKuendKurs
-     * @param pvKuendPer
+     * Konstruktor
+     * @param pvKuendKurs Kuendigungskurs
+     * @param pvKuendPer Kuendigungsprozent
      */
     public KuendigungTermin(String pvKuendKurs, String pvKuendPer) 
     {
@@ -42,41 +43,47 @@ public class KuendigungTermin
     }
 
     /**
-     * @return the kuendKurs
+     * Liefert den Kuendigungskurs
+     * @return Kuendigungskurs
      */
     public String getKuendKurs() {
         return this.ivKuendKurs;
     }
 
     /**
-     * @param pvKuendKurs the kuendKurs to set
+     * Setzt den Kuendigungskurs
+     * @param pvKuendKurs den zu setzenden Kuendigungskurs
      */
     public void setKuendKurs(String pvKuendKurs) {
         this.ivKuendKurs = pvKuendKurs;
     }
 
     /**
-     * @return the kuendPer
+     * Liefert die Kuendigungsprozent
+     * @return Kuendigungsprozent
      */
     public String getKuendPer() {
         return this.ivKuendPer;
     }
 
     /**
-     * @param pvKuendPer the kuendPer to set
+     * Setzt die Kuendigungsprozent
+     * @param pvKuendPer die zu setzenden Kuendigungsprozent
      */
     public void setKuendPer(String pvKuendPer) {
         this.ivKuendPer = pvKuendPer;
     }  
     
     /**
-     * 
+     * Liefert den Inhalt/die Werte als String
      */
     public String toString()
     {
     	StringBuilder lvBuilder = new StringBuilder();
-    	lvBuilder.append("Kuendigungskurs: " + ivKuendKurs);
-    	lvBuilder.append("Kuendigungsprozent: " + ivKuendPer);
+    	lvBuilder.append("Kuendigungskurs: ");
+    	lvBuilder.append(ivKuendKurs);
+    	lvBuilder.append("Kuendigungsprozent: ");
+    	lvBuilder.append(ivKuendPer);
     	return lvBuilder.toString();
     }
 }

@@ -33,9 +33,17 @@ public class TXSFinanzierungKredit implements TXSTransaktion
      */
     public TXSFinanzierungKredit()
     {
-        this.ivKey = new String();
-        this.ivOriginator = new String();
-        this.ivQuelle = new String();
+      initTXSFinanzierungKredit();
+    }
+
+    /**
+     * Initialisiert die Instanzvariablen mit leeren Strings
+    */
+    public void initTXSFinanzierungKredit()
+    {
+      this.ivKey = new String();
+      this.ivOriginator = new String();
+      this.ivQuelle = new String();
     }
 
     /**

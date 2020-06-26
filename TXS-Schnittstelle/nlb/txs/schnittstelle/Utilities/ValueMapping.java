@@ -1,8 +1,8 @@
 package nlb.txs.schnittstelle.Utilities;
 
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.SAPCMS.Daten.Sicherheitenvereinbarung;
-import nlb.txs.schnittstelle.SAPCMS.Daten.Vermoegensobjekt;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
+import nlb.txs.schnittstelle.Sicherheiten.Daten.Sicherheitenvereinbarung;
+import nlb.txs.schnittstelle.Sicherheiten.Daten.Vermoegensobjekt;
 
 public class ValueMapping 
 {
@@ -16,18 +16,18 @@ public class ValueMapping
     {
         // A_1 Ausl., Zentralregierungen
         // A_2 internationale Institutionen
-        // A_3 Ausl., Regionalreg./öff. Geb.-körpersch.
+        // A_3 Ausl., Regionalreg./ï¿½ff. Geb.-kï¿½rpersch.
         // B_1 Bund
         // B_2 Andere durch Bund abgesichert
-        // C   Bundesländer
-        // D   Städte, Gemeinden, Kreise, Bezirke
-        // E   öffentliche Unternehmen, Zweckverbände
+        // C   Bundeslï¿½nder
+        // D   Stï¿½dte, Gemeinden, Kreise, Bezirke
+        // E   ï¿½ffentliche Unternehmen, Zweckverbï¿½nde
         // G   Kreditinstitute
         // H   sonst. kommunale GP
-        // F   Unternehmen von Städten Gemeinden und Kommunen
-        // A_4 Andere ausl. Städte und Gemeinden
+        // F   Unternehmen von Stï¿½dten Gemeinden und Kommunen
+        // A_4 Andere ausl. Stï¿½dte und Gemeinden
         // A_5 Andere ausl. Regionen Provinzen und Staaten
-        // A_6 Andere ausl. staatliche oder öffentliche Unternehmen
+        // A_6 Andere ausl. staatliche oder ï¿½ffentliche Unternehmen
         // -1  undefiniert
 
         boolean lvGefunden = false;
@@ -44,7 +44,7 @@ public class ValueMapping
         }
         if (pvText.equals("A_3"))
         {
-            pvText = "Ausl., Regionalreg./öff. Geb.-körpersch.";
+            pvText = "Ausl., Regionalreg./ï¿½ff. Geb.-kï¿½rpersch.";
             lvGefunden = true;
         }
         if (pvText.equals("B_1"))
@@ -59,17 +59,17 @@ public class ValueMapping
         }
         if (pvText.equals("C"))
         {
-            pvText = "Bundesländer";
+            pvText = "Bundeslï¿½nder";
             lvGefunden = true;
         }
         if (pvText.equals("D"))
         {
-            pvText = "Städte, Gemeinden, Kreise, Bezirke";
+            pvText = "Stï¿½dte, Gemeinden, Kreise, Bezirke";
             lvGefunden = true;
         }
         if (pvText.equals("E"))
         {
-            pvText = "öffentliche Unternehmen, Zweckverbände";
+            pvText = "ï¿½ffentliche Unternehmen, Zweckverbï¿½nde";
             lvGefunden = true;
         }
         if (pvText.equals("G"))
@@ -84,12 +84,12 @@ public class ValueMapping
         }
         if (pvText.equals("F"))
         {
-            pvText = "Unternehmen von Städten Gemeinden und Kommunen";
+            pvText = "Unternehmen von Stï¿½dten Gemeinden und Kommunen";
             lvGefunden = true;
         }
         if (pvText.equals("A_4"))
         {
-            pvText = "Andere ausl. Städte und Gemeinden";
+            pvText = "Andere ausl. Stï¿½dte und Gemeinden";
             lvGefunden = true;
         }
         if (pvText.equals("A_5"))
@@ -99,13 +99,13 @@ public class ValueMapping
         }
         if (pvText.equals("A_6"))
         {
-            pvText = "Andere ausl. staatliche oder öffentliche Unternehmen";
+            pvText = "Andere ausl. staatliche oder ï¿½ffentliche Unternehmen";
             lvGefunden = true;
         }
         if (!lvGefunden)
             System.out.println("Unbekannte Kundengruppe: " + pvText);
 
-        // Die Länge der Kundengruppe darf maximal 40 Zeichen sein
+        // Die Lï¿½nge der Kundengruppe darf maximal 40 Zeichen sein
         if (pvText.length() > 39)
         {
             pvText = pvText.substring(0, 39);
@@ -195,6 +195,7 @@ public class ValueMapping
      * @param pvText
      * @return
      */
+    @Deprecated
     public static String changeZinstyp(String pvText)
     {
         boolean lvGefunden = false;
@@ -435,7 +436,7 @@ public class ValueMapping
     {
       // TXS 6 - Schiffsbeleihungen - Objektart x70             
       // TXS 3 - Landwirtschaftliche Nutzung - Objektart x2, x3, x4              
-      // TXS 5 - Sonstige Grundstücke - Objektart x60             
+      // TXS 5 - Sonstige Grundstï¿½cke - Objektart x60             
       // TXS 2 - Gewerblich - Objektart x5, x6 ohne x60             
       // TXS 4 - Bauplatz - Objektart x10, x14                
       // TXS 1 - Wohnwirtschaftlich - Objektart x1 ohne x10, x14                
@@ -471,32 +472,32 @@ public class ValueMapping
      */
     public static String mapObjektgruppeDarlehen(String pvObjektart)
     {
-      // TXS 9 - Wohnwirtschaftlich genutztes Grundstück - Objektart x10
+      // TXS 9 - Wohnwirtschaftlich genutztes Grundstï¿½ck - Objektart x10
       // TXS 1 - Einfamilienhaus - Objektart x16
       // TXS 4 - Mehrfamilienhaus - Objektart x12
       // TXS 5 - Wohnung - Objektart x17
-      // TXS 9 - Wohnwirtschaftlich genutztes Grundstück - Objektart x14
-      // TXS 9 - Wohnwirtschaftlich genutztes Grundstück - Objektart x15
-      // TXS 58 - Landwirtschaftlich genutztes Grundstück - Objektart x2, x3, x4
-      // TXS 57 - Gewerblich genutztes Grundstück - Objektart x50
+      // TXS 9 - Wohnwirtschaftlich genutztes Grundstï¿½ck - Objektart x14
+      // TXS 9 - Wohnwirtschaftlich genutztes Grundstï¿½ck - Objektart x15
+      // TXS 58 - Landwirtschaftlich genutztes Grundstï¿½ck - Objektart x2, x3, x4
+      // TXS 57 - Gewerblich genutztes Grundstï¿½ck - Objektart x50
       // TXS 33 - Klinik (z.B. Krankenhaus, Rehaklinik) - Objektart x51
       // TXS 36 - Kurheim / Sanatorium - Objektart x52
       // TXS 34 - Pflegeheim - Objektart x53
-      // TXS 21 - Handelsgebäude - Objektart x54
-      // TXS 31 - Hotel / Gaststätte - Objektart x55
-      // TXS 42 - Bürogebäude - Objektart x56
-      // TXS 15 - Industriegebäude - Objektart x57
-      // TXS 15 - Industriegebäude - Objektart x58
-      // TXS 13 - Sonstiges gewerblich genutztes Gebäude - Objektart x59
-      // TXS 57 - Gewerblich genutztes Grundstück - Objektart x60
-      // TXS 57 - Gewerblich genutztes Grundstück - Objektart x61
+      // TXS 21 - Handelsgebï¿½ude - Objektart x54
+      // TXS 31 - Hotel / Gaststï¿½tte - Objektart x55
+      // TXS 42 - Bï¿½rogebï¿½ude - Objektart x56
+      // TXS 15 - Industriegebï¿½ude - Objektart x57
+      // TXS 15 - Industriegebï¿½ude - Objektart x58
+      // TXS 13 - Sonstiges gewerblich genutztes Gebï¿½ude - Objektart x59
+      // TXS 57 - Gewerblich genutztes Grundstï¿½ck - Objektart x60
+      // TXS 57 - Gewerblich genutztes Grundstï¿½ck - Objektart x61
       // TXS 38 - Sportanlage / Freizeitanlage - Objektart x62
-      // TXS 52 - Lagerhalle / Warenlagergebäude / Kühlhaus - Objektart x63
+      // TXS 52 - Lagerhalle / Warenlagergebï¿½ude / Kï¿½hlhaus - Objektart x63
       // TXS 40 - Arztpraxis (inkl. medizinische Behandlungsinstitute) - Objektart x64
       // TXS 55 - Parkhaus / Tiefgarage / Waschhalle - Objektart x65
       // TXS 19 - Fabrik-, Werkstattgeb. - Objektart x66
-      // TXS 52 - Lagerhalle / Warenlagergebäude / Kühlhaus - Objektart x67
-      // TXS 15 - Industriegebäude - Objektart x68
+      // TXS 52 - Lagerhalle / Warenlagergebï¿½ude / Kï¿½hlhaus - Objektart x67
+      // TXS 15 - Industriegebï¿½ude - Objektart x68
       // TXS <Leer> - Objektart x69, x70, x75
         
         String lvBuffer1 = pvObjektart.substring(0,3);
@@ -554,64 +555,65 @@ public class ValueMapping
      * @param pvText
      * @return String mit 'neuer' Objektgruppe
      */
+    @Deprecated
     public static String changeObjektgruppe(String pvText)
     {
         // EDR
-        // 010 Wohnungsgrundstücke ohne spezielle Definition                 
-        // 011  Ein- und Zweifamilienhäuser                                   
-        // 012  Mehrfamilienhäuser (inkl. Mietwohnanlagen ab 3 Wohneinheiten) 
+        // 010 Wohnungsgrundstï¿½cke ohne spezielle Definition                 
+        // 011  Ein- und Zweifamilienhï¿½user                                   
+        // 012  Mehrfamilienhï¿½user (inkl. Mietwohnanlagen ab 3 Wohneinheiten) 
         // 013  Eigentumswohnungen (sowohl Eigen- als auch Fremdnutzung)      
-        // 014  Sonstige Wohngrundstücke                                      
+        // 014  Sonstige Wohngrundstï¿½cke                                      
         // 015  gemischte Nutzung mit mehr als 50% Wohnungsbau                
-        // 020  Landwirtschaftliche Grundstücke                               
-        // 050  Gewerbliche Bauplätze                                         
-        // 051  Kliniken (z.B. Krankenhäuser, Rehakliniken)                   
+        // 020  Landwirtschaftliche Grundstï¿½cke                               
+        // 050  Gewerbliche Bauplï¿½tze                                         
+        // 051  Kliniken (z.B. Krankenhï¿½user, Rehakliniken)                   
         // 052  Kurheime / Sanatorien                                         
         // 053  Pflegeheime                                                   
-        // 054  Einkaufszentren / SB-Märkte / Kaufhäuser                      
-        // 055  Hotels und Gaststätten (inkl. Fremdenheime/Pensionen/Kantinen)
-        // 056  Büro- und Verwaltungsgebäude (inkl. Kanzleigebäude)           
-        // 057  Produktionsstätten / Fabriken / Druckereien                   
+        // 054  Einkaufszentren / SB-Mï¿½rkte / Kaufhï¿½user                      
+        // 055  Hotels und Gaststï¿½tten (inkl. Fremdenheime/Pensionen/Kantinen)
+        // 056  Bï¿½ro- und Verwaltungsgebï¿½ude (inkl. Kanzleigebï¿½ude)           
+        // 057  Produktionsstï¿½tten / Fabriken / Druckereien                   
         // 058  Brauereien                                                    
         // 059  Einrichtungen der Infrastruktur und Forschung                 
-        // 060  Sonstige Grundstücke / Kommunalkredite                        
+        // 060  Sonstige Grundstï¿½cke / Kommunalkredite                        
         // 061  gemischte Nutzung mit mehr als 50% gewerblich                 
         // 062  Sportanlagen / Freizeitanlagen                                
-        // 063  Lagerhallen/Warenlagergebäude/Tankstellengeb./Kühlhäuser      
+        // 063  Lagerhallen/Warenlagergebï¿½ude/Tankstellengeb./Kï¿½hlhï¿½user      
         // 064  Arztpraxen (inkl. medizinische Behandlungsinstitute, ambulante
-        // 065  Parkhäuser / Tiefgaragen / Waschhallen                        
-        // 066  Werkstätten / Hobelwerke                                      
-        // 067  Vergnügungs- und Unterhaltungsstätten                         
+        // 065  Parkhï¿½user / Tiefgaragen / Waschhallen                        
+        // 066  Werkstï¿½tten / Hobelwerke                                      
+        // 067  Vergnï¿½gungs- und Unterhaltungsstï¿½tten                         
         // 068  Windkraftanlagen                                              
         // 094  unbekannt                                                     
 
         // TXS
-        // 9  Wohnwirtschaftlich genutztes Grundstück
+        // 9  Wohnwirtschaftlich genutztes Grundstï¿½ck
         // 1   Einfamilienhaus
         // 4   Mehrfamilienhaus
         // 5   Wohnung
-        // 9   Wohnwirtschaftlich genutztes Grundstück
-        // 9   Wohnwirtschaftlich genutztes Grundstück
-        // 58  Landwirtschaftlich genutztes Grundstück
-        // 57  Gewerblich genutztes Grundstück
+        // 9   Wohnwirtschaftlich genutztes Grundstï¿½ck
+        // 9   Wohnwirtschaftlich genutztes Grundstï¿½ck
+        // 58  Landwirtschaftlich genutztes Grundstï¿½ck
+        // 57  Gewerblich genutztes Grundstï¿½ck
         // 33  Klinik
         // 36  Kurheim 
         // 34  Pflegeheim
-        // 13  Sonstiges gewerblich genutztes Gebäude
-        // 31  Hotel / Gaststätte
-        // 42  Bürogebäude
-        // 15  Industriegebäude
-        // 15  Industriegebäude
-        // 15  Industriegebäude
+        // 13  Sonstiges gewerblich genutztes Gebï¿½ude
+        // 31  Hotel / Gaststï¿½tte
+        // 42  Bï¿½rogebï¿½ude
+        // 15  Industriegebï¿½ude
+        // 15  Industriegebï¿½ude
+        // 15  Industriegebï¿½ude
         // -1  
-        // 57  Gewerblich genutztes Grundstück
+        // 57  Gewerblich genutztes Grundstï¿½ck
         // 38  Sportanlage / Freizeitanlage
-        // 52  Lagerhalle / Warenlagergebäude / Kühlhaus
+        // 52  Lagerhalle / Warenlagergebï¿½ude / Kï¿½hlhaus
         // 40  Arztpraxis (inkl. medizinische Behandlungsinstitute)
         // 55  Parkhaus / Tiefgarage / Waschhalle
         // 19  Werkstatt
-        // 51  Vergnügungs- und Unterhaltungsstätten
-        // 15  Industriegebäude
+        // 51  Vergnï¿½gungs- und Unterhaltungsstï¿½tten
+        // 15  Industriegebï¿½ude
         // -1  
         
         boolean lvGefunden = false;
@@ -840,7 +842,7 @@ public class ValueMapping
         pvText = pvText.replace("100", "DE");
         if (!pvText.startsWith("DE_"))
           pvText = "DE_" + pvText;
-        //Gebietsschlüssel fehlerhaft
+        //Gebietsschlï¿½ssel fehlerhaft
         if (pvText.equals("DE_00"))
             pvText = "";
         // 003_undefiniert --> Amsterdam, Niederlande
@@ -1207,7 +1209,7 @@ public class ValueMapping
        } /* vermietet, verpachtet, Leasing */
       } /* Reihenhaus */
             if (pvObj.getNutzungsart().equals("100004"))
-      { /* Doppelhaushälfte */
+      { /* Doppelhaushï¿½lfte */
                 if (lvNutzung == 1)
        { /* Eigennutzung */
                     if (StringKonverter.convertString2Double(pvObj.getFertigstellungProzent()) == 0.0
@@ -1232,7 +1234,7 @@ public class ValueMapping
          return("22");  /* unfertig */
         }
        } /* vermietet, verpachtet, Leasing */
-      } /* Doppelhaushälfte */
+      } /* Doppelhaushï¿½lfte */
             if (pvObj.getNutzungsart().equals("100005"))
       { /* Eigentumswohnung */
                 if (lvNutzung == 1)
@@ -1281,7 +1283,7 @@ public class ValueMapping
       } /* MFH */
      } /* Wohnimmobilie */
         if (pvObj.getObjektTyp().equals("010720"))
-     { /*Wohn-und Geschäftsimmobilie*/
+     { /*Wohn-und Geschï¿½ftsimmobilie*/
             if (pvObj.getNutzungsart().equals("100008"))
       { /* MFH */
                 if (lvNutzung == 3)
@@ -1318,11 +1320,11 @@ public class ValueMapping
         } /* nur dann */
        } /* Gemischt */
       } /* Wohn-/Gesch. */
-     } /* Wohn-und Geschäftsimmobilie */
+     } /* Wohn-und Geschï¿½ftsimmobilie */
         if (pvObj.getObjektTyp().equals("010730"))
-     { /*Büro-und Geschäftsimmobilie*/
+     { /*Bï¿½ro-und Geschï¿½ftsimmobilie*/
             if (pvObj.getNutzungsart().equals("100010"))
-      { /* Büro */
+      { /* Bï¿½ro */
                 if (lvNutzung != 3)
        { /* Gemischt */
                     if (StringKonverter.convertString2Double(pvObj.getFertigstellungProzent()) == 0.0
@@ -1335,8 +1337,8 @@ public class ValueMapping
          return("14");
         }
        } /* Gemischt */
-      } /* Büro */
-     } /* Büro-und Geschäftsimmobilie */
+      } /* Bï¿½ro */
+     } /* Bï¿½ro-und Geschï¿½ftsimmobilie */
         if (pvObj.getObjektTyp().equals("010740"))
      { /*Handelsimmobilie*/
             if (pvObj.getNutzungsart().equals("100011"))
@@ -1392,9 +1394,9 @@ public class ValueMapping
       } /* Beherbergung und Gastronomie */
      } /* Beherbergung und Gastronomie */
         if (pvObj.getObjektTyp().equals("010770"))
-     { /*Lagergebäude*/
+     { /*Lagergebï¿½ude*/
             if (pvObj.getNutzungsart().equals("100013"))
-      { /* Lagergebäude */
+      { /* Lagergebï¿½ude */
                 if (lvNutzung != 3)
        { /* Nicht Gemischt */
                     if (StringKonverter.convertString2Double(pvObj.getFertigstellungProzent()) == 0.0
@@ -1407,8 +1409,8 @@ public class ValueMapping
          return("18");
         }
        } /* Nicht Gemischt */
-      } /* Lagergebäude */
-     } /*Lagergebäude */
+      } /* Lagergebï¿½ude */
+     } /*Lagergebï¿½ude */
         if (pvObj.getObjektTyp().equals("010780"))
      { /*Gewerbe- und Indust.*/
             if (pvObj.getNutzungsart().equals("100015"))
@@ -1495,16 +1497,16 @@ public class ValueMapping
       } /* sonst landwirt. Gr. */
      } /* sonst landwirt. Gr. */
         if (pvObj.getObjektTyp().equals("010840"))
-     { /* außerlandwirt. Gr.*/
+     { /* auï¿½erlandwirt. Gr.*/
             if (pvObj.getNutzungsart().equals("100021"))
-      { /* außerlandwirt Gr.*/
+      { /* auï¿½erlandwirt Gr.*/
                 if (StringKonverter.convertString2Double(pvObj.getFertigstellungProzent()) == 0.0
                         || (StringKonverter.convertString2Double(pvObj.getFertigstellungProzent()) == 100.0))
        { /* Fertig */
         return("13");
        } /* Fertig */
-      } /*außerlandwirt. */
-     } /*außerlandwirt */
+      } /*auï¿½erlandwirt. */
+     } /*auï¿½erlandwirt */
         if (pvObj.getObjektTyp().equals("010850"))
      { /* unbebaute  Gr.*/
             if (pvObj.getNutzungsart().equals("100022"))
@@ -1630,7 +1632,7 @@ public class ValueMapping
        } /* vermietet, verpachtet, Leasing */
       } /* Reihenhaus */
             if (pvNutzungsart.equals("100004"))
-      { /* Doppelhaushälfte */
+      { /* Doppelhaushï¿½lfte */
                 if (lvNutzung == 1)
        { /* Eigennutzung */
                     if (StringKonverter.convertString2Double(pvGradBaufertigstellung) == 0.0
@@ -1655,7 +1657,7 @@ public class ValueMapping
          return("22");  /* unfertig */
         }
        } /* vermietet, verpachtet, Leasing */
-      } /* Doppelhaushälfte */
+      } /* Doppelhaushï¿½lfte */
             if (pvNutzungsart.equals("100005"))
       { /* Eigentumswohnung */
                 if (lvNutzung == 1)
@@ -1704,7 +1706,7 @@ public class ValueMapping
       } /* MFH */
      } /* Wohnimmobilie */
         if (pvImmobilienobjektartId.equals("010720"))
-     { /*Wohn-und Geschäftsimmobilie*/
+     { /*Wohn-und Geschï¿½ftsimmobilie*/
             if (pvNutzungsart.equals("100008"))
       { /* MFH */
                 if (lvNutzung == 3)
@@ -1741,11 +1743,11 @@ public class ValueMapping
         } /* nur dann */
        } /* Gemischt */
       } /* Wohn-/Gesch. */
-     } /* Wohn-und Geschäftsimmobilie */
+     } /* Wohn-und Geschï¿½ftsimmobilie */
         if (pvImmobilienobjektartId.equals("010730"))
-     { /*Büro-und Geschäftsimmobilie*/
+     { /*Bï¿½ro-und Geschï¿½ftsimmobilie*/
             if (pvNutzungsart.equals("100010"))
-      { /* Büro */
+      { /* Bï¿½ro */
                 if (lvNutzung != 3)
        { /* Gemischt */
                     if (StringKonverter.convertString2Double(pvGradBaufertigstellung) == 0.0
@@ -1758,8 +1760,8 @@ public class ValueMapping
          return("14");
         }
        } /* Gemischt */
-      } /* Büro */
-     } /* Büro-und Geschäftsimmobilie */
+      } /* Bï¿½ro */
+     } /* Bï¿½ro-und Geschï¿½ftsimmobilie */
         if (pvImmobilienobjektartId.equals("010740"))
      { /*Handelsimmobilie*/
             if (pvNutzungsart.equals("100011"))
@@ -1815,9 +1817,9 @@ public class ValueMapping
       } /* Beherbergung und Gastronomie */
      } /* Beherbergung und Gastronomie */
         if (pvImmobilienobjektartId.equals("010770"))
-     { /*Lagergebäude*/
+     { /*Lagergebï¿½ude*/
             if (pvNutzungsart.equals("100013"))
-      { /* Lagergebäude */
+      { /* Lagergebï¿½ude */
                 if (lvNutzung != 3)
        { /* Nicht Gemischt */
                     if (StringKonverter.convertString2Double(pvGradBaufertigstellung) == 0.0
@@ -1830,8 +1832,8 @@ public class ValueMapping
          return("18");
         }
        } /* Nicht Gemischt */
-      } /* Lagergebäude */
-     } /*Lagergebäude */
+      } /* Lagergebï¿½ude */
+     } /*Lagergebï¿½ude */
         if (pvImmobilienobjektartId.equals("010780"))
      { /*Gewerbe- und Indust.*/
             if (pvNutzungsart.equals("100015"))
@@ -1918,16 +1920,16 @@ public class ValueMapping
       } /* sonst landwirt. Gr. */
      } /* sonst landwirt. Gr. */
         if (pvImmobilienobjektartId.equals("010840"))
-     { /* außerlandwirt. Gr.*/
+     { /* auï¿½erlandwirt. Gr.*/
             if (pvNutzungsart.equals("100021"))
-      { /* außerlandwirt Gr.*/
+      { /* auï¿½erlandwirt Gr.*/
                 if (StringKonverter.convertString2Double(pvGradBaufertigstellung) == 0.0
                         || (StringKonverter.convertString2Double(pvGradBaufertigstellung) == 100.0))
        { /* Fertig */
         return("13");
        } /* Fertig */
-      } /*außerlandwirt. */
-     } /*außerlandwirt */
+      } /*auï¿½erlandwirt. */
+     } /*auï¿½erlandwirt */
         if (pvImmobilienobjektartId.equals("010850"))
      { /* unbebaute  Gr.*/
             if (pvNutzungsart.equals("100022"))
@@ -2495,8 +2497,8 @@ public class ValueMapping
          {"000_undefiniert",""},
          {"038_B","B"},
          {"038_K","K"},
-         {"038_NÖ","NÖ"},
-         {"038_OÖ","OÖ"},
+         {"038_Nï¿½","Nï¿½"},
+         {"038_Oï¿½","Oï¿½"},
          {"038_S","S"},
          {"038_ST","ST"},
          {"038_T","T"},
@@ -3639,19 +3641,19 @@ public class ValueMapping
        } /* */
                 if ((lvPLZ > 4580) && (lvPLZ < 4640))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 6550) && (lvPLZ < 6579))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 7200) && (lvPLZ < 7981))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 7984) && (lvPLZ < 7990))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 6000) && (lvPLZ < 6549))
        { /* */
@@ -3823,11 +3825,11 @@ public class ValueMapping
        } /* */
                 if ((lvPLZ > 36400) && (lvPLZ < 36470))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 37300) && (lvPLZ < 37360))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 38480) && (lvPLZ < 38490))
        { /* */
@@ -3915,39 +3917,39 @@ public class ValueMapping
        } /* */
                 if ((lvPLZ > 63927) && (lvPLZ < 63929))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 64753) && (lvPLZ < 64755))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 68001) && (lvPLZ < 68313))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 68519) && (lvPLZ < 68550))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 68700) && (lvPLZ < 69235))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 68239) && (lvPLZ < 69430))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 69434) && (lvPLZ < 69470))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 69488) && (lvPLZ < 69503))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 69509) && (lvPLZ < 69515))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 65325) && (lvPLZ < 65327))
        { /* */
@@ -3992,7 +3994,7 @@ public class ValueMapping
       } /* PLZ 6* */
             if ((lvPLZ > 70000) && (lvPLZ < 80000))
       { /* PLZ 7* */
-                lvRetwert2 = 8; /* Baden-Würtenberg default */
+                lvRetwert2 = 8; /* Baden-Wï¿½rtenberg default */
                 if ((lvPLZ > 74593) && (lvPLZ < 74596))
        { /* */
                     lvRetwert2 = 9; /* Bayern */
@@ -4007,27 +4009,27 @@ public class ValueMapping
                 lvRetwert2 = 9; /* Bayern default */
                 if ((lvPLZ > 88000) && (lvPLZ < 88100))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 88146) && (lvPLZ < 88148))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 88180) && (lvPLZ < 89080))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 89080) && (lvPLZ < 89086))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 89089) && (lvPLZ < 89199))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 89500) && (lvPLZ < 89620))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
       } /* PLZ 8* */
             if ((lvPLZ > 90000) && (lvPLZ < 100000))
@@ -4035,23 +4037,23 @@ public class ValueMapping
                 lvRetwert2 = 9; /* Bayern default */
                 if ((lvPLZ > 96500) && (lvPLZ < 96530))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 98500) && (lvPLZ < 99999))
        { /* */
-                    lvRetwert2 = 16; /* Thüringen */
+                    lvRetwert2 = 16; /* Thï¿½ringen */
        } /* */
                 if ((lvPLZ > 97860) && (lvPLZ < 97878))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 97892) && (lvPLZ < 97901))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
                 if ((lvPLZ > 97910) && (lvPLZ < 98000))
        { /* */
-                    lvRetwert2 = 8; /* Baden-Würtenberg */
+                    lvRetwert2 = 8; /* Baden-Wï¿½rtenberg */
        } /* */
       } /* PLZ 9* */
      } /* PLZ ist da */
@@ -4234,9 +4236,46 @@ public class ValueMapping
         return lvEigentumstyp;
     }
 
-    /**
-     * @param pvLandnum dreistelliger numerischer Code gemäß Aussenwirtschaftsstatistik
-     * @return zweistelliger Ländercode gemäß ISO
+  /**
+   * @param pvNutzung
+   * @return
+   *
+   */
+  public static String mapEigentumstypSPOT(String pvNutzung)
+  {
+    // CMS-Nutzung = Eigennutzung (01)                          --> TXS-Eigentumstyp = Eigengenutzt (1)
+    // CMS-Nutzung = Vermietet oder verpachtet (02)             --> TXS-Eigentumstyp = Fremdgenutzt (2)
+    // CMS-Nutzung = Gemischt (03)                              --> TXS-Eigentumstyp = Eigen-/fremdgenutzt (3)
+    // CMS-Nutzung = Nicht genutzt (04)                         --> 'unbekannt' (leer)
+    // CMS-Nutzung = Leasing mit/ohne Kaufoption (05/06)        --> TXS-Eigentumstyp = Fremdgenutzt (2)
+    String lvEigentumstyp = new String();
+    if (pvNutzung.equals("01"))
+    {
+      lvEigentumstyp = "1";
+    }
+    if (pvNutzung.equals("02"))
+    {
+      lvEigentumstyp = "2";
+    }
+    if (pvNutzung.equals("03"))
+    {
+      lvEigentumstyp = "3";
+    }
+    if (pvNutzung.equals("04"))
+    {
+      lvEigentumstyp = "";
+    }
+    if (pvNutzung.equals("05") || pvNutzung.equals("06"))
+    {
+      lvEigentumstyp = "2";
+    }
+
+    return lvEigentumstyp;
+  }
+
+  /**
+     * @param pvLandnum dreistelliger numerischer Code gemï¿½ï¿½ Aussenwirtschaftsstatistik
+     * @return zweistelliger Lï¿½ndercode gemï¿½ï¿½ ISO
      * @author Unnasch
      */
     public static String mapAWV2ISO(String pvLandnum)
@@ -4516,7 +4555,7 @@ public class ValueMapping
 
     /**
      * @param pvDarlRefZins max. zehn Zeichen 
-     * @return Referenzzins gemäß TXS-Enum Referenzzins
+     * @return Referenzzins gemï¿½ï¿½ TXS-Enum Referenzzins
      * @author Unnasch
      */
     public static String mapRefZins(String pvDarlRefZins)
@@ -4556,7 +4595,7 @@ public class ValueMapping
      */
     public static int ermittleKredittyp(String pvAusplatzierungsmerkmal, String pvBuergschaftprozent)
     {
-    	int lvKredittyp = DarlehenLoanIQ.UNDEFINIERT;
+    	int lvKredittyp = Darlehen.UNDEFINIERT;
     	
     	if (pvAusplatzierungsmerkmal.startsWith("K"))
     	{
@@ -4564,20 +4603,20 @@ public class ValueMapping
     		{
     			if (StringKonverter.convertString2Double(pvBuergschaftprozent) > 0.0)
     			{
-    			  lvKredittyp = DarlehenLoanIQ.VERBUERGT_KOMMUNAL; // Verbuergt Kommunal
+    			  lvKredittyp = Darlehen.VERBUERGT_KOMMUNAL; // Verbuergt Kommunal
     			}
     			else
     			{
-    		      lvKredittyp = DarlehenLoanIQ.REIN_KOMMUNAL;  // Rein Kommunal		
+    		      lvKredittyp = Darlehen.REIN_KOMMUNAL;  // Rein Kommunal
     			}
     		}
     		if (pvAusplatzierungsmerkmal.endsWith("2") || pvAusplatzierungsmerkmal.endsWith("4"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung	
+    		  lvKredittyp = Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung
     		}
     		if (pvAusplatzierungsmerkmal.endsWith("3"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.BANKKREDIT; // Bankkredit
+    		  lvKredittyp = Darlehen.BANKKREDIT; // Bankkredit
     		}
     	}
 
@@ -4585,11 +4624,11 @@ public class ValueMapping
     	{
     		if (pvAusplatzierungsmerkmal.endsWith("0") || pvAusplatzierungsmerkmal.endsWith("1"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.HYPOTHEK_1A; // 1aHypothek
+    		  lvKredittyp = Darlehen.HYPOTHEK_1A; // 1aHypothek
     		}
     		if (pvAusplatzierungsmerkmal.endsWith("2") || pvAusplatzierungsmerkmal.endsWith("3") || pvAusplatzierungsmerkmal.endsWith("4"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung	
+    		  lvKredittyp = Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung
     		}	
     	}
 
@@ -4597,11 +4636,11 @@ public class ValueMapping
     	{
     		if (pvAusplatzierungsmerkmal.endsWith("0") || pvAusplatzierungsmerkmal.endsWith("1"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.SCHIFFSDARLEHEN; // Schiffsdarlehen
+    		  lvKredittyp = Darlehen.SCHIFFSDARLEHEN; // Schiffsdarlehen
     		}
     		if (pvAusplatzierungsmerkmal.endsWith("2") || pvAusplatzierungsmerkmal.endsWith("3") || pvAusplatzierungsmerkmal.endsWith("4"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung	
+    		  lvKredittyp = Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung
     		}	   		
     	}
 
@@ -4609,11 +4648,11 @@ public class ValueMapping
     	{
     		if (pvAusplatzierungsmerkmal.endsWith("0") || pvAusplatzierungsmerkmal.endsWith("1"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.FLUGZEUGDARLEHEN; // Flugzeugdarlehen
+    		  lvKredittyp = Darlehen.FLUGZEUGDARLEHEN; // Flugzeugdarlehen
     		}
     		if (pvAusplatzierungsmerkmal.endsWith("2") || pvAusplatzierungsmerkmal.endsWith("3") || pvAusplatzierungsmerkmal.endsWith("4"))
     		{
-    		  lvKredittyp = DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung	
+    		  lvKredittyp = Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung
     		}	    		
     	}
     	
@@ -4621,11 +4660,11 @@ public class ValueMapping
     	{
 			if (StringKonverter.convertString2Double(pvBuergschaftprozent) > 0.0)
 			{
-			  lvKredittyp = DarlehenLoanIQ.VERBUERGT_KOMMUNAL; // Verbuergt Kommunal 
+			  lvKredittyp = Darlehen.VERBUERGT_KOMMUNAL; // Verbuergt Kommunal
 			}
 			else
 			{
-		      lvKredittyp = DarlehenLoanIQ.REIN_KOMMUNAL;  // Rein Kommunal		
+		      lvKredittyp = Darlehen.REIN_KOMMUNAL;  // Rein Kommunal
 			}
 
     	}
@@ -4634,18 +4673,18 @@ public class ValueMapping
     	{
 			if (StringKonverter.convertString2Double(pvBuergschaftprozent) > 0.0)
 			{
-			  lvKredittyp = DarlehenLoanIQ.KOMMUNALVERBUERGTE_HYPOTHEK; // Kommunalverbuergte Hypothek
+			  lvKredittyp = Darlehen.KOMMUNALVERBUERGTE_HYPOTHEK; // Kommunalverbuergte Hypothek
 			}
 			else
 			{
-		      lvKredittyp = DarlehenLoanIQ.HYPOTHEK_1A;  // 1aHypothek		
+		      lvKredittyp = Darlehen.HYPOTHEK_1A;  // 1aHypothek
 			}
 
     	}
     	
     	if (pvAusplatzierungsmerkmal.equals("O2") || pvAusplatzierungsmerkmal.equals("O4"))
     	{
-    		lvKredittyp = DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung
+    		lvKredittyp = Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG; // Sonstige Schuldverschreibung
     	}
     	
     	return lvKredittyp;
@@ -4687,407 +4726,4 @@ public class ValueMapping
     	return lvDeckungstyp;
     }
     
-    /**
-     * Ermittelt den Zahlungstyp
-     * @param pvGD841
-     * @return
-     */
-    public static String ermittleZahlungstyp(String pvGD841)
-    {
-    	// 1	Annuitaet
-    	// 3	Endfaellig
-    	// 0	Keine
-    	// 2	Raten
-    	// 9	Sonderfall
-
-    	// Default -> Sonderfall
-    	String lvZahlungstyp = "9"; 
-    	// 2 -> Endfaellig/Festdarlehen
-    	if (pvGD841.equals("2"))
-    	{
-    		lvZahlungstyp = "3";
-    	}
-    	// 3,4,8,B,D,E und G -> Annuitaet/Tildungsdarlehen
-    	if (pvGD841.equals("3") || pvGD841.equals("4") || pvGD841.equals("8") || pvGD841.equals("B") || pvGD841.equals("D") || pvGD841.equals("E") || pvGD841.equals("G"))
-    	{
-    		lvZahlungstyp = "1";
-    	}
-    	// 2 -> Raten/Abzahlungsdarlehen
-    	if (pvGD841.equals("5"))
-    	{
-    		lvZahlungstyp = "2";
-    	}
-    	
-    	return lvZahlungstyp;
-    }
-    
-    /**
-     * Ermittelt die Zinsabweichung
-     * @param pvGD321
-     * @return
-     */
-    public static String ermittleZinsabweichung(String pvGD321)
-    {
-      // TXS
-      // 0		Keine
-      // 1		Kurzzahlung
-      // 2		Ueberlange Zahlung
-
-      // Mapping	
-      // 11		kurz                              
-      // 12		lang                              
-      // 15		lang                              
-      // 18		kurz                              
-      // 19		kurz                              
-      // 21		kurz                              
-      // 22		lang                              
-      // 23		lang                              
-      // 25		lang                              
-      // 26		kurz                              
-      // 27		kurz                              
-      // 30		lang                              
-      // 31		kurz                              
-      // 32		lang                              
-      // 33		kurz                              
-      // 34		lang                              
-      // 35		kurz                              
-      // 36		lang                              
-      // sonst	keine 
-      
-      // Default -> Keine
-      String lvZinsabweichung = "0";
-      // 11,18,19,21,26,27,31,33 und 35 -> Kurzzahlung
-      if (pvGD321.equals("11") || pvGD321.equals("18") || pvGD321.equals("19") || pvGD321.equals("21") || pvGD321.equals("26") || pvGD321.equals("27") || pvGD321.equals("31") || pvGD321.equals("33") || pvGD321.equals("35"))
-      {
-    	  lvZinsabweichung = "1";
-      }
-      // 12,15,22,23,25,30,32,34 und 36 -> Ueberlange Zahlung
-      if (pvGD321.equals("12") || pvGD321.equals("15") || pvGD321.equals("22") || pvGD321.equals("23") || pvGD321.equals("25") || pvGD321.equals("30") || pvGD321.equals("32") || pvGD321.equals("34") || pvGD321.equals("36"))
-      {
-    	  lvZinsabweichung = "2";
-      }
-      
-      return lvZinsabweichung;
-    }
-    
-    /**
-     * Ermittelt den Zinsrythmus
-     * @param pvGD311A
-     * @param pvGD811
-     * @return
-     */
-    public static String ermittleZinsrythmus(String pvGD311A, String pvGD811)
-    {	
-       // GD311A	GD811		Output
-       // 14,15	 		    	0
-       //		 	0			1
-       // 			1			12
-       //		 	2			6
-       // 			3			4
-       //		 	4			3
-       //		 	5			9
-       //		 	6			2
-       //		 	A			5
-       //		 	B			7
-       //		 	C			8
-       // 			D			10
-       // 			E			11
-       //			<> blank 	13
-    	
-      String lvZinsrythmus = new String();
-      if (pvGD311A.equals("14") || pvGD311A.equals("15"))
-      {
-    	  lvZinsrythmus = "0";
-      }
-      else
-      {
-    	 if (!pvGD811.isEmpty())
-    	 {
-    		 lvZinsrythmus = "13";
-    		 
-    		 if (pvGD811.equals("0"))
-    		 {
-    			 lvZinsrythmus = "1";
-    		 }
-    		 if (pvGD811.equals("1"))
-    		 {
-    			 lvZinsrythmus = "12";
-    		 }
-    		 if (pvGD811.equals("2"))
-    		 {
-    			 lvZinsrythmus = "6";
-    		 }
-    		 if (pvGD811.equals("3"))
-    		 {
-    			 lvZinsrythmus = "4";
-    		 }
-    		 if (pvGD811.equals("4"))
-    		 {
-    			 lvZinsrythmus = "3";
-    		 }
-    		 if (pvGD811.equals("5"))
-    		 {
-    			 lvZinsrythmus = "9";
-    		 }
-    		 if (pvGD811.equals("6"))
-    		 {
-    			 lvZinsrythmus = "2";
-    		 }
-    		 if (pvGD811.equals("A"))
-    		 {
-    			 lvZinsrythmus = "5";
-    		 }
-    		 if (pvGD811.equals("B"))
-    		 {
-    			 lvZinsrythmus = "7";
-    		 }
-    		 if (pvGD811.equals("C"))
-    		 {
-    			 lvZinsrythmus = "8";
-    		 }
-    		 if (pvGD811.equals("D"))
-    		 {
-    			 lvZinsrythmus = "10";
-    		 }
-    		 if (pvGD811.equals("E"))
-    		 {
-    			 lvZinsrythmus = "11";
-    		 }
-    	 }
-      }
-      
-      return lvZinsrythmus;
-    }
-    
-    /**
-     * Ermittelt den Zinstyp
-     * @param pvGD805
-     * @return
-     */
-    public static String ermittleZinstyp(String pvGD805)
-    {
-    	//GD805		TXS-Wert		TXS-Schluessel
-    	// F		fest            1                  
-    	// H		staffZins       5                  
-    	// R		revFloater      3                  
-    	// V		variabel        2                  
-    	// Z		zeroBond        4                  
-    	// sonst	undefiniert  
-
-    	String lvZinstyp = new String();
-    	
-    	if (pvGD805.equals("F"))
-    	{
-    		lvZinstyp = "1";
-    	}
-    	if (pvGD805.equals("H"))
-    	{
-    		lvZinstyp = "5";
-    	}
-    	if (pvGD805.equals("R"))
-    	{
-    		lvZinstyp = "3";
-    	}
-    	if (pvGD805.equals("V"))
-    	{
-    		lvZinstyp = "2";
-    	}
-    	if (pvGD805.equals("Z"))
-    	{
-    		lvZinstyp = "4";
-    	}
-    	
-    	return lvZinstyp;
-	
-    }
-    
-    /**
-     * 
-     * @param pvGD805
-     * @param pvGD312
-     * @return
-     */
-    public static String ermittleZinszahlart(String pvGD805, String pvGD312)
-    {
-    	// Wenn (GD805 = „Z“ )  -> keine
-    	// sonst
-    	// Input-GD312 	| Output
-    	// 4 			| vorschuessig                      
-    	// 7 			| vorschuessig                      
-    	// 1 			| nachschuessig                     
-    	// 6 			| nachschuessig                     
-    	// sonst 		| keine              
-
-    	// TXS-Schluessel		TXS-Text
-    	// 0					Keine
-    	// 1					Nachschuessig
-    	// 2					Vorschuessig
-
-    	// Default 'Keine'
-    	String lvZinszahlart = "0";
-    	if (!pvGD805.equals("Z"))
-    	{
-    		if (pvGD312.equals("4") || pvGD312.equals("7"))
-    		{
-    			lvZinszahlart = "2";
-    		}
-    		if (pvGD312.equals("1") || pvGD312.equals("6"))
-    		{
-    			lvZinszahlart = "1";
-    		}
-    	}
-    	
-    	return lvZinszahlart;
-    }
-    
-    /**
-     * 
-     * @param pvGD809C
-     * @return
-     */
-    public static String ermittleFixingKonvention(String pvGD809C)
-    {
-    	// Input-GD809C		Output			TXS-Schluessel
-    	// 1				Beginn  		1                               
-    	// 3				Beginn          1                      
-    	// 2				Ende            2                      
-    	// 4				Ende            2                      
-    	// 5				Beginn          1                      
-    	// 6				Ende            2                      
-    	// sonst			keine			0
-    	
-    	// Default 'keine'
-    	String lvFixingKonvention = "0";
-
-    	if (pvGD809C.equals("1") || pvGD809C.equals("3") || pvGD809C.equals("5"))
-    	{
-    		lvFixingKonvention = "1";
-    	}
-    	if (pvGD809C.equals("2") || pvGD809C.equals("4") || pvGD809C.equals("6"))
-    	{
-    		lvFixingKonvention = "2";
-    	}
-    	
-    	return lvFixingKonvention;
-    }
-    
-    public static String ermittleKalenderkonvention(String pvGD821B)
-    {
-    	// Leer -> 0
-    	// 03 -> act_360
-    	// 09 -> act_act_isma
-    	// 01 -> 30_360
-    	// 06 -> 30e_360
-    	// 04 -> act_365f
-    	
-    	String lvKalenderkonvention = new String();
-    	if (pvGD821B.isEmpty())
-    	{
-    		lvKalenderkonvention = "0";
-    	}
-    	else
-    	{
-    		if (pvGD821B.equals("01"))
-    			lvKalenderkonvention = "30_360";
-    		if (pvGD821B.equals("03"))
-    			lvKalenderkonvention = "act_360";
-    		if (pvGD821B.equals("04"))
-    			lvKalenderkonvention = "act_365f";
-    		if (pvGD821B.equals("06"))
-    			lvKalenderkonvention = "30e_360";
-    		if (pvGD821B.equals("09"))
-    			lvKalenderkonvention = "act_act_isma";
-    	}
-    	
-    	return lvKalenderkonvention;
-    }
-    
-    public static String ermittleReferenzzins(String pvGD808, String pvGD808A, String pvGD808B)
-    {
-    	// GD808B	GD808A	GD808	Code833
-		//							BOT6M                             
-	 	//							LIGBP1MD                          
-    	// 3		C		23		LIEUR3MD                          
-    	// 6		C		23		LIEUR6MD                          
-    	// 1		C		23		LIEUR1MD                          
-    	// 9		C		23		LIEUR9MD                          
-    	// 12		C		23		LIEUR1YD                          
-    	// 2		C		23		LIEUR2MD                          
-    	//	 	 					LIGBP1WKD                         
-    	//	 	 					LIGBP2MD                          
-    	//	 	 					LIGBP6MD                          
-    	// 12		C		52		REX10Y                            
-    	// 1		B		23		LIEUR1WKD                         
-    	//	 	 					LIGBP3MD                          
-    	//	 	 					LIGBP1YD                          
-    	// 3		B		36		EURIBOR3WD                        
-    	// 					64		EONIA                             
-    	// 2		B		36		EURIBOR2WD                        
-    	//	 	 					LIGBP9MD                          
-    	// 1		C		36		EURIBOR1MD                        
-    	// 12		C		36		EURIBOR1YMD                       
-    	// 2		C		36		EURIBOR2MD                        
-    	// 3		C		36		EURIBOR3MD                        
-    	// 5		C		36		EURIBOR5MD                        
-    	// 6		C		36		EURIBOR6MD                        
-    	// 7		C		36		EURIBOR7MD                        
-    	// 8		C		36		EURIBOR8MD                        
-    	// 11		C		36		EURIBOR11MD                       
-    	// 9		C		36		EURIBOR9MD                        
-    	// 1		B		36		EURIBORSWD                        
-    	// 10		C		36		EURIBOR10MD                       
-    	// 4		C		36		EURIBOR4MD                        
-    	//					<> 23, 36, 52, 64	Sonderfall                        
-    	//	 				blank	keine
-    	
-    	// Default 'Sonderfall'
-    	String lvReferenzzins = "Sonderfall";
-    	if (pvGD808.equals("23"))
-    	{
-    		if (pvGD808A.equals("C"))
-    		{
-       			lvReferenzzins = "LIEUR" + pvGD808B + "MD";
-    			if (pvGD808B.equals("12"))
-    			{
-    				lvReferenzzins = "LIEUR1YD";
-    			}
-    		}
-    		if (pvGD808A.equals("B"))
-    		{
-    			if (pvGD808B.equals("1"))
-    			{
-    				lvReferenzzins = "LIEUR1WKD";
-    			}   			
-    		}
-    	}
-    	if (pvGD808.equals("36"))
-    	{
-    		if (pvGD808A.equals("C"))
-    		{
-    			lvReferenzzins = "EURIBOR" + pvGD808B + "MD";
-    			if (pvGD808B.equals("12"))
-    			{
-    				lvReferenzzins = "EURIBOR1YMD";
-    			}
-    		}
-    		if (pvGD808A.equals("B"))
-    		{
-    			lvReferenzzins = "EURIBOR" + pvGD808B + "WD";
-    			if (pvGD808B.equals("1"))
-    			{
-    				lvReferenzzins = "EURIBORSWD";
-    			}
-    		}   		
-    	}
-    	if (pvGD808.equals("52"))
-    	{
-    		lvReferenzzins = "REX10Y";
-    	}
-    	if (pvGD808.equals("64"))
-    	{
-    		lvReferenzzins = "EONIA";
-    	}
-    	
-    	return lvReferenzzins;
-    }
 }

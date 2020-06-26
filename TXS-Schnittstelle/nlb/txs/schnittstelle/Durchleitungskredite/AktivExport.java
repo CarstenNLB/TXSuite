@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
  * @author tepperc
  *
  */
+@Deprecated
 public class AktivExport 
 {
     /**

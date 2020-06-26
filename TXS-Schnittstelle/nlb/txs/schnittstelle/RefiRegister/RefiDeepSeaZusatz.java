@@ -2,6 +2,7 @@ package nlb.txs.schnittstelle.RefiRegister;
 
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 
+@Deprecated
 public class RefiDeepSeaZusatz 
 {
     /**
@@ -58,9 +59,19 @@ public class RefiDeepSeaZusatz
      * Konsortialanteil der NORD/LB (absolut)
      */
     private String ivKonsortialanteil;
-    
-    /**
-     * Konstruktor
+
+	/**
+	 * IMO-Nummer des Schiffs
+	 */
+	private String ivIMONummer;
+
+	/**
+	 * Info RefiRegister (Spalte 7)
+	 */
+	private String ivBemerkung;
+
+	/**
+	 * Konstruktor
      */
     public RefiDeepSeaZusatz() 
     {
@@ -75,9 +86,11 @@ public class RefiDeepSeaZusatz
         this.ivRechtlicherGrund = new String();
         this.ivRechtlicherGrundDatum = new String();
         this.ivKonsortialanteil = new String();
+        this.ivIMONummer = new String();
+        this.ivBemerkung = new String();
     }
 
-    /**
+	/**
 	 * @return the ivKontonummer
 	 */
 	public String getKontonummer() 
@@ -253,6 +266,37 @@ public class RefiDeepSeaZusatz
 		this.ivKonsortialanteil = pvKonsortialanteil;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
+	public String getMONummer() {
+		return ivIMONummer;
+	}
+
+	/**
+	 *
+	 * @param pvIMONummer
+	 */
+	public void setIMONummer(String pvIMONummer) {
+		this.ivIMONummer = pvIMONummer;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public String getBemerkung() {
+		return ivBemerkung;
+	}
+
+	/**
+	 *
+	 * @param pvBemerkung
+	 */
+	public void setBemerkung(String pvBemerkung) {
+		this.ivBemerkung = pvBemerkung;
+	}
 
 	/**
      * @param pvZeile 
@@ -262,37 +306,36 @@ public class RefiDeepSeaZusatz
      */
     public boolean parseRefiDeepSeaZusatz(String pvZeile, int pvAnzahlZeilen)
     {
-     String lvTemp = new String();  // arbeitsbereich/zwischenspeicher feld
-     int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
-     int    lvZzStr=0;              // pointer fuer satzbereich
+    	String lvTemp = new String();  // arbeitsbereich/zwischenspeicher feld
+    	int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
+    	int    lvZzStr=0;              // pointer fuer satzbereich
      
-     // steuerung/iteration eingabesatz
-     for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
-     {
+    	// steuerung/iteration eingabesatz
+    	for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
+    	{
 
-       // wenn Semikolon erkannt
-       if (pvZeile.charAt(lvZzStr) == ';')
-       {
-         this.setRefiDeepSeaZusatz(lvLfd, lvTemp, pvAnzahlZeilen);
+    		// wenn Semikolon erkannt
+    		if (pvZeile.charAt(lvZzStr) == ';')
+    		{
+    			this.setRefiDeepSeaZusatz(lvLfd, lvTemp, pvAnzahlZeilen);
        
-         lvLfd++;                  // naechste Feldnummer
+    			lvLfd++;                  // naechste Feldnummer
        
-         // loeschen Zwischenbuffer
-         lvTemp = new String();
-
-       }
-       else
-       {
-           // uebernehmen byte aus eingabesatzposition
-           lvTemp = lvTemp + pvZeile.charAt(lvZzStr);
-       }
-     } // ende for
+    			// loeschen Zwischenbuffer
+    			lvTemp = new String();
+    		}
+    		else
+    		{
+    			// uebernehmen byte aus eingabesatzposition
+    			lvTemp = lvTemp + pvZeile.charAt(lvZzStr);
+    		}
+    	} // ende for
      
-     // Letzte Feld auch noch setzen
-     this.setRefiDeepSeaZusatz(lvLfd, lvTemp, pvAnzahlZeilen);     
-     
-     return true;
-   }
+    	// Letzte Feld auch noch setzen
+    	this.setRefiDeepSeaZusatz(lvLfd, lvTemp, pvAnzahlZeilen);     
+    
+    	return true;
+    }
     
     /**
      * Setzt einen Wert des RefiDeepSeaZusatz
@@ -309,34 +352,40 @@ public class RefiDeepSeaZusatz
             case 1:
               this.setSicherheitenID(pvWert);
               break;
+            //case 2:
+            //  this.setObjektID(pvWert);
+            //  break;
             case 2:
-              this.setObjektID(pvWert);
-              break;
-            case 3:  
               this.setKundennummer(pvWert);
               break;
-            case 4:
-              this.setNominalbetrag(pvWert);
+            case 3:
+              this.setNominalbetrag(pvWert.replace(".", ""));
               break;
-            case 5:
+            case 4:
               this.setNominalbetragWaehrung(pvWert);
               break;
-            case 6:
-              this.setNominalbetragQuelle(pvWert); //.replace("%", ""));
-              break;
-            case 7:
-              this.setSchiffsregister(pvWert); //.replace("#", ";"));
-              break;
-            case 8:
+            //case 6:
+            //  this.setNominalbetragQuelle(pvWert); //.replace("%", ""));
+            //  break;
+            //case 7:
+            //  this.setSchiffsregister(pvWert); //.replace("#", ";"));
+            //  break;
+            case 5:
               this.setRechtlicherGrund(pvWert);
               //System.out.println("Zeile " + (pvAnzahlZeilen + 1) + ": " + pvWert);
               break;
-            case 9:
+            case 6:
               this.setRechtlicherGrundDatum(pvWert); //.replace("#", ";"));
               break;
-            case 10:
+            case 7:
             	this.setKonsortialanteil(pvWert);
             	break;
+					case 8:
+						this.setIMONummer(pvWert);
+						break;
+					case 9:
+						this.setBemerkung(pvWert);
+						break;
           default:
               //this.setBemerkung(this.getBemerkung() + ";" + pvWert);
               System.out.println("Zeile " + (pvAnzahlZeilen + 1) + " - RefiDeepSeaZusatz: undefiniert - Feld: " + pvPos + " Wert: " + pvWert);
@@ -362,6 +411,8 @@ public class RefiDeepSeaZusatz
         lvOut.append("Rechtlicher Grund: " + ivRechtlicherGrund + StringKonverter.lineSeparator);
         lvOut.append("Rechtlicher Grund Datum: " + ivRechtlicherGrundDatum + StringKonverter.lineSeparator);
         lvOut.append("Konsortialanteil: " + ivKonsortialanteil + StringKonverter.lineSeparator);
+        lvOut.append("IMO-Nummer: " + ivIMONummer + StringKonverter.lineSeparator);
+        lvOut.append("Bemerkung: " + ivBemerkung + StringKonverter.lineSeparator);
 
         return lvOut.toString();
     }

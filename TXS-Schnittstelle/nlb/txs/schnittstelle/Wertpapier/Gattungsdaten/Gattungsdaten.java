@@ -68,7 +68,7 @@ public class Gattungsdaten
 
     /**
      * Startroutine
-     * @param args
+     * @param args Uebergabeparameter
      */
     public static void main(String[] args) 
     {        
@@ -100,6 +100,7 @@ public class Gattungsdaten
     /**
      * Konstruktor
      * @param pvReader
+     * @param pvLogger log4j-Logger
      */
     public Gattungsdaten(IniReader pvReader, Logger pvLogger)
     { 

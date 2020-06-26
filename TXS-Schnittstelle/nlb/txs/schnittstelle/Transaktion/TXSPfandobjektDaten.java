@@ -112,7 +112,7 @@ public class TXSPfandobjektDaten implements TXSTransaktion
     private String ivBwertdat;
     
     /**
-     * Containerkapazität. Nur relevant für Pfandobjekte der Kategorie "Schiff"
+     * Containerkapazitï¿½t. Nur relevant fï¿½r Pfandobjekte der Kategorie "Schiff"
      */
     private String ivContkap;
     
@@ -147,7 +147,7 @@ public class TXSPfandobjektDaten implements TXSTransaktion
     private String ivEwert;
     
     /**
-     * Datum der Fertigstellung des Pfandobjekts. Nur relevant für Pfandobjekte der Kategorien "Schiff" und "Flugzeug"
+     * Datum der Fertigstellung des Pfandobjekts. Nur relevant fï¿½r Pfandobjekte der Kategorien "Schiff" und "Flugzeug"
      */
     private String ivFertstdat;
     
@@ -442,97 +442,105 @@ public class TXSPfandobjektDaten implements TXSTransaktion
     private String ivKadr;
     
     /**
-     *
+     * Konstruktor
      */
     public TXSPfandobjektDaten()
     {
-        this.ivAnzgew = new String();
-        this.ivAnzobj = new String();
-        this.ivAnzwhg = new String();
-        this.ivAusldat = new String();
-        this.ivAusst = new String();
-        this.ivBelaus = new String();
-        this.ivBelausmw = new String();
-        this.ivBewdat = new String();
-        this.ivBewerter = new String();
-        this.ivBez = new String();
-        this.ivBranche = new String();
-        this.ivBranchetxt = new String();
-        this.ivBrmiete = new String();
-        this.ivBrmmiete = new String();
-        this.ivBrnr = new String();
-        this.ivBstatus = new String();
-        this.ivBwert = new String();
-        this.ivBwertdat = new String();
-        this.ivContkap = new String();
-        this.ivDist = new String();
-        this.ivDscr = new String();
-        this.ivEigtyp = new String();
-        this.ivErgaenztxt = new String();
-        this.ivErtragsf = new String();
-        this.ivEwert = new String();
-        this.ivFertstdat = new String();
-        this.ivFlottnr = new String();
-        this.ivFlut = new String();
-        this.ivFoerdart = new String();
-        this.ivFtyp = new String();
-        this.ivGebiet = new String();
-        this.ivGem = new String();
-        this.ivGeschw = new String();
-        this.ivGeteilt = new String();
-        this.ivHausnr = new String();
-        this.ivIcr = new String();
-        this.ivImo = new String();
-        this.ivInvtyp = new String();
-        this.ivJahr = new String();
-        this.ivKat = new String();
-        this.ivKdat = new String();
-        this.ivKpreis = new String();
-        this.ivKreisnr = new String();
-        this.ivLand = new String();
-        this.ivModjahr = new String();
-        this.ivMuster = new String();
-        this.ivMwert = new String();
-        this.ivMwertber = new String();
-        this.ivMwertdat = new String();
-        this.ivNart = new String();
-        this.ivNtmiete = new String();
-        this.ivNtmmiete = new String();
-        this.ivOgrp = new String();
-        this.ivOrt = new String();
-        this.ivPlz = new String();
-        this.ivQmges = new String();
-        this.ivQmgew = new String();
-        this.ivQmgrund = new String();
-        this.ivQmwo = new String();
-        this.ivRatint = new String();
-        this.ivRisikotxt = new String();
-        this.ivSbrnr = new String();
-        this.ivSn = new String();
-        this.ivSpeigtyp = new String();
-        this.ivStockw = new String();
-        this.ivStr = new String();
-        this.ivStyp = new String();
-        this.ivSumfrsp = new String();
-        this.ivSumnbetrag = new String();
-        this.ivSumrdpf = new String();
-        this.ivSumrkap = new String();
-        this.ivSumsdpf = new String();
-        this.ivSwert = new String();
-        this.ivTdw = new String();
-        this.ivUrmwert = new String();
-        this.ivUrmwertdat = new String();
-        this.ivVar = new String();
-        this.ivVermiettxt = new String();
-        this.ivWhrg = new String();
-        this.ivZusatz = new String();
-        this.ivKonsortialanteil = new String();
-        this.ivBlhwertinit = new String();
-        this.ivFinobjnr = new String();
-        this.ivKadr = new String();
+      initTXSPfandobjektDaten();
     }
 
-    /**
+   /**
+    * Initialisiert die Instanzvariablen mit leeren Strings
+    */
+   public void initTXSPfandobjektDaten()
+   {
+     this.ivAnzgew = new String();
+     this.ivAnzobj = new String();
+     this.ivAnzwhg = new String();
+     this.ivAusldat = new String();
+     this.ivAusst = new String();
+     this.ivBelaus = new String();
+     this.ivBelausmw = new String();
+     this.ivBewdat = new String();
+     this.ivBewerter = new String();
+     this.ivBez = new String();
+     this.ivBranche = new String();
+     this.ivBranchetxt = new String();
+     this.ivBrmiete = new String();
+     this.ivBrmmiete = new String();
+     this.ivBrnr = new String();
+     this.ivBstatus = new String();
+     this.ivBwert = new String();
+     this.ivBwertdat = new String();
+     this.ivContkap = new String();
+     this.ivDist = new String();
+     this.ivDscr = new String();
+     this.ivEigtyp = new String();
+     this.ivErgaenztxt = new String();
+     this.ivErtragsf = new String();
+     this.ivEwert = new String();
+     this.ivFertstdat = new String();
+     this.ivFlottnr = new String();
+     this.ivFlut = new String();
+     this.ivFoerdart = new String();
+     this.ivFtyp = new String();
+     this.ivGebiet = new String();
+     this.ivGem = new String();
+     this.ivGeschw = new String();
+     this.ivGeteilt = new String();
+     this.ivHausnr = new String();
+     this.ivIcr = new String();
+     this.ivImo = new String();
+     this.ivInvtyp = new String();
+     this.ivJahr = new String();
+     this.ivKat = new String();
+     this.ivKdat = new String();
+     this.ivKpreis = new String();
+     this.ivKreisnr = new String();
+     this.ivLand = new String();
+     this.ivModjahr = new String();
+     this.ivMuster = new String();
+     this.ivMwert = new String();
+     this.ivMwertber = new String();
+     this.ivMwertdat = new String();
+     this.ivNart = new String();
+     this.ivNtmiete = new String();
+     this.ivNtmmiete = new String();
+     this.ivOgrp = new String();
+     this.ivOrt = new String();
+     this.ivPlz = new String();
+     this.ivQmges = new String();
+     this.ivQmgew = new String();
+     this.ivQmgrund = new String();
+     this.ivQmwo = new String();
+     this.ivRatint = new String();
+     this.ivRisikotxt = new String();
+     this.ivSbrnr = new String();
+     this.ivSn = new String();
+     this.ivSpeigtyp = new String();
+     this.ivStockw = new String();
+     this.ivStr = new String();
+     this.ivStyp = new String();
+     this.ivSumfrsp = new String();
+     this.ivSumnbetrag = new String();
+     this.ivSumrdpf = new String();
+     this.ivSumrkap = new String();
+     this.ivSumsdpf = new String();
+     this.ivSwert = new String();
+     this.ivTdw = new String();
+     this.ivUrmwert = new String();
+     this.ivUrmwertdat = new String();
+     this.ivVar = new String();
+     this.ivVermiettxt = new String();
+     this.ivWhrg = new String();
+     this.ivZusatz = new String();
+     this.ivKonsortialanteil = new String();
+     this.ivBlhwertinit = new String();
+     this.ivFinobjnr = new String();
+     this.ivKadr = new String();
+   }
+
+   /**
      * @return the anzgew
      */
     public String getAnzgew() {
@@ -1895,13 +1903,13 @@ public class TXSPfandobjektDaten implements TXSTransaktion
      */
     public void importDarlehen(Darlehen darlehen, Sicherungsobjekt pvObj) 
     {
-        /* Sicherheitenschlüssel auf zwei Stellen ... */
+        /* Sicherheitenschlï¿½ssel auf zwei Stellen ... */
         //String sSiSchl = new String();
         //sSiSchl = darlehen.getSicherheitenSchluessel().substring(1,3);
     
-        /* => TXX404/405 bestücken..... nur bei hypothekar .... */
+        /* => TXX404/405 bestï¿½cken..... nur bei hypothekar .... */
         /* geht nur mit Bauf bzw. iSIO   ..... */
-        /* Bestückung von Pfandobjekten etc... */
+        /* Bestï¿½ckung von Pfandobjekten etc... */
         String lvLand = new String();
         String lvStaat = new String();
         //String sPfGruppe = new String();
@@ -1915,7 +1923,7 @@ public class TXSPfandobjektDaten implements TXSTransaktion
          String lvBuffer1 = new String();
 
          lvLand = "undefiniert"; /* nur Deutschland wird def. */
-         /* Sonderfälle LandID umsetzen..bspw. Deutschland */
+         /* Sonderfï¿½lle LandID umsetzen..bspw. Deutschland */
          if (!pvObj.getBeleihungsgebiet().isEmpty() &&
              !pvObj.getBeleihungsgebiet().equals("00000"))
          { /* Es ist was da ..*/
@@ -1952,13 +1960,13 @@ public class TXSPfandobjektDaten implements TXSTransaktion
          else
          { /* nichts da .... */
           lvStaat = "100";
-          /* Gebiet über PLZ */
-          /* Hier ist die PLZ für das Land interessant */
+          /* Gebiet ï¿½ber PLZ */
+          /* Hier ist die PLZ fï¿½r das Land interessant */
           int lvRetGebiet = -1;
           lvRetGebiet = ValueMapping.PLZ2Land(darlehen.getInstitutsnummer(), pvObj.getPostleitzahl());
           /* Definitionen in der Codetabelle sind falsch ! ...... */
-          /* Die führende 100 führt zum Ergebnis "undefiniert" ...*/
-          /* Vielleicht wird es später wieder so ....             */
+          /* Die fï¿½hrende 100 fï¿½hrt zum Ergebnis "undefiniert" ...*/
+          /* Vielleicht wird es spï¿½ter wieder so ....             */
           if (lvRetGebiet == -1)
           {
            lvLand = "undefiniert";
@@ -2007,10 +2015,10 @@ public class TXSPfandobjektDaten implements TXSTransaktion
          // } /* Sonderfall 2 - Landwirtschaft */
          // else
          // { /* Nicht Sonderfall 1 + 2 */
-           /* Generelle Übernahme ... */
+           /* Generelle ï¿½bernahme ... */
            //sPfGruppe = "0";
            //sPfGruppe = sPfGruppe + sBuffer1.substring(1,3);
-           /* Ein-/Zweifamilienhäuser 016 -> 011 */
+           /* Ein-/Zweifamilienhï¿½user 016 -> 011 */
            /* Eigentumswohnungen      017 -> 013 */
            //if (sBuffer1.substring(1,3).equals("16"))
            //{
@@ -2025,13 +2033,13 @@ public class TXSPfandobjektDaten implements TXSTransaktion
            //{ /* grobe Def. */
            // sPfArt = "2";
            //} /* grobe Def. - gewerblich genutzte GS */
-           /* sonstige Grundstücke */
+           /* sonstige Grundstï¿½cke */
            //if (sBuffer1.substring(1,3).equals("60"))
            //{ /* Sonstige GS */
            // sPfArt = "5";
            //} /* Sonstige GS */
            //if (sBuffer1.charAt(1) ==  '1')
-           //{ /* Häuser/Grundstücke ..*/
+           //{ /* Hï¿½user/Grundstï¿½cke ..*/
             //if (sBuffer1.charAt(2) == '0' ||
             //    sBuffer1.charAt(2) == '4')
             //{ /* Bauplatz */
@@ -2039,9 +2047,9 @@ public class TXSPfandobjektDaten implements TXSTransaktion
             //} /* Bauplatz */
             //else
             //{ /* Kein Bauplatz .. */
-            // sPfArt = "1"; /* Wohngebäde */
+            // sPfArt = "1"; /* Wohngebï¿½de */
             //} /* Kein Bauplatz .. */
-           //} /* Häuser/Grundstücke ..*/
+           //} /* Hï¿½user/Grundstï¿½cke ..*/
           //} /* Nicht Sonderfall 1 + 2*/
          //} /* Nicht Sonderfall 1 */
           
@@ -2086,13 +2094,13 @@ public class TXSPfandobjektDaten implements TXSTransaktion
      */
     public void importDarlehen(Darlehen darlehen, OSPVermoegensobjekt vObj) 
     {
-        /* Sicherheitenschlüssel auf zwei Stellen ... */
+        /* Sicherheitenschlï¿½ssel auf zwei Stellen ... */
         //String sSiSchl = new String();
         //sSiSchl = darlehen.getSicherheitenSchluessel().substring(1,3);
     
-        /* => TXX404/405 bestücken..... nur bei hypothekar .... */
+        /* => TXX404/405 bestï¿½cken..... nur bei hypothekar .... */
         /* geht nur mit Bauf bzw. iSIO   ..... */
-        /* Bestückung von Pfandobjekten etc... */
+        /* Bestï¿½ckung von Pfandobjekten etc... */
         String lvLand = new String();
         String lvStaat = new String();
         //String sPfGruppe = new String();
@@ -2108,13 +2116,13 @@ public class TXSPfandobjektDaten implements TXSTransaktion
          //sLand = new String(); /* nur Deutschland wird def. */
 
           lvStaat = "100";
-          /* Gebiet über PLZ */
-          /* Hier ist die PLZ für das Land interessant */
+          /* Gebiet ï¿½ber PLZ */
+          /* Hier ist die PLZ fï¿½r das Land interessant */
           int lvRetGebiet = -1;
           lvRetGebiet = ValueMapping.PLZ2Land(darlehen.getInstitutsnummer(), vObj.getPlz());
           /* Definitionen in der Codetabelle sind falsch ! ...... */
-          /* Die führende 100 führt zum Ergebnis "undefiniert" ...*/
-          /* Vielleicht wird es später wieder so ....             */
+          /* Die fï¿½hrende 100 fï¿½hrt zum Ergebnis "undefiniert" ...*/
+          /* Vielleicht wird es spï¿½ter wieder so ....             */
           if ( lvRetGebiet == -1 )
           {
            lvLand = "undefiniert";
@@ -2163,10 +2171,10 @@ public class TXSPfandobjektDaten implements TXSTransaktion
          // } /* Sonderfall 2 - Landwirtschaft */
          // else
          // { /* Nicht Sonderfall 1 + 2 */
-           /* Generelle Übernahme ... */
+           /* Generelle ï¿½bernahme ... */
            //sPfGruppe = "0";
            //sPfGruppe = sPfGruppe + sBuffer1.substring(1,3);
-           /* Ein-/Zweifamilienhäuser 016 -> 011 */
+           /* Ein-/Zweifamilienhï¿½user 016 -> 011 */
            /* Eigentumswohnungen      017 -> 013 */
            //if (sBuffer1.substring(1,3).equals("16"))
            //{
@@ -2181,13 +2189,13 @@ public class TXSPfandobjektDaten implements TXSTransaktion
            //{ /* grobe Def. */
            // sPfArt = "2";
            //} /* grobe Def. - gewerblich genutzte GS */
-           /* sonstige Grundstücke */
+           /* sonstige Grundstï¿½cke */
            //if (sBuffer1.substring(1,3).equals("60"))
            //{ /* Sonstige GS */
            // sPfArt = "5";
            //} /* Sonstige GS */
            //if (sBuffer1.charAt(1) ==  '1')
-           //{ /* Häuser/Grundstücke ..*/
+           //{ /* Hï¿½user/Grundstï¿½cke ..*/
             //if (sBuffer1.charAt(2) == '0' ||
             //    sBuffer1.charAt(2) == '4')
             //{ /* Bauplatz */
@@ -2195,9 +2203,9 @@ public class TXSPfandobjektDaten implements TXSTransaktion
             //} /* Bauplatz */
             //else
             //{ /* Kein Bauplatz .. */
-            // sPfArt = "1"; /* Wohngebäde */
+            // sPfArt = "1"; /* Wohngebï¿½de */
             //} /* Kein Bauplatz .. */
-           //} /* Häuser/Grundstücke ..*/
+           //} /* Hï¿½user/Grundstï¿½cke ..*/
           //} /* Nicht Sonderfall 1 + 2*/
          //} /* Nicht Sonderfall 1 */
           

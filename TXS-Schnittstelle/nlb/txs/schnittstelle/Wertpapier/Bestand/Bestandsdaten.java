@@ -319,7 +319,7 @@ public class Bestandsdaten
 
 	/**
 	 * Setzt SaldoWaehrung
-	 * @param ivSaldoWaehrung the ivSaldoWaehrung to set
+	 * @param pvSaldoWaehrung the ivSaldoWaehrung to set
 	 */
 	public void setSaldoWaehrung(String pvSaldoWaehrung) 
 	{
@@ -330,7 +330,7 @@ public class Bestandsdaten
 	 * Liefert Marktkurs
 	 * @return the ivMarktkurs
 	 */
-	public String getMarktkurs() 
+	public String getMarktkurs()
 	{
 		return ivMarktkurs;
 	}
@@ -683,28 +683,50 @@ public class Bestandsdaten
 	public String toString() 
 	{
 		StringBuilder lvOut = new StringBuilder();
-		lvOut.append("System: " + this.ivSystem);
-		lvOut.append("AktivPassiv: "  + this.ivAktivPassiv);
-		lvOut.append("Produkt: " + this.ivProdukt);
-	    lvOut.append("DepotNr: " + this.ivDepotNr);
-		lvOut.append("KennzeichenSOMA: " + this.ivKennzeichenSOMA);
-		lvOut.append("DatumSOMA: " + this.ivDatumSOMA);
-		lvOut.append("DepotKennzeichen: " + this.ivDepotKennzeichen);
-		lvOut.append("Wertpapierart: " + this.ivWertpapierart);
-		lvOut.append("Saldo: " + this.ivSaldo);
-		lvOut.append("SaldoWaehrung: " + this.ivSaldoWaehrung);
-		lvOut.append("Marktkurs: " + this.ivMarktkurs);
-		lvOut.append("Nominalbetrag: " + this.ivNominalbetrag);
-		lvOut.append("NominalbetragWaehrung: " + this.ivNominalbetragWaehrung);
-		lvOut.append("Valutierung: " + this.ivValutierung);
-		lvOut.append("Betragswaehrung: " + this.ivBetragswaehrung);
-		lvOut.append("Deckungsschluessel: " +this.ivDeckungsschluessel);
-		lvOut.append("Ausplatzierungsmerkmal: " + this.ivAusplatzierungsmerkmal);
-		lvOut.append("MAVPROD: " + this.ivMAVPROD);
-		lvOut.append("Kundennummer: " + this.ivKundennummer);
-		lvOut.append("PAS: " + this.ivPAS);
-		lvOut.append("KUST: " + this.ivKUST);
-		lvOut.append("VerwaltendeStelle: " + this.ivVerwaltendeStelle);
+		lvOut.append("System: ");
+		lvOut.append(this.ivSystem);
+		lvOut.append("AktivPassiv: ");
+		lvOut.append(this.ivAktivPassiv);
+		lvOut.append("Produkt: ");
+		lvOut.append(this.ivProdukt);
+		lvOut.append("DepotNr: ");
+		lvOut.append(this.ivDepotNr);
+		lvOut.append("KennzeichenSOMA: ");
+		lvOut.append(this.ivKennzeichenSOMA);
+		lvOut.append("DatumSOMA: ");
+		lvOut.append(this.ivDatumSOMA);
+		lvOut.append("DepotKennzeichen: ");
+		lvOut.append(this.ivDepotKennzeichen);
+		lvOut.append("Wertpapierart: ");
+		lvOut.append(this.ivWertpapierart);
+		lvOut.append("Saldo: ");
+		lvOut.append(this.ivSaldo);
+		lvOut.append("SaldoWaehrung: ");
+		lvOut.append(this.ivSaldoWaehrung);
+		lvOut.append("Marktkurs: ");
+		lvOut.append(this.ivMarktkurs);
+		lvOut.append("Nominalbetrag: ");
+		lvOut.append(this.ivNominalbetrag);
+		lvOut.append("NominalbetragWaehrung: ");
+		lvOut.append(this.ivNominalbetragWaehrung);
+		lvOut.append("Valutierung: ");
+		lvOut.append(this.ivValutierung);
+		lvOut.append("Betragswaehrung: ");
+		lvOut.append(this.ivBetragswaehrung);
+		lvOut.append("Deckungsschluessel: ");
+		lvOut.append(this.ivDeckungsschluessel);
+		lvOut.append("Ausplatzierungsmerkmal: ");
+		lvOut.append(this.ivAusplatzierungsmerkmal);
+		lvOut.append("MAVPROD: ");
+		lvOut.append(this.ivMAVPROD);
+		lvOut.append("Kundennummer: ");
+		lvOut.append(this.ivKundennummer);
+		lvOut.append("PAS: ");
+		lvOut.append(this.ivPAS);
+		lvOut.append("KUST: ");
+		lvOut.append(this.ivKUST);
+		lvOut.append("VerwaltendeStelle: ");
+		lvOut.append(this.ivVerwaltendeStelle);
 		
 		return lvOut.toString();
 	}

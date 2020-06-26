@@ -16,7 +16,7 @@ public class ListeISIN extends HashSet<String>
 {
  
     /**
-     * 
+     * UID
      */
     private static final long serialVersionUID = 1L;
 

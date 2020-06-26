@@ -16,26 +16,26 @@ public class LeseVorlaufsatz
 {    
     
     /**
-     * @param pvZeile 
-     * @return 
+     * Zerlegt eine Zeile in die einzelnen Felder
+     * @param pvZeile die zu zerlegende Zeile
+     * @return Vorlaufsatz
      * 
      */
    public DWHVOR parseVorlaufsatz(String pvZeile)
    {
      String lvTemp = new String(); // arbeitsbereich/zwischenspeicher feld
      int    lvLfd=0;                // lfd feldnr, pruefsumme je satzart
-     int    lvZzStr=0;              // pointer für satzbereich
-     
+
      DWHVOR lvVorlaufsatz = new DWHVOR();
      
      // steuerung/iteration eingabesatz
-     for (lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
+     for (int lvZzStr=0; lvZzStr < pvZeile.length(); lvZzStr++)
      {
 
        // wenn semikolon erkannt
        if (pvZeile.charAt(lvZzStr) == ';')
        {
-           // Die ersten drei Felder können überlesen werden...
+           // Die ersten drei Felder koennen ueberlesen werden...
            if (lvLfd > 3)
            {
                //stemp = stemp;
@@ -44,7 +44,7 @@ public class LeseVorlaufsatz
        
            lvLfd++;                  // naechste feldnummer
        
-           // löschen zwischenbuffer
+           // loeschen zwischenbuffer
            lvTemp = new String();
 
        }

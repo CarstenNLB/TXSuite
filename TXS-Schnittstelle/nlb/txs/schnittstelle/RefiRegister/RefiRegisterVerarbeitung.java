@@ -13,13 +13,7 @@ import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import nlb.txs.schnittstelle.Darlehen.DarlehenXML;
-import nlb.txs.schnittstelle.Darlehen.LeseVorlaufsatz;
-import nlb.txs.schnittstelle.Darlehen.SicherheitenListe;
-import nlb.txs.schnittstelle.Darlehen.SicherheitenXML;
-import nlb.txs.schnittstelle.Darlehen.SicherungsobjekteListe;
-import nlb.txs.schnittstelle.Darlehen.SicherungsobjekteXML;
 import nlb.txs.schnittstelle.Darlehen.Daten.DarlehenKomplett;
 import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
 import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Sicherheit;
@@ -35,13 +29,17 @@ import nlb.txs.schnittstelle.Darlehen.Daten.Original.KTS;
 import nlb.txs.schnittstelle.Darlehen.Daten.Original.OBJ;
 import nlb.txs.schnittstelle.Darlehen.Daten.Original.REC;
 import nlb.txs.schnittstelle.Darlehen.Daten.Original.UMS;
+import nlb.txs.schnittstelle.Darlehen.LeseVorlaufsatz;
+import nlb.txs.schnittstelle.Darlehen.SicherheitenListe;
+import nlb.txs.schnittstelle.Darlehen.SicherheitenXML;
+import nlb.txs.schnittstelle.Darlehen.SicherungsobjekteListe;
+import nlb.txs.schnittstelle.Darlehen.SicherungsobjekteXML;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
-import nlb.txs.schnittstelle.SAPCMS.SAPCMS_Neu;
+import nlb.txs.schnittstelle.Sicherheiten.SicherheitenDaten;
 import nlb.txs.schnittstelle.Utilities.CalendarHelper;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.IniReader;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -54,10 +52,10 @@ public class RefiRegisterVerarbeitung
     public static final int REFI_REG = 0;
     
     // Verarbeitungsmodus LettreDeGage
-    public static final int LETTRE_DE_GAGE = 1;
+    //public static final int LETTRE_DE_GAGE = 1;
     
     // Verarbeitungsmodus DeepSea
-    public static final int DEEP_SEA = 2;
+    //public static final int DEEP_SEA = 2;
 	
     // Logger fuer RefiRegister
     private static Logger LOGGER_REFI_REGISTER = Logger.getLogger("TXSRefiRegisterLogger"); 
@@ -127,7 +125,7 @@ public class RefiRegisterVerarbeitung
     /**
      * RefiRegister Aktiv
      */
-    private RefiRegisterAktiv ivRefiRegisterAktiv;
+    //private RefiRegisterAktiv ivRefiRegisterAktiv;
     
     /**
      * Kundennummer
@@ -187,8 +185,8 @@ public class RefiRegisterVerarbeitung
     private SicherungsobjekteXML ivSicherungsObjXML;
     private SicherungsobjekteListe ivListeSicherungsobjekte;
     
-    // Sicherheiten aus SAP CMS
-    private SAPCMS_Neu ivSapcms;
+    // Sicherheiten-Daten
+    private SicherheitenDaten ivSicherheitenDaten;
                
     /**
      * 
@@ -203,7 +201,7 @@ public class RefiRegisterVerarbeitung
     /**
      * Liste der RefiDeepSea-Zusaetze
      */
-    private HashMap<String, RefiDeepSeaZusatz> ivListeRefiDeepSeaZusatz;
+    //private HashMap<String, RefiDeepSeaZusatz> ivListeRefiDeepSeaZusatz;
     
     /** 
      * Liste der Kontonummern die verarbeitet werden
@@ -222,14 +220,14 @@ public class RefiRegisterVerarbeitung
     	//{
     	//	lvModus = "RefiRegister";
     	//}
-    	if (pvVerarbeitungsmodus == DEEP_SEA)
-    	{
-    		lvModus = "RefiRegister_DeepSea";
-    	}
-    	if (pvVerarbeitungsmodus == LETTRE_DE_GAGE)
-    	{
-    		lvModus = "RefiRegister_LettreDeGage";
-    	}
+    	//if (pvVerarbeitungsmodus == DEEP_SEA)
+    	//{
+    	//	lvModus = "RefiRegister_DeepSea";
+    	//}
+    	//if (pvVerarbeitungsmodus == LETTRE_DE_GAGE)
+    	//{
+    	//	lvModus = "RefiRegister_LettreDeGage";
+    	//}
     	
         if (pvReader != null)
         {
@@ -239,12 +237,20 @@ public class RefiRegisterVerarbeitung
                 LOGGER_REFI_REGISTER.error("Keine Institutsnummer in der ini-Datei...");
                 System.exit(1);
             }
+            else
+            {
+                LOGGER_REFI_REGISTER.info("Institut: " + ivInstitutsnummer);
+            }
                         
             ivImportVerzeichnis = pvReader.getPropertyString(lvModus, "ImportVerzeichnis", "Fehler");
             if (ivImportVerzeichnis.equals("Fehler"))
             {
                 LOGGER_REFI_REGISTER.error("Kein Import-Verzeichnis in der ini-Datei...");
                 System.exit(1);
+            }
+            else
+            {
+                LOGGER_REFI_REGISTER.info("ImportVerzeichnis: " + ivImportVerzeichnis);
             }
 
             ivExportVerzeichnis = pvReader.getPropertyString(lvModus, "ExportVerzeichnis", "Fehler");
@@ -253,6 +259,10 @@ public class RefiRegisterVerarbeitung
                 LOGGER_REFI_REGISTER.error("Kein Export-Verzeichnis in der ini-Datei...");
                 System.exit(1);
             }
+            else
+            {
+                LOGGER_REFI_REGISTER.info("ExportVerzeichnis: " + ivExportVerzeichnis);
+            }
 
             ivDarlehenImportDatei =  pvReader.getPropertyString(lvModus, "DarlehenImport-Datei", "Fehler");
             if (ivDarlehenImportDatei.equals("Fehler"))
@@ -260,26 +270,42 @@ public class RefiRegisterVerarbeitung
                 LOGGER_REFI_REGISTER.error("Kein DarlehenImport-Dateiname in der ini-Datei...");
                 System.exit(1);
             }
-            
+            else
+            {
+                LOGGER_REFI_REGISTER.info("DarlehenImport-Datei: " + ivDarlehenImportDatei);
+            }
+
             ivDarlehenTXSDatei =  pvReader.getPropertyString(lvModus, "DarlehenTXS-Datei", "Fehler");
             if (ivDarlehenTXSDatei.equals("Fehler"))
             {
                 LOGGER_REFI_REGISTER.error("Kein DarlehenTXS-Dateiname in der ini-Datei...");
                 System.exit(1);
             }
-           
+            else
+            {
+                LOGGER_REFI_REGISTER.info("DarlehenTXS-Datei: " + ivDarlehenTXSDatei);
+            }
+
             ivDarlehenDatei = pvReader.getPropertyString(lvModus, "Darlehen-Datei", "Fehler");
             if (ivDarlehenDatei.equals("Fehler"))
             {
                 LOGGER_REFI_REGISTER.error("Kein Darlehen-Dateiname in der ini-Datei...");
                 System.exit(1);
             }
-            
+            else
+            {
+                LOGGER_REFI_REGISTER.info("Darlehen-Datei: " + ivDarlehenDatei);
+            }
+
             ivSicherheitenDatei = pvReader.getPropertyString(lvModus, "Sicherheiten-Datei", "Fehler");
             if (ivSicherheitenDatei.equals("Fehler"))
             {
                 LOGGER_REFI_REGISTER.error("Kein Sicherheiten-Dateiname in der ini-Datei...");
                 System.exit(1);
+            }
+            else
+            {
+                LOGGER_REFI_REGISTER.info("SicherheitenDatei: " + ivSicherheitenDatei);
             }
 
             ivSicherungsobjekteDatei = pvReader.getPropertyString(lvModus, "Sicherungsobjekte-Datei", "Fehler");
@@ -288,12 +314,20 @@ public class RefiRegisterVerarbeitung
                 LOGGER_REFI_REGISTER.error("Kein Sicherungsobjekte-Dateiname in der ini-Datei...");
                 System.exit(1);
             }
-            
-            ivImportVerzeichnisSAPCMS = pvReader.getPropertyString("SAPCMS", "ImportVerzeichnis", "Fehler");
+            else
+            {
+                LOGGER_REFI_REGISTER.info("Sicherungsobjekte-Datei: " + ivSicherungsobjekteDatei);
+            }
+
+            ivImportVerzeichnisSAPCMS = pvReader.getPropertyString("Sicherheiten", "ImportVerzeichnis", "Fehler");
             if (ivImportVerzeichnisSAPCMS.equals("Fehler"))
             {
-                LOGGER_REFI_REGISTER.error("Kein SAPCMS Import-Verzeichnis in der ini-Datei...");
+                LOGGER_REFI_REGISTER.error("Kein Sicherheiten Import-Verzeichnis in der ini-Datei...");
                 System.exit(1);
+            }
+            else
+            {
+                LOGGER_REFI_REGISTER.info("Sicherheiten ImportVerzeichnis: " + ivImportVerzeichnisSAPCMS);
             }
 
             ivFilterDatei = pvReader.getPropertyString(lvModus, "Filter-Datei", "Fehler");
@@ -302,21 +336,29 @@ public class RefiRegisterVerarbeitung
             	LOGGER_REFI_REGISTER.error("Kein Filter-Dateiname in der ini-Datei...");
             	System.exit(1);
             }
-            
-            ivSapcmsDatei = pvReader.getPropertyString("SAPCMS", "SAPCMS-Datei", "Fehler");
+            else
+            {
+                LOGGER_REFI_REGISTER.info("Filter-Datei: " + ivFilterDatei);
+            }
+
+            ivSapcmsDatei = pvReader.getPropertyString("Sicherheiten", "Sicherheiten-Datei", "Fehler");
             if (ivSapcmsDatei.equals("Fehler"))
             {
-                LOGGER_REFI_REGISTER.error("Kein SAPCMS-Dateiname in der ini-Datei...");
+                LOGGER_REFI_REGISTER.error("Kein Sicherheiten-Dateiname in der ini-Datei...");
                 System.exit(1);
             }
-        
+            else
+            {
+                LOGGER_REFI_REGISTER.info("Sicherheiten-Datei: " + ivSapcmsDatei);
+            }
+
             this.ivVerarbeitungsmodus = pvVerarbeitungsmodus;
             this.ivRefiRegisterPassiv = new RefiRegisterPassiv(ivExportVerzeichnis, LOGGER_REFI_REGISTER);
-            this.ivRefiRegisterAktiv = new RefiRegisterAktiv(LOGGER_REFI_REGISTER);
+            //this.ivRefiRegisterAktiv = new RefiRegisterAktiv(LOGGER_REFI_REGISTER);
         
             ivListeRefiRegisterFilterElemente = new HashMap<String, RefiRegisterFilterElement>();
             ivListeRefiZusatz = new HashMap<String, RefiZusatz>();
-            ivListeRefiDeepSeaZusatz = new HashMap<String, RefiDeepSeaZusatz>();
+            //ivListeRefiDeepSeaZusatz = new HashMap<String, RefiDeepSeaZusatz>();
             ivListeKontonummern = new HashSet<String>();
             // Dummy-Kontonummer damit die Liste nicht leer wird
             ivListeKontonummern.add("99999999999");
@@ -328,10 +370,10 @@ public class RefiRegisterVerarbeitung
             //ivListeRefiZusatz = readRefiZusatz(ivExportVerzeichnis + "\\RefiListe_Pfandobjekt.csv");
             
             // RefiDeepSeaZusatz einlesen - CT 10.02.2017
-            if (pvVerarbeitungsmodus == DEEP_SEA)
-            {
-              readRefiDeepSeaZusatz("C:\\DeepSea\\DeepSea-Abzug_20170210.csv");
-            }
+            //if (pvVerarbeitungsmodus == DEEP_SEA)
+            //{
+            //  readRefiDeepSeaZusatz("C:\\DeepSea\\DeepSea-Abzug_20170210.csv");
+            //}
             
             // Liste der Kontonummern einlesen
             readListeKontonummern(ivExportVerzeichnis + "\\" + ivFilterDatei);
@@ -456,7 +498,7 @@ public class RefiRegisterVerarbeitung
      */
     private void readRefiDeepSeaZusatz(String pvDateiname)
     {
-        System.out.println("Start - readRefiDeepSeaZusatz");
+        LOGGER_REFI_REGISTER.info("Start - readRefiDeepSeaZusatz");
         String lvZeile = null;
                       
         // Oeffnen der Dateien
@@ -475,7 +517,7 @@ public class RefiRegisterVerarbeitung
     
         BufferedReader lvIn = new BufferedReader(new InputStreamReader(lvFis));
              
-        RefiDeepSeaZusatz lvRefiDeepSeaZusatz = null;
+        /* RefiDeepSeaZusatz lvRefiDeepSeaZusatz = null;
         try
         {
             while ((lvZeile = lvIn.readLine()) != null)  // Lesen RefiZusatz-Datei
@@ -495,7 +537,7 @@ public class RefiRegisterVerarbeitung
         }
         
         LOGGER_REFI_REGISTER.info("Anzahl ivListeRefiDeepSeaZusatz: " + ivListeRefiDeepSeaZusatz.size());
-        
+        */
         try
         {
             lvIn.close();
@@ -566,25 +608,25 @@ public class RefiRegisterVerarbeitung
 
         LOGGER_REFI_REGISTER.info("Start: " + lvCh.printDateAndTime(lvCal));
                           
-        // SAPCMS-Datei einlesen
-        ivSapcms = new SAPCMS_Neu(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, LOGGER_REFI_REGISTER);
+        // Sicherheiten-Datei einlesen
+        ivSicherheitenDaten = new SicherheitenDaten(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, SicherheitenDaten.SAPCMS, LOGGER_REFI_REGISTER);
                 
         // Darlehen XML-Datei
-        ivDarlehenXML = new DarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenDatei);
+        ivDarlehenXML = new DarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenDatei, LOGGER_REFI_REGISTER);
         ivDarlehenXML.openXML();
         
         // Darlehen XML-Datei im TXS-Format
-        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenTXSDatei);
+        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenTXSDatei, LOGGER_REFI_REGISTER);
         ivOutputDarlehenXML.openXML();
         ivOutputDarlehenXML.printXMLStart();
                 
         // Sicherheiten XML-Datei 
-        ivSicherheitenXML = new SicherheitenXML(ivExportVerzeichnis + "\\" + ivSicherheitenDatei);
+        ivSicherheitenXML = new SicherheitenXML(ivExportVerzeichnis + "\\" + ivSicherheitenDatei, LOGGER_REFI_REGISTER);
         ivSicherheitenXML.openXML();
         ivListeSicherheiten = new SicherheitenListe();
         
         // Sicherungsobjekte XML-Datei
-        ivSicherungsObjXML = new SicherungsobjekteXML(ivExportVerzeichnis + "\\" + ivSicherungsobjekteDatei);
+        ivSicherungsObjXML = new SicherungsobjekteXML(ivExportVerzeichnis + "\\" + ivSicherungsobjekteDatei, LOGGER_REFI_REGISTER);
         ivSicherungsObjXML.openXML();
         ivListeSicherungsobjekte = new SicherungsobjekteListe();
         
@@ -666,7 +708,7 @@ public class RefiRegisterVerarbeitung
                   {
                       LOGGER_REFI_REGISTER.error("Datenfehler: " + lvZeile);
                   }
-                  //System.out.println(s);
+
                   if (!ivKontonummer.equals("0000000000"))
                   {
                       einfuegenSegment();
@@ -696,10 +738,10 @@ public class RefiRegisterVerarbeitung
                 {
                   LOGGER_REFI_REGISTER.info("Kontonummer " + ivKts.getKopf().getsDwhknr() + " in der Liste enthalten...");
                   ivListeKontonummern.remove(ivKts.getKopf().getsDwhknr());
-                  if (ivVerarbeitungsmodus == DEEP_SEA || ivVerarbeitungsmodus == LETTRE_DE_GAGE)
-                  {
-                	  verarbeiteAktiv();
-                  }
+                  //if (ivVerarbeitungsmodus == DEEP_SEA || ivVerarbeitungsmodus == LETTRE_DE_GAGE)
+                  //{
+                	//  verarbeiteAktiv();
+                  //}
                   if (ivVerarbeitungsmodus == REFI_REG)
                   {
                 	  verarbeitePassiv();
@@ -710,7 +752,7 @@ public class RefiRegisterVerarbeitung
           }
           else
           {
-        	  System.out.println("KTR == null");
+        	  LOGGER_REFI_REGISTER.info("KTR == null");
           }
           
           try
@@ -760,8 +802,8 @@ public class RefiRegisterVerarbeitung
        ivZielDarlehen = new Darlehen(LOGGER_REFI_REGISTER, new String()); // Umsatz19-Datei wird nicht benoetigt -> new String()
        ivZielDarlehen.extractDarlehen(ivOriginalDarlehen);
        
-       System.out.println("Kontotyp: " + ivZielDarlehen.getKontotyp());
-       System.out.println("Kontozustand: " + ivZielDarlehen.getKontozustand());
+       //System.out.println("Kontotyp: " + ivZielDarlehen.getKontotyp());
+       //System.out.println("Kontozustand: " + ivZielDarlehen.getKontozustand());
        if (StringKonverter.convertString2Int(ivZielDarlehen.getKontotyp()) == 4)
        {  
            int lvHelpInt = StringKonverter.convertString2Int(ivZielDarlehen.getKontozustand());
@@ -771,7 +813,7 @@ public class RefiRegisterVerarbeitung
               ivDarlehenXML.printDarlehen(ivZielDarlehen);
               try
               {
-                  ivRefiRegisterPassiv.importDarlehen2Transaktion(ivZielDarlehen, ivOutputDarlehenXML, ivSapcms, ivListeRefiRegisterFilterElemente, ivListeRefiZusatz, LOGGER_REFI_REGISTER);
+                  ivRefiRegisterPassiv.importDarlehen2Transaktion(ivZielDarlehen, ivOutputDarlehenXML, ivSicherheitenDaten, ivListeRefiRegisterFilterElemente);//, ivListeRefiZusatz);
               }
               catch (Exception exp)
               {
@@ -825,10 +867,9 @@ public class RefiRegisterVerarbeitung
        ivZielDarlehen = new Darlehen(LOGGER_REFI_REGISTER, new String()); // Umsatz19-Datei wird nicht benoetigt -> new String()
        ivZielDarlehen.extractDarlehen(ivOriginalDarlehen);
        
-       System.out.println("Kontotyp: " + ivZielDarlehen.getKontotyp());
-       System.out.println("Kontozustand: " + ivZielDarlehen.getKontozustand());
-       //if (ivVerarbeitungsmodus == LETTRE_DE_GAGE || ivVerarbeitungsmodus == DEEP_SEA)
-       if (ivVerarbeitungsmodus == DEEP_SEA)
+       //System.out.println("Kontotyp: " + ivZielDarlehen.getKontotyp());
+       //System.out.println("Kontozustand: " + ivZielDarlehen.getKontozustand());
+       /* if (ivVerarbeitungsmodus == DEEP_SEA)
        {
            int lvHelpInt = StringKonverter.convertString2Int(ivZielDarlehen.getKontozustand());
 
@@ -837,7 +878,7 @@ public class RefiRegisterVerarbeitung
     		   ivDarlehenXML.printDarlehen(ivZielDarlehen);
     		   try
     		   {
-    			   ivRefiRegisterAktiv.importDarlehen2TransaktionDeepSea(ivZielDarlehen, ivOutputDarlehenXML, ivSapcms, ivListeRefiDeepSeaZusatz, ivVerarbeitungsmodus);
+    			   ivRefiRegisterAktiv.importDarlehen2TransaktionDeepSea(ivZielDarlehen, ivOutputDarlehenXML, ivSicherheitenDaten, ivListeRefiDeepSeaZusatz, ivVerarbeitungsmodus);
     		   }
     		   catch (Exception exp)
     		   {
@@ -865,7 +906,7 @@ public class RefiRegisterVerarbeitung
                   ivDarlehenXML.printDarlehen(ivZielDarlehen);
                   try
                   {
-                      ivRefiRegisterAktiv.importDarlehen2TransaktionLettreDeGage(ivZielDarlehen, ivOutputDarlehenXML, ivSapcms, ivVerarbeitungsmodus);
+                      ivRefiRegisterAktiv.importDarlehen2TransaktionLettreDeGage(ivZielDarlehen, ivOutputDarlehenXML, ivSicherheitenDaten, ivVerarbeitungsmodus);
                   }
                   catch (Exception exp)
                   {
@@ -882,7 +923,7 @@ public class RefiRegisterVerarbeitung
                //            + ")KtoZustand-" + ivZielDarlehen.getKontozustand() + "-darf nicht");
                //}
             //}    	   
-       }
+       } */
     }
 
     /**
@@ -922,26 +963,25 @@ public class RefiRegisterVerarbeitung
       lvStringBuilder.append(StringKonverter.lineSeparator);     
       lvStringBuilder.append(ivListeRefiZusatz.size() + " RefiZusatz gelesen...");
       lvStringBuilder.append(StringKonverter.lineSeparator);
-      if (ivVerarbeitungsmodus == DEEP_SEA)
-      {
-        lvStringBuilder.append(ivZaehlerRefiDeepSeaZusatz + " RefiDeepSeaZusatz gelesen...");
-      }
+      //if (ivVerarbeitungsmodus == DEEP_SEA)
+      //{
+      //  lvStringBuilder.append(ivZaehlerRefiDeepSeaZusatz + " RefiDeepSeaZusatz gelesen...");
+      //}
       lvStringBuilder.append(StringKonverter.lineSeparator);     
       
       return lvStringBuilder.toString();
     }
 
   /**
-   * @param pvZeile 
-   * @return 
-   *       
+   * Zerlegt eine Zeile in die unterschiedlichen Daten/Felder
+   * @param pvZeile
+   * @return
    */
    private boolean parseDarlehen(String pvZeile)
    {             
       String stemp = new String(); // arbeitsbereich/zwischenspeicher feld
       int lvLfd = 0; // lfd feldnr, pruefsumme je satzart
-      int lvZzStr = 0; // pointer fuer satzbereich
-            
+
       ivStatus = UNDEFINIERT;
       
       if (pvZeile.contains(";KTR     ;"))
@@ -950,7 +990,7 @@ public class RefiRegisterVerarbeitung
       }
       
       // steuerung/iteration eingabesatz
-      for (lvZzStr = 0; lvZzStr < pvZeile.length(); lvZzStr++)
+      for (int lvZzStr = 0; lvZzStr < pvZeile.length(); lvZzStr++)
       {
 
         // wenn semikolon erkannt
@@ -994,10 +1034,10 @@ public class RefiRegisterVerarbeitung
                                   {
                                 	 LOGGER_REFI_REGISTER.info("Kontonummer " + ivAlteKontonummer + " in der Liste enthalten...");
                                      ivListeKontonummern.remove(ivAlteKontonummer);
-                                     if (ivVerarbeitungsmodus == DEEP_SEA || ivVerarbeitungsmodus == LETTRE_DE_GAGE)
-                                     {
-                                    	 verarbeiteAktiv();
-                                     }
+                                     //if (ivVerarbeitungsmodus == DEEP_SEA || ivVerarbeitungsmodus == LETTRE_DE_GAGE)
+                                     //{
+                                     //	 verarbeiteAktiv();
+                                     //}
                                      if (ivVerarbeitungsmodus == REFI_REG)
                                      {
                                     	 verarbeitePassiv();
@@ -1008,7 +1048,7 @@ public class RefiRegisterVerarbeitung
                           }
                           else
                           {
-                        	 System.out.println("KTR == null"); 
+                        	  LOGGER_REFI_REGISTER.info("KTR == null");
                           }
                           ivOriginalDarlehen.clearLists();
                           ivInf = null;
@@ -1045,8 +1085,9 @@ public class RefiRegisterVerarbeitung
     if (!stemp.isEmpty())
     {
           setzeWert(ivStatus, lvLfd, stemp);
-    }  
-    return true; 
+    }
+
+    return true;
    }
 
 

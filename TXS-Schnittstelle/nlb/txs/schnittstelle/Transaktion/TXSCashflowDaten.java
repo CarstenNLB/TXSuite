@@ -68,16 +68,24 @@ public class TXSCashflowDaten
      */
     public TXSCashflowDaten() 
     {
-        this.ivBewart = new String();
-        this.ivCfkey = new String();
-        this.ivDatum = new String();
-        this.ivNomdeck = new String();
-        this.ivRhyt = new String();
-        this.ivTbetrag = new String();
-        this.ivTsatz = new String();
-        this.ivWhrg = new String();
-        this.ivZbetrag = new String();
-        this.ivZsatz = new String();
+      initTXSCashflowDaten();
+    }
+
+    /**
+     * Initialisiert die Instanzvariablen mit leeren Strings
+     */
+    public void initTXSCashflowDaten()
+    {
+      this.ivBewart = new String();
+      this.ivCfkey = new String();
+      this.ivDatum = new String();
+      this.ivNomdeck = new String();
+      this.ivRhyt = new String();
+      this.ivTbetrag = new String();
+      this.ivTsatz = new String();
+      this.ivWhrg = new String();
+      this.ivZbetrag = new String();
+      this.ivZsatz = new String();
     }
 
     /**

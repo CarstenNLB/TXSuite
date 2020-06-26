@@ -10,6 +10,7 @@ package nlb.txs.schnittstelle.Deckungspooling.Sicherheiten;
  * @author tepperc
  *
  */
+@Deprecated
 public class OSPKonto 
 {
     /**

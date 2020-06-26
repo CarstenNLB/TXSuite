@@ -27,6 +27,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
+@Deprecated
 public class MAVISVerarbeiten 
 {
 	/**
@@ -188,7 +189,7 @@ public class MAVISVerarbeiten
         File lvTXSFile = new File(ivFileout);
         FileOutputStream  lvTXSost = null;
         
-        // Für die Ausgabe der Quellsystemdatei        
+        // Fï¿½r die Ausgabe der Quellsystemdatei        
         File lvQuelle = new File(ivEingabeverzeichnis + ivFileout_mavquell);
         FileOutputStream lvQuelleost = null;
         
@@ -238,7 +239,7 @@ public class MAVISVerarbeiten
         
         LOGGER.info("Datei mit hoechstem daypointer " + lvNeuedatei);
         
-        // logdatei zur eingabe öffnen
+        // logdatei zur eingabe ï¿½ffnen
         try
         {
           lvStreamlogein = new FileInputStream(lvLogdatei); 
@@ -487,7 +488,7 @@ public class MAVISVerarbeiten
                   // Wertpapierpositionsdaten anhaengen
                   lvElement_fg.addContent(lvElement_wpposdaten);
                   
-                  // Globalurkunde anhängen
+                  // Globalurkunde anhï¿½ngen
                   lvElement_fg.addContent(lvElement_gudaten);
                   
               }
@@ -683,13 +684,15 @@ public class MAVISVerarbeiten
         {
             while ((lvZeile = lvIn.readLine()) != null)  // Lesen der RueckmeldeDaten
             {
-        		RueckmeldeDatenMAVIS lvRueckmeldeDaten = new RueckmeldeDatenMAVIS();
+        		  RueckmeldeDatenMAVIS lvRueckmeldeDaten = new RueckmeldeDatenMAVIS();
 
-        		if (lvRueckmeldeDaten.parseRueckmeldeDaten(lvZeile, LOGGER)) // Parsen der Felder
-        		{     
-        			lvZaehlerRueckmeldeDaten++;
-        			ivListeRueckmeldeDaten.put(lvRueckmeldeDaten.getProdukt(), lvRueckmeldeDaten);
-                }
+              lvRueckmeldeDaten.parseRueckmeldeDaten(lvZeile, LOGGER); // Parsen der Felder
+
+        		  //if (lvRueckmeldeDaten.parseRueckmeldeDaten(lvZeile, LOGGER)) // Parsen der Felder
+        		  //{
+              lvZaehlerRueckmeldeDaten++;
+              ivListeRueckmeldeDaten.put(lvRueckmeldeDaten.getProdukt(), lvRueckmeldeDaten);
+             // }
             }
         }
         catch (Exception e)

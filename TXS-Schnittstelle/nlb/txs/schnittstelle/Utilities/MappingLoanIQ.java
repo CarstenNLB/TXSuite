@@ -9,15 +9,16 @@ package nlb.txs.schnittstelle.Utilities;
 import org.apache.log4j.Logger;
 
 /**
- * @author tepperc
- *
+ * Diese Klasse enthaelt die Mappings fuer die LoanIQ-Verarbeitung.
+ * @author Carsten Tepper
  */
 public abstract class MappingLoanIQ 
 {
     /**
-     * Aendert den LoanIQ-Schluessel auf den TXS-Schluessel
-     * @param pvText
-     * @return
+     * Aendert den LoanIQ-Schluessel auf den TXS-Schluessel fuer den Zinsrythmus
+     * @param pvText LoanIQ-Schluessel fuer den Zinsrythmus
+     * @param pvLogger log4j-Logger
+     * @return TXS-Schluessel fuer den Zinsrythmus
      */
     public static String changeZinsrythmus(String pvText, Logger pvLogger)
     {
@@ -34,13 +35,13 @@ public abstract class MappingLoanIQ
         // 2000   Zweitaegig
         // 3      Vierteljaehrlich
         // 3000   Dreitaegig
-        // 30000  Dreißigtaegig
+        // 30000  Dreiï¿½igtaegig
         // 4      Alle 4 Monate
         // 4000   Viertaegig
         // 5      Alle 5 Monate
-        // 5000   Fünftägig
+        // 5000   Fï¿½nftï¿½gig
         // 6      Halbjaehrlich
-        // 6000   Sechstägig
+        // 6000   Sechstï¿½gig
         // 60000  Sechzigtaegig
         // 7      Alle 7 Monate
         // 7000   Siebentaegig
@@ -180,9 +181,11 @@ public abstract class MappingLoanIQ
     
     
     /**
-     * @param pvZinstyp 
-     * @param pvMerkmalAktivPassiv 
-     * @return 
+     * Aendert den LoanIQ-Schluessel auf den TXS-Schluessel fuer den Zinstyp
+     * @param pvZinstyp Zinstyp aus LoanIQ
+     * @param pvMerkmalAktivPassiv MerkmalAktivPassiv aus LoanIQ
+     * @param pvLogger log4j-Logger
+     * @return TXS-Schluessel fuer den Zinstyp
      * 
      */
     public static String changeZinstyp(String pvZinstyp, String pvMerkmalAktivPassiv, Logger pvLogger)
@@ -254,16 +257,18 @@ public abstract class MappingLoanIQ
         return lvHelpText;
         
     }
-    
-    /**
-     * @param pvArbeitskonvention 
-     * @return 
-     * modified following || following -> Danach (1)
-     * preceding -> Davor (2)
-     * keine -> Keine (0)
-     */
-    public static String changeArbeitskonvention(String pvArbeitskonvention, Logger pvLogger)
-    {
+
+  /**
+   * Aendert den LoanIQ-Schluessel auf den TXS-Schluessel fuer die Arbeitskonvention
+   * Auspraegungen:
+   * modified following || following -> Danach (1)
+   * preceding -> Davor (2)
+   * keine -> Keine (0)
+   * @param pvArbeitskonvention Arbeitskonvention aus LoanIQ
+   * @param pvLogger log4j-Logger
+   * @return TXS-Schluessel fuer die Arbeitskonvention
+   */
+  public static String changeArbeitskonvention(String pvArbeitskonvention, Logger pvLogger) {
         String lvHelpText = pvArbeitskonvention;
         if (lvHelpText.equalsIgnoreCase("MOD_FOLLOW") || lvHelpText.equalsIgnoreCase("FOLLOWING"))
         {
@@ -287,16 +292,16 @@ public abstract class MappingLoanIQ
         
         return lvHelpText;
     }
-    
-    /**
-     * @param pvWaehrung 
-     * @param pvReferenzzins 
-     * @param pvLaufzeit 
-     * @return 
-     * 
-     */
-    public static String changeReferenzzins(String pvReferenzzins, String pvLaufzeit, Logger pvLogger)
-    {
+
+  /**
+   * Aendert den LoanIQ-Schluessel/-Wert auf den TXS-Schluessel fuer den Referenzzins
+   * @param pvReferenzzins Referenzzins aus LoanIQ
+   * @param pvLaufzeit Laufzeit aus LoanIQ
+   * @param pvLogger log4j-Logger
+   * @return TXS-Schluessel fuer den Referenzzins
+   */
+  public static String changeReferenzzins(
+      String pvReferenzzins, String pvLaufzeit, Logger pvLogger) {
         // Defauft-Referenzzins 'keine' setzen
         String lvHelpText = "keine";
         

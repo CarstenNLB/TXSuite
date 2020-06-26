@@ -10,16 +10,17 @@ package nlb.txs.schnittstelle.OutputXML;
  * @author tepperc
  *
  */
+@Deprecated
 public class TXSHeader 
 {
     /**
-     * 
-     * @param pvValdate 
-     * @return 
+     * Liefert den TXSHeader im XML-Format
+     * @param pvValdate Datum
+     * @return TXSHeader im XML-Format
      */
     public String printTXSHeader(String pvValdate) 
     {
-        return new String("<txsi:header valdate=\"" + pvValdate + "\"/>\n");
+        return "<txsi:header valdate=\"" + pvValdate + "\"/>\n";
     }
 
 }

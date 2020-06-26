@@ -13,6 +13,7 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
  * @author tepperc
  *
  */
+@Deprecated
 public class Deckungspooling 
 {
     /**

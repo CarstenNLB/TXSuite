@@ -73,7 +73,7 @@ public class LoanIQPassivDaten
     private String ivRolloverKennzeichen;
     
     /**
-     * Kuendigungsdatum nach BGB §489
+     * Kuendigungsdatum nach BGB ï¿½489
      */
     private String ivKuendigungsdatum;
     
@@ -93,7 +93,7 @@ public class LoanIQPassivDaten
     private String ivEmissionskurs;
     
     /**
-     * Kalenderkonvention (Tageszählweise) entsprechend SCHL_ID 9003
+     * Kalenderkonvention (Tageszï¿½hlweise) entsprechend SCHL_ID 9003
      */
     private String ivKalenderkonvention;
     
@@ -255,7 +255,13 @@ public class LoanIQPassivDaten
     private String ivDealNominal;
     
     /**
+     * Left to amortize
+     */
+    private String ivLeftAmortize;
+    
+    /**
      * Initialisierung der Strings
+     * @param pvLogger log4j-Logger
      */
     public LoanIQPassivDaten(Logger pvLogger) 
     {
@@ -306,9 +312,11 @@ public class LoanIQPassivDaten
         this.ivFacilityNominal = new String();
         this.ivDealReferenz = new String();
         this.ivDealNominal = new String();
+        this.ivLeftAmortize = new String();
     }
 
     /**
+     * Liefert die Kontonummer
      * @return the kontonummer
      */
     public String getKontonummer() {
@@ -316,13 +324,15 @@ public class LoanIQPassivDaten
     }
 
     /**
-     * @param pvKontonummer the kontonummer to set
+     * Setzt die Kontonummer
+     * @param pvKontonummer Kontonummer
      */
     public void setKontonummer(String pvKontonummer) {
         this.ivKontonummer = pvKontonummer;
     }
 
     /**
+     * Liefert das Quellsystem
      * @return the quellsystem
      */
     public String getQuellsystem() {
@@ -330,6 +340,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Quellsystem
      * @param pvQuellsystem the quellsystem to set
      */
     public void setQuellsystem(String pvQuellsystem) {
@@ -337,6 +348,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Gueltigkeitsdatum
      * @return the gueltigkeitsdatum
      */
     public String getGueltigkeitsdatum() {
@@ -344,6 +356,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Gueltigkeitsdatum
      * @param pvGueltigkeitsdatum the gueltigkeitsdatum to set
      */
     public void setGueltigkeitsdatum(String pvGueltigkeitsdatum) {
@@ -351,6 +364,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert den Originator
      * @return the originator
      */
     public String getOriginator() {
@@ -358,6 +372,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt den Originator
      * @param pvOriginator the originator to set
      */
     public void setOriginator(String pvOriginator) {
@@ -365,6 +380,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Merkmal Aktiv/Passiv
      * @return the merkmalAktivPassiv
      */
     public String getMerkmalAktivPassiv() {
@@ -372,6 +388,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Merkmal Aktiv/Passiv
      * @param pvMerkmalAktivPassiv the merkmalAktivPassiv to set
      */
     public void setMerkmalAktivPassiv(String pvMerkmalAktivPassiv) {
@@ -379,6 +396,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Aktenzeichen
      * @return the aktenzeichen
      */
     public String getAktenzeichen() {
@@ -386,6 +404,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Aktenzeichen
      * @param pvAktenzeichen the aktenzeichen to set
      */
     public void setAktenzeichen(String pvAktenzeichen) {
@@ -393,6 +412,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert den Nennbetrag
      * @return the nennbetrag
      */
     public String getNennbetrag() {
@@ -400,6 +420,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt den Nennbetrag
      * @param pvNennbetrag the nennbetrag to set
      */
     public void setNennbetrag(String pvNennbetrag) {
@@ -407,6 +428,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert den Kredittyp
      * @return the kredittyp
      */
     public String getKredittyp() {
@@ -414,6 +436,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt den Kredittyp
      * @param pvKredittyp the kredittyp to set
      */
     public void setKredittyp(String pvKredittyp) {
@@ -421,6 +444,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert die Waehrung
      * @return the waehrung
      */
     public String getWaehrung() {
@@ -428,6 +452,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt die Waehrung
      * @param pvWaehrung the waehrung to set
      */
     public void setWaehrung(String pvWaehrung) {
@@ -435,6 +460,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Kennzeichen Rollover
      * @return the rolloverKennzeichen
      */
     public String getRolloverKennzeichen() {
@@ -442,6 +468,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Kennzeichen Rollover
      * @param pvRolloverKennzeichen the rolloverKennzeichen to set
      */
     public void setRolloverKennzeichen(String pvRolloverKennzeichen) {
@@ -449,6 +476,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Kuendigungsdatum
      * @return the kuendigungsdatum
      */
     public String getKuendigungsdatum() {
@@ -456,6 +484,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Kuendigungsdatum
      * @param pvKuendigungsdatum the kuendigungsdatum to set
      */
     public void setKuendigungsdatum(String pvKuendigungsdatum) {
@@ -477,6 +506,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Emissionsdatum
      * @return the emissionsdatum
      */
     public String getEmissionsdatum() {
@@ -484,6 +514,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Emissionsdatum
      * @param pvEmissionsdatum the emissionsdatum to set
      */
     public void setEmissionsdatum(String pvEmissionsdatum) {
@@ -491,6 +522,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert den Emissionskurs
      * @return the emissionskurs
      */
     public String getEmissionskurs() {
@@ -498,6 +530,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt den Emissionskurs
      * @param pvEmissionskurs the emissionskurs to set
      */
     public void setEmissionskurs(String pvEmissionskurs) {
@@ -505,6 +538,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert die Kalenderkonvention
      * @return the kalenderkonvention
      */
     public String getKalenderkonvention() {
@@ -512,6 +546,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt die Kalenderkonvention
      * @param pvKalenderkonvention the kalenderkonvention to set
      */
     public void setKalenderkonvention(String pvKalenderkonvention) {
@@ -743,6 +778,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Restkapital
      * @return the restkapital
      */
     public String getRestkapital() {
@@ -750,6 +786,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Restkapital
      * @param pvRestkapital the restkapital to set
      */
     public void setRestkapital(String pvRestkapital) {
@@ -757,6 +794,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert die naechste Zinsanpassung
      * @return the naechsteZinsanpassung
      */
     public String getNaechsteZinsanpassung() {
@@ -764,6 +802,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt die naechste Zinsanpassung
      * @param pvNaechsteZinsanpassung the naechsteZinsanpassung to set
      */
     public void setNaechsteZinsanpassung(String pvNaechsteZinsanpassung) {
@@ -771,6 +810,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert die letzte Zinsanpassung
      * @return the letzteZinsanpassung
      */
     public String getLetzteZinsanpassung() {
@@ -778,6 +818,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt die letzte Zinsanpassung
      * @param pvLetzteZinsanpassung the letzteZinsanpassung to set
      */
     public void setLetzteZinsanpassung(String pvLetzteZinsanpassung) {
@@ -785,6 +826,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Datum der Konditionierung
      * @return the datumKonditionierung
      */
     public String getDatumKonditionierung() {
@@ -792,6 +834,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Datum der Konditionierung
      * @param pvDatumKonditionierung the datumKonditionierung to set
      */
     public void setDatumKonditionierung(String pvDatumKonditionierung) {
@@ -799,6 +842,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert die Kundennummer
      * @return the kundennummer
      */
     public String getKundennummer() {
@@ -806,6 +850,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt die Kundennummer
      * @param pvKundennummer the kundennummer to set
      */
     public void setKundennummer(String pvKundennummer) {
@@ -813,6 +858,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Ausplatzierungsmerkmal
      * @return the ausplatzierungsmerkmal
      */
     public String getAusplatzierungsmerkmal() {
@@ -820,6 +866,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Ausplatzierungsmerkmal
      * @param pvAusplatzierungsmerkmal the ausplatzierungsmerkmal to set
      */
     public void setAusplatzierungsmerkmal(String pvAusplatzierungsmerkmal) {
@@ -827,6 +874,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert den Deckungsschluessel
      * @return the deckungsschluessel
      */
     public String getDeckungsschluessel() {
@@ -834,6 +882,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt den Deckungsschluessel
      * @param pvDeckungsschluessel the deckungsschluessel to set
      */
     public void setDeckungsschluessel(String pvDeckungsschluessel) {
@@ -841,6 +890,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert die Urkundenummer
      * @return the urkundennummer
      */
     public String getUrkundennummer() {
@@ -848,6 +898,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt die Urkundennummer
      * @param pvUrkundennummer the urkundennummer to set
      */
     public void setUrkundennummer(String pvUrkundennummer) {
@@ -855,6 +906,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert das Laufzeitende
      * @return the laufzeitende
      */
     public String getLaufzeitende() {
@@ -862,6 +914,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt das Laufzeitende
      * @param pvLaufzeitende the laufzeitende to set
      */
     public void setLaufzeitende(String pvLaufzeitende) {
@@ -869,6 +922,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert den Ausstatungsstatus
      * @return the ausstatungsstatus
      */
     public String getAuszahlungsstatus() {
@@ -876,6 +930,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt den Auszahlungsstatus
      * @param pvAuszahlungsstatus 
      */
     public void setAuszahlungsstatus(String pvAuszahlungsstatus) {
@@ -883,6 +938,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Liefert die Gegenkontonummer
      * @return the gegenkontonummer
      */
     public String getGegenkontonummer() {
@@ -890,6 +946,7 @@ public class LoanIQPassivDaten
     }
 
     /**
+     * Setzt die Gegenkontonummer
      * @param pvGegenkontonummer the gegenkontonummer to set
      */
     public void setGegenkontonummer(String pvGegenkontonummer) {
@@ -897,7 +954,7 @@ public class LoanIQPassivDaten
     }
     
     /**
-     * 
+     * Liefert die Referenz auf die Facility
      * @return
      */
     public String getFacilityReferenz() 
@@ -906,7 +963,7 @@ public class LoanIQPassivDaten
 	}
 
     /**
-     * 
+     * Setzt die Referenz auf die Facility
      * @param pvFacilityReferenz
      */
 	public void setFacilityReferenz(String pvFacilityReferenz) 
@@ -915,7 +972,7 @@ public class LoanIQPassivDaten
 	}
 
 	/**
-	 * 
+	 * Liefert das Nominalkapital der Facility
 	 * @return
 	 */
 	public String getFacilityNominal() 
@@ -924,7 +981,7 @@ public class LoanIQPassivDaten
 	}
 
 	/**
-	 * 
+	 * Setzt das Nominalkapital der Facility
 	 * @param pvFacilityNominal
 	 */
 	public void setFacilityNominal(String pvFacilityNominal) 
@@ -933,7 +990,7 @@ public class LoanIQPassivDaten
 	}
 
 	/**
-	 * 
+	 * Liefert die Referenz auf den Deal
 	 * @return
 	 */
 	public String getDealReferenz() 
@@ -942,7 +999,7 @@ public class LoanIQPassivDaten
 	}
 
 	/**
-	 * 
+	 * Setzt die Refernz auf den Deal
 	 * @param pvDealReferenz
 	 */
 	public void setDealReferenz(String pvDealReferenz) 
@@ -951,7 +1008,7 @@ public class LoanIQPassivDaten
 	}
 
 	/**
-	 * 
+	 * Liefert das Nominalkapital des Deals
 	 * @return
 	 */
 	public String getDealNominal() 
@@ -960,7 +1017,7 @@ public class LoanIQPassivDaten
 	}
 
 	/**
-	 * 
+	 * Setzt das Nominalkapital des Deals
 	 * @param pvDealNominal
 	 */
 	public void setDealNominal(String pvDealNominal) 
@@ -969,9 +1026,27 @@ public class LoanIQPassivDaten
 	}
 
 	/**
+	 * Liefert 'LeftToAmortize'
+	 * @return
+	 */
+	public String getLeftAmortize() 
+	{
+		return ivLeftAmortize;
+	}
+
+	/**
+	 * Setzt 'LeftToAmortize'
+	 * @param pvLeftAmortize
+	 */
+	public void setLeftAmortize(String pvLeftAmortize) 
+	{
+		this.ivLeftAmortize = pvLeftAmortize;
+	}
+
+	/**
+   *  Zerlegt eine Zeile in die einzelnen Datenfelder
      * @param pvZeile 
-     * @return 
-     *       
+     * @return
      */
     public boolean parsePassivDaten(String pvZeile)
     {                 
@@ -1173,6 +1248,10 @@ public class LoanIQPassivDaten
               }
               this.ivDealNominal = pvWert;
               break;
+          case 46:
+        	  pvWert = pvWert.replace(",", ".");
+        	  this.ivLeftAmortize = pvWert;
+        	  break;
          default:
               ivLogger.error("DarlehenLoanIQPassiv: Feld " + pvPos + " undefiniert - Wert: " + pvWert);
         }

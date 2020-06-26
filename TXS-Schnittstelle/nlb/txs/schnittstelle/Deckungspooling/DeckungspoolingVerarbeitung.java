@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
  * @author tepperc
  *
  */
+@Deprecated
 public class DeckungspoolingVerarbeitung 
 {
     /**
@@ -130,7 +131,7 @@ public class DeckungspoolingVerarbeitung
     }   
     
     /**
-     * Überprüft die Statistikdaten mit den eingelesen Datenanzahlen
+     * ï¿½berprï¿½ft die Statistikdaten mit den eingelesen Datenanzahlen
      * @return 
      */
     public boolean checkStatistiken()

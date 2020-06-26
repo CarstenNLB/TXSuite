@@ -34,6 +34,7 @@ import org.jdom2.input.SAXBuilder;
  * @author tepperc
  *
  */
+@Deprecated
 public class OSPSicherheitenVerarbeitung 
 {
     /**
@@ -394,7 +395,7 @@ public class OSPSicherheitenVerarbeitung
                 
             // Grundbuch
             List<Element> lvListGrundbuecher = lvNodeOSPInstitut.getChildren("Grundbuch");
-            pvLogger.info("Anzahl gefundener Grundbücher: " + lvListGrundbuecher.size());
+            pvLogger.info("Anzahl gefundener Grundbï¿½cher: " + lvListGrundbuecher.size());
                 
             Element lvNodeGrundbuch;
             for (int g = 0; g < lvListGrundbuecher.size(); g++)

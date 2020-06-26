@@ -12,6 +12,7 @@ import java.util.LinkedList;
  * @author tepperc
  *
  */
+@Deprecated
 public class KreditDeutscheHypo 
 {
     /**

@@ -9,13 +9,13 @@ package nlb.txs.schnittstelle.Transaktion;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
 import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Sicherheit;
 import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Sicherungsobjekt;
 import nlb.txs.schnittstelle.Deckungspooling.Sicherheiten.OSPSicherheit;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
 import nlb.txs.schnittstelle.Utilities.MappingDPP;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
+import org.apache.log4j.Logger;
 
 /**
  * @author tepperc
@@ -64,7 +64,7 @@ public class TXSSicherheitDaten implements TXSTransaktion
     private String ivGepr;
     
     /**
-     * Info Konsortialgeschäft
+     * Info Konsortialgeschï¿½ft
      */
     private String ivKoninfo;
     
@@ -130,9 +130,16 @@ public class TXSSicherheitDaten implements TXSTransaktion
     
     /**
      * Konstruktor
-     * Alle Variablen werden mit einem leeren String initialisiert.
      */
     public TXSSicherheitDaten() 
+    {
+        initTXSSicherheitDaten();
+    }
+
+    /**
+     * Alle Variablen werden mit einem leeren String initialisiert.
+     */
+    public void initTXSSicherheitDaten()
     {
         this.ivArt = new String();
         this.ivBemzus = new String();
@@ -604,10 +611,10 @@ public class TXSSicherheitDaten implements TXSTransaktion
      * @param pvObj 
      * @return 
      */
-    public boolean importDarlehen(Darlehen pvDarlehen, Sicherheit pvSicherheit, Sicherungsobjekt pvObj)
+    public boolean importDarlehen(nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen, Sicherheit pvSicherheit, Sicherungsobjekt pvObj)
     {
         BigDecimal dBtrDivHd = new BigDecimal("0.01");
-        /* Sicherheitenschlüssel auf zwei Stellen ... */
+        /* Sicherheitenschlï¿½ssel auf zwei Stellen ... */
         String lvSiSchl = new String();
         //System.out.println("SiSchl: " + darlehen.getSicherheitenSchluessel());
         lvSiSchl = pvDarlehen.getSicherheitenSchluessel().substring(1,3);
@@ -615,7 +622,7 @@ public class TXSSicherheitDaten implements TXSTransaktion
         //int iTypGS;
         /* Jetzt noch TXX408 .... */
         String lvSiArt = new String();
-        /* Erste Definition geht über den Sicherheitenschlüssel */
+        /* Erste Definition geht ï¿½ber den Sicherheitenschlï¿½ssel */
         if (lvSiSchl.equals("01") ||
             lvSiSchl.equals("03") ||
             lvSiSchl.equals("04") ||
@@ -707,9 +714,9 @@ public class TXSSicherheitDaten implements TXSTransaktion
           } /* Ausl- Grundpf.recht */
          } /* Gesamt */
          if (lvWISIN.substring(6,10).equals("KOBS"))
-         { /* Kommunal - Bürgsch. */
+         { /* Kommunal - Bï¿½rgsch. */
           lvSiArt = "51";
-         } /* Kommunal - Bürgsch. */
+         } /* Kommunal - Bï¿½rgsch. */
          if (lvWISIN.substring(6,10).equals("KOSS"))
          { /* Kommunal - Schuldsch. */
           lvSiArt = "50";
@@ -729,12 +736,12 @@ public class TXSSicherheitDaten implements TXSTransaktion
         BigDecimal lvKonEigenUKAP_Fakt = new BigDecimal("1.0");
         BigDecimal lvKonEigenRKAP_Fakt = new BigDecimal("1.0");
         if (pvDarlehen.getKredittyp().equals("4"))
-        { /* mit Bürge .. anteilig */
+        { /* mit Bï¿½rge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) != 0.0)
          { /* nichts da */
           lvBuerge_Fakt = dBtrDivHd.multiply(StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftProzent()));
          } /* etwas da */
-        } /* mit Bürge .. anteilig */
+        } /* mit Bï¿½rge .. anteilig */
         /* Konsortiale ..... Summe der anderen, nur bei korrektem Schl.... */
         if (StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) > 0 &&
                 StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) < 20)
@@ -776,12 +783,12 @@ public class TXSSicherheitDaten implements TXSTransaktion
         //BigDecimal dZuwBetragRe = new BigDecimal("0.0");
         
         if (pvDarlehen.getKredittyp().equals("1"))
-        { /* ohne Bürge .. alles */
+        { /* ohne Bï¿½rge .. alles */
          lvVerfBetragRe = dVerfBetrag;
          //dZuwBetragRe  = dZuwBetrag;
-        } /* ohne Bürge .. alles */
+        } /* ohne Bï¿½rge .. alles */
         if (pvDarlehen.getKredittyp().equals("2"))
-        { /* mit Bürge .. anteilig */
+        { /* mit Bï¿½rge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) == 0.0)
          { /* nichts da */
           lvVerfBetragRe = dVerfBetrag;
@@ -796,7 +803,7 @@ public class TXSSicherheitDaten implements TXSTransaktion
             //                StringKonverter.convertString2BigDecimal(darlehen.getBuergschaftProzent()));
             //dZuwBetragRe  = dZuwBetrag.subtract(dZuwBetragBu);
          } /* etwas da */
-        } /* mit Bürge .. anteilig */
+        } /* mit Bï¿½rge .. anteilig */
         //System.out.println("Sicherheit - Nominalwert: " + sicherheit.getNominalwert());
         
         this.ivArt = lvSiArt;
@@ -816,7 +823,7 @@ public class TXSSicherheitDaten implements TXSTransaktion
      * @param pvDarlehen 
      * @return 
      */
-    public boolean importDarlehen(Darlehen pvDarlehen)
+    public boolean importDarlehen(nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen)
     {
         BigDecimal lvBtrDivHd = new BigDecimal("0.01");
         
@@ -826,12 +833,12 @@ public class TXSSicherheitDaten implements TXSTransaktion
         BigDecimal lvKonEigenRKAP_Fakt = new BigDecimal("1.0");
         
         if (pvDarlehen.getKredittyp().equals("4"))
-        { /* mit Bürge .. anteilig */
+        { /* mit Bï¿½rge .. anteilig */
          if (StringKonverter.convertString2Double(pvDarlehen.getBuergschaftProzent()) != 0.0)
          { /* nichts da */
           lvBuerge_Fakt = lvBtrDivHd.multiply(StringKonverter.convertString2BigDecimal(pvDarlehen.getBuergschaftProzent()));
          } /* etwas da */
-        } /* mit Bürge .. anteilig */
+        } /* mit Bï¿½rge .. anteilig */
         /* Konsortiale ..... Summe der anderen, nur bei korrektem Schl.... */
         if (StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) > 0 &&
                 StringKonverter.convertString2Int(pvDarlehen.getKompensationsschluessel()) < 20)
@@ -898,7 +905,7 @@ public class TXSSicherheitDaten implements TXSTransaktion
      * @param pvDarlehen 
      * @return 
      */
-    public boolean importDarlehen(DarlehenLoanIQ pvDarlehen)
+    public boolean importDarlehen(Darlehen pvDarlehen, Logger pvLogger)
     {
          
         this.ivArt = "51";
@@ -929,7 +936,15 @@ public class TXSSicherheitDaten implements TXSTransaktion
     	{
     		this.ivVbetrag = pvDarlehen.getNennbetrag(); 
     	}
-        
+
+        //if (pvDarlehen.getKontonummer().contains("4250195350") || pvDarlehen.getKontonummer().contains("4250189380"))
+        //{
+        //    pvLogger.info("Kontonummer: " + pvDarlehen.getKontonummer());
+        //    pvLogger.info("Nennbetrag LoanIQ: " + pvDarlehen.getNennbetrag());
+        //    pvLogger.info("Buergschaftprozent LoanIQ: " + lvBuergschaftprozent);
+        //    pvLogger.info("Verfuegungsbetrag an TXS: " + this.ivVbetrag);
+        //}
+
         this.ivWhrg = pvDarlehen.getBetragwaehrung();
         
         return true;
@@ -940,7 +955,7 @@ public class TXSSicherheitDaten implements TXSTransaktion
      * @param pvDarlehen 
      * @return 
      */
-    public boolean importMIDAS(DarlehenLoanIQ pvDarlehen)
+    public boolean importMIDAS(Darlehen pvDarlehen)
     {
          
         this.ivArt = "51";
@@ -961,13 +976,15 @@ public class TXSSicherheitDaten implements TXSTransaktion
      * @param pvSicherheit
      * @return 
      */
-    public boolean importDarlehen(Darlehen pvZielDarlehen, OSPSicherheit pvSicherheit) 
+    @Deprecated
+    public boolean importDarlehen(
+        nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvZielDarlehen, OSPSicherheit pvSicherheit)
     {
-        /* Sicherheitenschlüssel auf zwei Stellen ... */
+        /* Sicherheitenschlï¿½ssel auf zwei Stellen ... */
         String lvSiSchl = new String();
 
         String lvSiArt = new String();
-        /* Erste Definition geht über den Sicherheitenschlüssel */
+        /* Erste Definition geht ï¿½ber den Sicherheitenschlï¿½ssel */
         if (lvSiSchl.equals("01") ||
             lvSiSchl.equals("03") ||
             lvSiSchl.equals("04") ||
@@ -1059,9 +1076,9 @@ public class TXSSicherheitDaten implements TXSTransaktion
           } /* Ausl- Grundpf.recht */
          } /* Gesamt */
          if (lvWISIN.substring(6,10).equals("KOBS"))
-         { /* Kommunal - Bürgsch. */
+         { /* Kommunal - Bï¿½rgsch. */
           lvSiArt = "51";
-         } /* Kommunal - Bürgsch. */
+         } /* Kommunal - Bï¿½rgsch. */
          if (lvWISIN.substring(6,10).equals("KOSS"))
          { /* Kommunal - Schuldsch. */
           lvSiArt = "50";

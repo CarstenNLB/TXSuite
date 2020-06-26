@@ -38,7 +38,7 @@ import nlb.txs.schnittstelle.ObjektZuweisungsbetrag.InputObjektZuweisungsbetrag;
 import nlb.txs.schnittstelle.ObjektZuweisungsbetrag.ObjektZuweisungsbetrag;
 import nlb.txs.schnittstelle.ObjektZuweisungsbetrag.ObjektZuweisungsbetragListe;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
-import nlb.txs.schnittstelle.SAPCMS.SAPCMS_Neu;
+import nlb.txs.schnittstelle.Sicherheiten.SAPCMS_Neu;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeft;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeftDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzierungKredit;
@@ -129,7 +129,10 @@ public class DarlehenVerarbeiten
     
     // Verarbeitungsmodus KEV-Extractor
     public static final int KEV_EXTRACTOR = 6;
-    
+
+    // Verarbeitungsmodus KEV
+    public static final int KEV = 7;
+
     /**
      * Verarbeitungsmodus
      */
@@ -213,7 +216,6 @@ public class DarlehenVerarbeiten
     private SicherungsobjekteListe ivListeSicherungsobjekte;
     
     // Sicherheiten aus SAP CMS
-    //private SAPCMS ivSapcms;
     private SAPCMS_Neu ivSapcms;
         
     // ANNA-Datei aus LoanIQ
@@ -276,6 +278,10 @@ public class DarlehenVerarbeiten
         {
             LOGGER_DARKA = Logger.getLogger("TXSDarKaOEPGLogger");
         }
+        if (pvModus == DarlehenVerarbeiten.KEV)
+        {
+            LOGGER_DARKA = Logger.getLogger("DarKaKEVLogger");
+        }
         
         this.ivFinanzgeschaeft = new TXSFinanzgeschaeft();
         this.ivSliceInDaten = new TXSSliceInDaten();
@@ -301,16 +307,19 @@ public class DarlehenVerarbeiten
                 LOGGER_DARKA.error("Keine Institutsnummer in der ini-Datei...");
                 System.exit(1);
             }
-            
-            ivFilenameUmsatz19 = pvReader.getPropertyString("DARLWP", "DARLWPUMSATZ19", "Fehler");
-            if (ivFilenameUmsatz19.equals("Fehler"))
+
+            if (pvModus != DarlehenVerarbeiten.KEV)
             {
+              ivFilenameUmsatz19 = pvReader.getPropertyString("DARLWP", "DARLWPUMSATZ19", "Fehler");
+              if (ivFilenameUmsatz19.equals("Fehler"))
+              {
                 LOGGER_DARKA.error("Kein [DARLWP][DARLWPUMSATZ19] in der ini-Datei...");
                 System.exit(1);
-            }
-            else
-            {
-                LOGGER_DARKA.info("DARLWPUMSATZ19=" + ivFilenameUmsatz19);                    
+              }
+              else
+              {
+                LOGGER_DARKA.info("DARLWPUMSATZ19=" + ivFilenameUmsatz19);
+              }
             }
 
             // Defaultmaessig 'Darlehen'
@@ -331,6 +340,9 @@ public class DarlehenVerarbeiten
                     break;
                 case DarlehenVerarbeiten.DPP:
                     bereich = "Deckungspooling";
+                    break;
+                case DarlehenVerarbeiten.KEV:
+                    bereich = "DarKaKEV";
                     break;
                 default:
                     System.out.println("DarlehenVerarbeiten - Unbekannter Modus");
@@ -397,13 +409,16 @@ public class DarlehenVerarbeiten
                   LOGGER_DARKA.error("Kein Sicherungsobjekte-Dateiname in der ini-Datei...");
                   System.exit(1);
               }
-            }   
+            }
 
-            ivObjektZWDatei = pvReader.getPropertyString(bereich, "ObjektZW-Datei", "Fehler");
-            if (ivObjektZWDatei.equals("Fehler"))
+            if (pvModus != DarlehenVerarbeiten.KEV)
             {
+              ivObjektZWDatei = pvReader.getPropertyString(bereich, "ObjektZW-Datei", "Fehler");
+              if (ivObjektZWDatei.equals("Fehler"))
+              {
                 LOGGER_DARKA.error("Kein ObjektZW-Dateiname in der ini-Datei...");
                 System.exit(1);
+              }
             }
             
             if (pvModus == DarlehenVerarbeiten.DARKA || pvModus == DarlehenVerarbeiten.SCHIFFE || pvModus == DarlehenVerarbeiten.FLUGZEUGE)
@@ -411,14 +426,14 @@ public class DarlehenVerarbeiten
               ivImportVerzeichnisSAPCMS = pvReader.getPropertyString("SAPCMS", "ImportVerzeichnis", "Fehler");
               if (ivImportVerzeichnisSAPCMS.equals("Fehler"))
               {
-                  LOGGER_DARKA.error("Kein SAPCMS Import-Verzeichnis in der ini-Datei...");
+                  LOGGER_DARKA.error("Kein Sicherheiten Import-Verzeichnis in der ini-Datei...");
                   System.exit(1);
               }
 
               ivSapcmsDatei = pvReader.getPropertyString("SAPCMS", "SAPCMS-Datei", "Fehler");
               if (ivSapcmsDatei.equals("Fehler"))
               {
-                  LOGGER_DARKA.error("Kein SAPCMS-Dateiname in der ini-Datei...");
+                  LOGGER_DARKA.error("Kein Sicherheiten-Dateiname in der ini-Datei...");
                   System.exit(1);
               }
               
@@ -580,17 +595,17 @@ public class DarlehenVerarbeiten
                 System.exit(0);
             }
             
-            ivImportVerzeichnisSAPCMS = reader.getPropertyString("SAPCMS", "ImportVerzeichnis", "Fehler");
+            ivImportVerzeichnisSAPCMS = reader.getPropertyString("Sicherheiten", "ImportVerzeichnis", "Fehler");
             if (ivImportVerzeichnisSAPCMS.equals("Fehler"))
             {
-                System.out.println("Kein SAPCMS Import-Verzeichnis in der ini-Datei...");
+                System.out.println("Kein Sicherheiten Import-Verzeichnis in der ini-Datei...");
                 System.exit(0);
             }
 
-            ivSapcmsDatei = reader.getPropertyString("SAPCMS", "SAPCMS-Datei", "Fehler");
+            ivSapcmsDatei = reader.getPropertyString("Sicherheiten", "Sicherheiten-Datei", "Fehler");
             if (ivSapcmsDatei.equals("Fehler"))
             {
-                System.out.println("Kein SAPCMS-Dateiname in der ini-Datei...");
+                System.out.println("Kein Sicherheiten-Dateiname in der ini-Datei...");
                 System.exit(0);
             }
 
@@ -684,36 +699,39 @@ public class DarlehenVerarbeiten
         }
         // CT 06.05.2013
         
-        // SAPCMS-Datei einlesen, wenn Verarbeitung DarKa
+        // Sicherheiten-Datei einlesen, wenn Verarbeitung DarKa
         ////if (ivModus == DarlehenVerarbeiten.DARKA)
         ////{
-        ////  ivSapcms = new SAPCMS(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, LOGGER_DARKA);
+        ////  ivSapcms = new Sicherheiten(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, LOGGER_DARKA);
         ////}
 
-        // SAPCMS-Datei einlesen, wenn Verarbeitung DarKa, Schiffe oder Flugzeuge
+        // Sicherheiten-Datei einlesen, wenn Verarbeitung DarKa, Schiffe, Flugzeuge oder KEV
         if (ivModus == DarlehenVerarbeiten.DARKA || ivModus == DarlehenVerarbeiten.SCHIFFE || ivModus == DarlehenVerarbeiten.FLUGZEUGE)
         {
           ivSapcms = new SAPCMS_Neu(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, LOGGER_DARKA);
         }
 
-        // ANNA-Datei einlesen, wenn Verarbeitung DarKa, Schiffe oder Flugzeuge
+        // ANNA-Datei einlesen, wenn Verarbeitung DarKa, Schiffe, Flugzeuge oder KEV
         if (ivModus == DarlehenVerarbeiten.DARKA || ivModus == DarlehenVerarbeiten.SCHIFFE || ivModus == DarlehenVerarbeiten.FLUGZEUGE || ivModus == DarlehenVerarbeiten.OEPG)
         {
           ivANNA = new ANNADatei(ivImportVerzeichnis + "\\" + ivANNADatei, LOGGER_DARKA);
         }
-        
+
         // ObjektZuweisungsbetrag-Datei einlesen
-        ivObjektZuweisungsbetrag = new InputObjektZuweisungsbetrag(ivImportVerzeichnis + "\\" + ivObjektZWDatei);
-        ivObjektZuweisungsbetrag.open();
-        ivObjektZuweisungsListe = ivObjektZuweisungsbetrag.readObjektZuweisungsbetrag();
-        ivObjektZuweisungsbetrag.close();
+        if (ivModus == DarlehenVerarbeiten.DARKA || ivModus == DarlehenVerarbeiten.SCHIFFE || ivModus == DarlehenVerarbeiten.FLUGZEUGE)
+        {
+          ivObjektZuweisungsbetrag = new InputObjektZuweisungsbetrag(ivImportVerzeichnis + "\\" + ivObjektZWDatei);
+          ivObjektZuweisungsbetrag.open();
+          ivObjektZuweisungsListe = ivObjektZuweisungsbetrag.readObjektZuweisungsbetrag();
+          ivObjektZuweisungsbetrag.close();
+        }
         
         // Darlehen XML-Datei
-        ivDarlehenXML = new DarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenDatei);
+        ivDarlehenXML = new DarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenDatei, LOGGER_DARKA);
         ivDarlehenXML.openXML();
         
         // Darlehen XML-Datei im TXS-Format
-        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenTXSDatei);
+        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivDarlehenTXSDatei, LOGGER_DARKA);
         ivOutputDarlehenXML.openXML();
         ivOutputDarlehenXML.printXMLStart();
         
@@ -727,12 +745,12 @@ public class DarlehenVerarbeiten
         if (ivModus == DarlehenVerarbeiten.DARKA)
         {
             // Sicherheiten XML-Datei 
-            ivSicherheitenXML = new SicherheitenXML(ivExportVerzeichnis + "\\" + ivSicherheitenDatei);
+            ivSicherheitenXML = new SicherheitenXML(ivExportVerzeichnis + "\\" + ivSicherheitenDatei, LOGGER_DARKA);
             ivSicherheitenXML.openXML();
             ivListeSicherheiten = new SicherheitenListe();
         
             // Sicherungsobjekte XML-Datei
-            ivSicherungsObjXML = new SicherungsobjekteXML(ivExportVerzeichnis + "\\" + ivSicherungsobjekteDatei);
+            ivSicherungsObjXML = new SicherungsobjekteXML(ivExportVerzeichnis + "\\" + ivSicherungsobjekteDatei, LOGGER_DARKA);
             ivSicherungsObjXML.openXML();
             ivListeSicherungsobjekte = new SicherungsobjekteListe();
         }
@@ -940,7 +958,16 @@ public class DarlehenVerarbeiten
                     verarbeiteDarlehen();
                 }
             }
-            if (ivModus == DarlehenVerarbeiten.KEV_EXTRACTOR)
+            if (ivModus == DarlehenVerarbeiten.KEV)
+            {
+                  if (!ivOriginalDarlehen.existsDummySegment() && ivOriginalDarlehen.existsPflichtsegmente() &&
+                      //(ivKtr.getsDd().equals("A") || ivKtr.getsDd().equals("9")))
+                      ivKtr.getAusplatzierungsmerkmal().startsWith("A"))
+                  {
+                      verarbeiteDarlehen();
+                  }
+              }
+              if (ivModus == DarlehenVerarbeiten.KEV_EXTRACTOR)
             {
             	if (ivKtr.getAusplatzierungsmerkmal().equals("A0") || ivKtr.getAusplatzierungsmerkmal().equals("A1"))
             	{
@@ -1093,6 +1120,8 @@ public class DarlehenVerarbeiten
         
         ivStatus = UNDEFINIERT;
         
+        //System.out.println("Zeile: " + pvZeile);
+        
         //LOGGER_DARKA.info("parseDarlehen...");
         // steuerung/iteration eingabesatz
         for (lvZzStr = 0; lvZzStr < pvZeile.length(); lvZzStr++)
@@ -1196,6 +1225,15 @@ public class DarlehenVerarbeiten
                                          verarbeiteDarlehen();
                                     }
                                 }
+                                if (ivModus == DarlehenVerarbeiten.KEV)
+                                {
+                                    if (!ivOriginalDarlehen.existsDummySegment() && ivOriginalDarlehen.existsPflichtsegmente() &&
+                                        //(ivKtr.getsDd().equals("A") || ivKtr.getsDd().equals("9")))
+                                        ivKtr.getAusplatzierungsmerkmal().startsWith("A0") || ivKtr.getAusplatzierungsmerkmal().startsWith("A1"))
+                                    {
+                                        verarbeiteDarlehen();
+                                    }
+                                }
                                 if (ivModus == DarlehenVerarbeiten.KEV_EXTRACTOR)
                                 {
                                 	if (ivKtr.getAusplatzierungsmerkmal().equals("A0") || ivKtr.getAusplatzierungsmerkmal().equals("A1"))
@@ -1266,7 +1304,7 @@ public class DarlehenVerarbeiten
              	 
          //LOGGER_DARKA.info("Ueberpruefe " + ivOriginalDarlehen.getKTS().getKopf().getsDwhknr());
          // Gibt es die Kontonummer in den ANNA-Daten
-         if (ivANNA.existsKontonummerQuellsystem(ivOriginalDarlehen.getKTS().getKopf().getsDwhknr()))
+         if (ivModus != DarlehenVerarbeiten.KEV && ivANNA.existsKontonummerQuellsystem(ivOriginalDarlehen.getKTS().getKopf().getsDwhknr()))
          {
          	LOGGER_DARKA.info("-->Konto " + ivOriginalDarlehen.getKTS().getKopf().getsDwhknr() + " existiert in der ANNA-Datei --> Keine Verarbeitung");
          }         
@@ -1335,9 +1373,9 @@ public class DarlehenVerarbeiten
         }
         
         //LOGGER_DARKA.info("Einzelkonten;" + ivZielDarlehen.getKontonummer() + ";" + ivZielDarlehen.getKundennummer() + ";" + ivZielDarlehen.getDeckungsschluessel() + ";" +
-		//          ivZielDarlehen.getAusplatzierungsmerkmal() + ";" + ivZielDarlehen.getSolldeckung() + ";" + ivZielDarlehen.getVerwaltendeOE() + ";" +
-		//          ivZielDarlehen.getProduktSchluessel() + ";" + ivZielDarlehen.getKontozustand() + ";" + ivZielDarlehen.getRestkapital() + ";" +
-		//          ivZielDarlehen.getZusageDatum() + ";" + ivZielDarlehen.getVollvalutierungsdatum() + ";" + ivZielDarlehen.getVertragBis());
+		    //ivZielDarlehen.getAusplatzierungsmerkmal() + ";" + ivZielDarlehen.getSolldeckung() + ";" + ivZielDarlehen.getVerwaltendeOE() + ";" +
+		    //        ivZielDarlehen.getProduktSchluessel() + ";" + ivZielDarlehen.getKontozustand() + ";" + ivZielDarlehen.getRestkapital() + ";" +
+		    //        ivZielDarlehen.getZusageDatum() + ";" + ivZielDarlehen.getVollvalutierungsdatum() + ";" + ivZielDarlehen.getVertragBis());
         
         //System.out.println("Kontotyp: " + ivZielDarlehen.getKontotyp());
         if (StringKonverter.convertString2Int(ivZielDarlehen.getKontotyp()) == 1 ||
@@ -1631,7 +1669,7 @@ public class DarlehenVerarbeiten
             if (ivModus == DarlehenVerarbeiten.DPP)
             {
                 // Originator und Institutsnummer ueber die Kontonummer ermitteln
-                System.out.println("CT - Kontonummer: " + ivZielDarlehen.getKontonummer());
+                //System.out.println("CT - Kontonummer: " + ivZielDarlehen.getKontonummer());
                 if (ivDpp.getInstitutskennung(ivZielDarlehen.getKontonummer()).isEmpty())
                 {
                   System.out.println("Kein Institut fuer Kontonummer " + ivZielDarlehen.getKontonummer() + " gefunden.");
@@ -1689,7 +1727,7 @@ public class DarlehenVerarbeiten
             		ivSliceInDaten.setBis(ivFinanzgeschaeftDaten.getNbetrag());
 
             	}
-            	lvOkayDarlehen = ivKondDaten.importDarlehen(ivZielDarlehen, LOGGER_DARKA);
+            	lvOkayDarlehen = ivKondDaten.importDarlehen(ivModus, ivZielDarlehen, LOGGER_DARKA);
             
             	if (ivModus == DarlehenVerarbeiten.DPP)
             	{
@@ -1737,7 +1775,9 @@ public class DarlehenVerarbeiten
             		{
             			lvBuergschaft = "J";
             		}
-            		ivFosCashflowQuellsystem.write((ivZielDarlehen.getKontonummer() + ";" + ivFinanzgeschaeft.getKey() + ";" + ivFinanzgeschaeft.getOriginator() + ";" + ivFinanzgeschaeft.getQuelle() + ";" + lvBuergschaft + ";" + ivZielDarlehen.getBuergschaftProzent() + ";" + ivZielDarlehen.getKontozustand() + ";" + StringKonverter.lineSeparator).getBytes());
+            		ivFosCashflowQuellsystem.write((ivZielDarlehen.getKontonummer() + ";" + ivFinanzgeschaeft.getKey() + ";" + ivFinanzgeschaeft.getOriginator() + ";" + ivFinanzgeschaeft.getQuelle() + ";" + 
+            		                                lvBuergschaft + ";" + ivZielDarlehen.getBuergschaftProzent() + ";" + ivZielDarlehen.getKontozustand() + ";" + 
+            				                        ivKondDaten.getMantilg() + ";" + ivKondDaten.getManzins() + ";" + ivKondDaten.getFaellig() + StringKonverter.lineSeparator).getBytes());
             	}
             	catch (Exception e)
             	{
@@ -1785,7 +1825,7 @@ public class DarlehenVerarbeiten
                 ////ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitObjekte(ivZielDarlehen.getKontonummer(), ivZielDarlehen.getKredittyp(), ivZielDarlehen.getBuergschaftProzent(), ivZielDarlehen.getDeckungsschluessel()));
                 try
                 {
-            	  ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitHypotheken(ivZielDarlehen.getKontonummer(), new String(), ivZielDarlehen.getKredittyp(), ivZielDarlehen.getBuergschaftProzent(), "ADARLPFBG"));
+            	  ivOutputDarlehenXML.printTransaktion(ivSapcms.getSicherheitenDaten().getSicherheiten2Pfandbrief().importSicherheitHypotheken(ivZielDarlehen.getKontonummer(), new String(), "", ivZielDarlehen.getKredittyp(), ivZielDarlehen.getBuergschaftProzent(), "ADARLPFBG", ivInstitutsnummer));
 
                 }
             	catch (Exception exp)
@@ -1795,20 +1835,21 @@ public class DarlehenVerarbeiten
                   exp.printStackTrace();
             	}
             }
-            //// CT 19.02.2018 - Noch in der Testphase
+            //// CT 07.11.2019 - Noch in der Testphase
             ////if (ivZielDarlehen.getKredittyp().equals("2") || ivZielDarlehen.getKredittyp().equals("4"))
             ////{
             ////    try
             ////    {
-            ////	  ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitBuergschaft(ivZielDarlehen.getKontonummer(), "ADARLPFBG", ivZielDarlehen.getRestkapital(), ivZielDarlehen.getBuergschaftProzent(), ivZielDarlehen.getAusplatzierungsmerkmal()));
+            ////    	  ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitBuergschaft(ivZielDarlehen.getKontonummer(), "ADARLPFBG", ivZielDarlehen.getRestkapital(), ivZielDarlehen.getBuergschaftProzent(), ivZielDarlehen.getAusplatzierungsmerkmal(), ivZielDarlehen.getUrsprungsKapital(), ivZielDarlehen.getKundennummer(), ivZielDarlehen.getBuergennummer()));
             ////    }
-            ////	catch (Exception exp)
-            ////	{
+            ////  	catch (Exception exp)
+            ////    {
             ////      LOGGER_DARKA.error("Verarbeitungsfehler Sicherheit Buergschaft - Konto " + ivZielDarlehen.getKontonummer() + StringKonverter.lineSeparator);
             ////      LOGGER_DARKA.error(exp.getMessage());
             ////      exp.printStackTrace();
-            ////	}            	
+            ////    }
             ////}
+            //// CT 07.11.2019 - Noch in der Testphase
          }
          
         if (ivModus == DarlehenVerarbeiten.DARKA || ivModus == DarlehenVerarbeiten.OEPG)
@@ -1817,7 +1858,7 @@ public class DarlehenVerarbeiten
             if (ivZielDarlehen.getKredittyp().equals("2") || ivZielDarlehen.getKredittyp().equals("4"))
              {
             	// CT 14.03.2016 - Herausgenommen
-            	//LOGGER_DARKA.info("Buerge in SAPCMS: " + ivZielDarlehen.getKontonummer() + ";" + ivSapcms.getSicherheitId(ivZielDarlehen.getKontonummer()));
+            	//LOGGER_DARKA.info("Buerge in Sicherheiten: " + ivZielDarlehen.getKontonummer() + ";" + ivSapcms.getSicherheitId(ivZielDarlehen.getKontonummer()));
                 //ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitBuergschaft(ivZielDarlehen.getKontonummer(), "ADARLPFBG", ivZielDarlehen.getRestkapital(), ivZielDarlehen.getBuergschaftProzent()));
             	// CT 14.03.2016 - Herausgenommen
             	if (lvKredsh.importDarlehen(ivModus, ivZielDarlehen, LOGGER_DARKA))
@@ -1848,7 +1889,7 @@ public class DarlehenVerarbeiten
                 {
                     Sicherheit lvSicherheit = ivListeSicherheiten.getSicherheit(ivZielDarlehen.getObjektnummer()); //+ "_" + zielDarlehen.getKontonummer());
                     Sicherungsobjekt lvSicherungsObj = ivListeSicherungsobjekte.getSicherungsobjekt(ivZielDarlehen.getObjektnummer());
-             
+
                     ObjektZuweisungsbetrag lvObjektZuweisungsbetrag = ivObjektZuweisungsListe.getObjektZuweisungsbetrag(lvSicherheit.getObjektnummer());
                     if (lvObjektZuweisungsbetrag != null)
                     {
@@ -1930,7 +1971,7 @@ public class DarlehenVerarbeiten
         	{
         		try
         		{
-        			ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitSchiff(ivZielDarlehen.getKontonummer(), "ADARLSCHF"));   
+        			ivOutputDarlehenXML.printTransaktion(ivSapcms.getSicherheitenDaten().getSicherheiten2Pfandbrief().importSicherheitSchiff(ivZielDarlehen.getKontonummer(), "ADARLSCHF", ivInstitutsnummer));
         		}
         		catch (Exception exp)
         		{
@@ -1948,7 +1989,7 @@ public class DarlehenVerarbeiten
         	{
         		try
         		{
-        			ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitFlugzeug(ivZielDarlehen.getKontonummer(), "ADARLFLUG"));      
+        			ivOutputDarlehenXML.printTransaktion(ivSapcms.getSicherheitenDaten().getSicherheiten2Pfandbrief().importSicherheitFlugzeug(ivZielDarlehen.getKontonummer(), "ADARLFLUG", ivInstitutsnummer));
         		}
         		catch (Exception exp)
         		{

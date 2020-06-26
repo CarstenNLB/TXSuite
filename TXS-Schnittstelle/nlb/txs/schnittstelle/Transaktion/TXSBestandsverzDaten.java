@@ -36,17 +36,25 @@ public class TXSBestandsverzDaten implements TXSTransaktion
 
     /**
      * Konstruktor
-     * Initialisiert die Variablen mit leeren Strings
      */
     public TXSBestandsverzDaten() 
     {
-        this.ivFlur = new String();
-        this.ivFlurst = new String();
-        this.ivGem = new String();
-        this.ivLfdnr = new String();
+       initTXSBestandsverzDaten();
     }
 
     /**
+    * Initialisiert die Instanzvariablen mit leeren Strings
+    */
+    public void initTXSBestandsverzDaten()
+    {
+      this.ivFlur = new String();
+      this.ivFlurst = new String();
+      this.ivGem = new String();
+      this.ivLfdnr = new String();
+    }
+
+    /**
+     * Liefert den Flur
      * @return the flur
      */
     public String getFlur() {
@@ -54,6 +62,7 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     }
 
     /**
+     * Setzt den Flur
      * @param pvFlur the flur to set
      */
     public void setFlur(String pvFlur) {
@@ -61,6 +70,7 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     }
 
     /**
+     * Liefert das Flurstueck
      * @return the flurst
      */
     public String getFlurst() {
@@ -68,6 +78,7 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     }
 
     /**
+     * Setzt das Flurstueck
      * @param pvFlurst the flurst to set
      */
     public void setFlurst(String pvFlurst) {
@@ -75,6 +86,7 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     }
 
     /**
+     * Liefert die Gemarkung
      * @return the gem
      */
     public String getGem() {
@@ -82,6 +94,7 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     }
 
     /**
+     * Setzt die Gemarkung
      * @param pvGem the gem to set
      */
     public void setGem(String pvGem) {
@@ -89,6 +102,7 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     }
 
     /**
+     * Liefert die laufende Nummer
      * @return the lfdnr
      */
     public String getLfdnr() {
@@ -96,6 +110,7 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     }
 
     /**
+     * Setzt die laufende Nummer
      * @param pvLfdnr the lfdnr to set
      */
     public void setLfdnr(String pvLfdnr) {
@@ -146,19 +161,6 @@ public class TXSBestandsverzDaten implements TXSTransaktion
     public StringBuffer printTXSTransaktionEnde() 
     {
         return new StringBuffer("</txsi:bvdaten>\n");
-    }
-
-    /**
-     * Importiert die Darlehensinformationen
-     * Im Darlehenssystem gibt es keine Informationen zu Flur, 
-     * Flurstueck, Gemarkung und Laufende Nummer
-     */
-    public void importDarlehen() 
-    {
-        //this.flur = "";  
-        //this.flurst = "";
-        //this.gem = "";
-        //this.lfdnr = "";
     }
 
 }

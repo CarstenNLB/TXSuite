@@ -15,7 +15,7 @@ import nlb.txs.schnittstelle.Utilities.IniReader;
 public class LoanIQPassiv 
 {
     /**
-     * Startroutine LoanIQ
+     * Startroutine LoanIQPassiv
      * @param argv 
      */
     public static void main(String argv[])

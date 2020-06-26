@@ -49,6 +49,7 @@ import org.jdom2.input.SAXBuilder;
  * @author tepperc
  *
  */
+@Deprecated
 public class FRISCO2TXS 
 {
  
@@ -149,7 +150,7 @@ public class FRISCO2TXS
         //}
         //if (pvVerarbeitung.equals("Flugzeuge"))
         //{
-        ivOutputDarlehenXML = new OutputDarlehenXML("D:\\" + pvVerarbeitung + "_" + pvInstitut + "_TXS.xml");
+        ivOutputDarlehenXML = new OutputDarlehenXML("D:\\" + pvVerarbeitung + "_" + pvInstitut + "_TXS.xml", null);
         //}
         if (ivOutputDarlehenXML != null)
         {
@@ -833,7 +834,7 @@ public class FRISCO2TXS
           lvPodaten.setLand("US");
         if (ivFlugzeug.getRegisterland().equals("Frankreich"))
           lvPodaten.setLand("FR");
-        if (ivFlugzeug.getRegisterland().equals("Großbritannien"))
+        if (ivFlugzeug.getRegisterland().equals("Groï¿½britannien"))
           lvPodaten.setLand("GB");
         if (ivFlugzeug.getRegisterland().equals("Deutschland"))
             lvPodaten.setLand("DE");
@@ -1220,7 +1221,7 @@ public class FRISCO2TXS
         }
         if (pvText.equals("DE4"))
         {
-            pvText = "Köln";
+            pvText = "Kï¿½ln";
         }
         if (pvText.equals("DE5"))
         {
@@ -1228,7 +1229,7 @@ public class FRISCO2TXS
         }
         if (pvText.equals("DE6"))
         {
-            pvText = "Lübeck";
+            pvText = "Lï¿½beck";
         }
         if (pvText.equals("DE7"))
         {

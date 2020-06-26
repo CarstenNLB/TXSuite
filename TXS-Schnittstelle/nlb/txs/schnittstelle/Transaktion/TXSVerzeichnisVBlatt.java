@@ -33,7 +33,7 @@ public class TXSVerzeichnisVBlatt implements TXSTransaktion
     private String ivOrg;
     
     /**
-     * Bestandsführendes System der Geschäftspartnerdaten.
+     * Bestandsfï¿½hrendes System der Geschï¿½ftspartnerdaten.
      * z.B. SAP
      * Pflicht
      */
@@ -43,6 +43,14 @@ public class TXSVerzeichnisVBlatt implements TXSTransaktion
      * Konstruktor
      */
     public TXSVerzeichnisVBlatt()
+    {
+        initTXSVerzeichnisVBlatt();
+    }
+
+    /**
+     * Initialisierung der Instanzvariablen mit leeren Strings
+     */
+    public void initTXSVerzeichnisVBlatt()
     {
         ivVbnr = new String();
         ivOrg = new String();

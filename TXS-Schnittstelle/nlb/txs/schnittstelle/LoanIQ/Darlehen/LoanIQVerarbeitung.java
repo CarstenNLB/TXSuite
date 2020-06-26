@@ -11,29 +11,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import nlb.txs.schnittstelle.Kunde.KundennummernOutput;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
-import nlb.txs.schnittstelle.SAPCMS.SAPCMS_Neu;
-import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeft;
-import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeftDaten;
-import nlb.txs.schnittstelle.Transaktion.TXSKonditionenDaten;
-import nlb.txs.schnittstelle.Transaktion.TXSKreditKunde;
-import nlb.txs.schnittstelle.Transaktion.TXSKreditSicherheit;
-import nlb.txs.schnittstelle.Transaktion.TXSSicherheitDaten;
-import nlb.txs.schnittstelle.Transaktion.TXSSicherheitPerson;
-import nlb.txs.schnittstelle.Transaktion.TXSSliceInDaten;
+import nlb.txs.schnittstelle.Sicherheiten.Sicherheiten2Pfandbrief;
+import nlb.txs.schnittstelle.Sicherheiten.SicherheitenDaten;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.IniReader;
 import nlb.txs.schnittstelle.Utilities.MappingKunde;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
-import nlb.txs.schnittstelle.Utilities.ValueMapping;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -71,19 +58,19 @@ public class LoanIQVerarbeitung
     private String ivLoanIQOutputDatei;
     
     /**
-     * Import-Verzeichnis der SAPCMS-Datei
+     * Import-Verzeichnis der Sicherheiten-Datei
      */
     private String ivImportVerzeichnisSAPCMS;
     
     /**
-     * Dateiname der SAPCMS-Datei
+     * Dateiname der Sicherheiten-Datei
      */
     private String ivSapcmsDatei;
 
     /**
-     * Sicherheiten aus SAPCMS
+     * Sicherheiten-Daten
      */
-    private SAPCMS_Neu ivSapcms;
+    private SicherheitenDaten ivSicherheitenDaten;
     
     /**
      * Quellsystem-Datei fuer die FRISCO-Verarbeitung
@@ -136,9 +123,9 @@ public class LoanIQVerarbeitung
     private Vorlaufsatz ivVorlaufsatz;
        
     /**
-     * Ein DarlehenLoanIQBlock
+     * Ein DarlehenBlock
      */
-    private DarlehenLoanIQBlock ivDarlehenLoanIQBlock;
+    private DarlehenBlock ivDarlehenBlock;
     
     /**
      * Zaehler fuer die Anzahl der Vorlaufsaetze
@@ -159,19 +146,12 @@ public class LoanIQVerarbeitung
      * Zaehler fuer die Anzahl der Fremd-Finanzgeschaefte
      */
     private int ivZaehlerFinanzgeschaefteFremd;
-    
+            
     /**
-     * Ausgabedatei der TXS-Importdatei
+     * Ausgabedatei der TXS-Importdaten
      */
     private OutputDarlehenXML ivOutputDarlehenXML;
-    
-    // Transaktionen
-    private TXSFinanzgeschaeft ivFinanzgeschaeft;
-    private TXSSliceInDaten ivSliceInDaten;
-    private TXSFinanzgeschaeftDaten ivFinanzgeschaeftDaten;
-    private TXSKonditionenDaten ivKondDaten;
-    private TXSKreditKunde ivKredkunde;
-    
+
     // Zaehlvariablen
     private int ivAnzahlK = 0;
     private int ivAnzahlH = 0;
@@ -185,11 +165,6 @@ public class LoanIQVerarbeitung
      */
     public LoanIQVerarbeitung(IniReader pvReader)
     {
-        this.ivFinanzgeschaeft = new TXSFinanzgeschaeft();
-        this.ivSliceInDaten = new TXSSliceInDaten();
-        this.ivFinanzgeschaeftDaten = new TXSFinanzgeschaeftDaten();
-        this.ivKondDaten = new TXSKonditionenDaten();
-        this.ivKredkunde = new TXSKreditKunde();
         
         if (pvReader != null)
         {
@@ -199,12 +174,20 @@ public class LoanIQVerarbeitung
                 LOGGER_LOANIQ.error("Keine Institutsnummer in der ini-Datei...");
                 System.exit(1);
             }
+            else
+            {
+                LOGGER_LOANIQ.info("Institutsnummer: " + ivInstitutsnummer);
+            }
                         
             ivImportVerzeichnis = pvReader.getPropertyString("LoanIQ", "ImportVerzeichnis", "Fehler");
             if (ivImportVerzeichnis.equals("Fehler"))
             {
                 LOGGER_LOANIQ.error("Kein Import-Verzeichnis in der ini-Datei...");
                 System.exit(1);
+            }
+            else
+            {
+                LOGGER_LOANIQ.info("ImportVerzeichnis: " + ivImportVerzeichnis);
             }
 
             ivExportVerzeichnis = pvReader.getPropertyString("LoanIQ", "ExportVerzeichnis", "Fehler");
@@ -213,6 +196,10 @@ public class LoanIQVerarbeitung
                 LOGGER_LOANIQ.error("Kein Export-Verzeichnis in der ini-Datei...");
                 System.exit(1);
             }
+            else
+            {
+                LOGGER_LOANIQ.info("ExportVerzeichnis: " + ivExportVerzeichnis);
+            }
 
             ivLoanIQInputDatei =  pvReader.getPropertyString("LoanIQ", "LoanIQInput-Datei", "Fehler");
             if (ivLoanIQInputDatei.equals("Fehler"))
@@ -220,33 +207,53 @@ public class LoanIQVerarbeitung
                 LOGGER_LOANIQ.error("Kein LoanIQInput-Dateiname in der ini-Datei...");
                 System.exit(1);
             }
-            
+            else
+            {
+                LOGGER_LOANIQ.info("LoanIQInput-Datei: " + ivLoanIQInputDatei);
+            }
+
             ivLoanIQOutputDatei =  pvReader.getPropertyString("LoanIQ", "LoanIQOutput-Datei", "Fehler");
             if (ivLoanIQOutputDatei.equals("Fehler"))
             {
                 LOGGER_LOANIQ.error("Kein LoanIQOutput-Dateiname in der ini-Datei...");
                 System.exit(1);
-            }           
-            
+            }
+            else
+            {
+                LOGGER_LOANIQ.info("LoanIQOutput-Datei: " + ivLoanIQOutputDatei);
+            }
+
             ivImportVerzeichnisSAPCMS = pvReader.getPropertyString("SAPCMS", "ImportVerzeichnis", "Fehler");
             if (ivImportVerzeichnisSAPCMS.equals("Fehler"))
             {
                 LOGGER_LOANIQ.error("Kein SAPCMS Import-Verzeichnis in der ini-Datei...");
                 System.exit(1);
             }
-            
+            else
+            {
+                LOGGER_LOANIQ.info("SAPCMS ImportVerzeichnis: " + ivImportVerzeichnisSAPCMS);
+            }
+
             ivSapcmsDatei = pvReader.getPropertyString("SAPCMS", "SAPCMS-Datei", "Fehler");
             if (ivSapcmsDatei.equals("Fehler"))
             {
                 LOGGER_LOANIQ.error("Kein SAPCMS-Dateiname in der ini-Datei...");
                 System.exit(1);
             }
-            
+            else
+            {
+                LOGGER_LOANIQ.info("SAPCMS-Datei: " + ivSapcmsDatei);
+            }
+
             ivCashflowQuellsystemDatei = pvReader.getPropertyString("LoanIQ", "Quellsystem-Datei", "Fehler");
             if (ivCashflowQuellsystemDatei.equals("Fehler"))
             {
                 LOGGER_LOANIQ.error("Kein Cashflow-Quellsystem-Dateiname in der ini-Datei...");
                 System.exit(1);
+            }
+            else
+            {
+                LOGGER_LOANIQ.info("Cashflow Quelsystem-Datei: " + ivCashflowQuellsystemDatei);
             }
 
             ivKundeRequestDatei = pvReader.getPropertyString("LoanIQ", "KundeRequestDatei", "Fehler");
@@ -255,6 +262,10 @@ public class LoanIQVerarbeitung
                 LOGGER_LOANIQ.error("Kein KundeRequest-Dateiname in der ini-Datei...");
                 System.exit(1); 
             }
+            else
+            {
+                LOGGER_LOANIQ.info("KundeRequestDatei: " + ivKundeRequestDatei);
+            }
 
             ivImportVerzeichnisRueckmeldung = pvReader.getPropertyString("Rueckmeldung", "ImportVerzeichnis", "Fehler");
             if (ivImportVerzeichnisRueckmeldung.equals("Fehler"))
@@ -262,24 +273,37 @@ public class LoanIQVerarbeitung
                 LOGGER_LOANIQ.error("Kein Import-Verzeichnis fuer die Rueckmeldung in der ini-Datei...");
                 System.exit(1);
             }
-            
+            else
+            {
+                LOGGER_LOANIQ.info("Rueckmeldung ImportVerzeichnis: " + ivImportVerzeichnisRueckmeldung);
+            }
+
             ivAusplatzierungsmerkmalDatei = pvReader.getPropertyString("Rueckmeldung", "AusplatzierungsmerkmalLoanIQ-Datei", "Fehler");
             if (ivAusplatzierungsmerkmalDatei.equals("Fehler"))
             {
                 LOGGER_LOANIQ.error("Kein Ausplatzierungsmerkmal-Dateiname in der ini-Datei...");
                 System.exit(1); 
             }
-            
+            else
+            {
+                LOGGER_LOANIQ.info("AusplatzierungsmerkmalLoanIQ-Datei: " + ivAusplatzierungsmerkmalDatei);
+            }
+
             ivVerbuergtKonsortialDatei = pvReader.getPropertyString("Rueckmeldung", "VerbuergtKonsortialDatei", "Fehler");
             if (ivVerbuergtKonsortialDatei.equals("Fehler"))
             {
                 LOGGER_LOANIQ.error("Kein VerbuergtKonsortial-Dateiname in der ini-Datei...");
                 System.exit(1); 
             }
-            
+            else
+            {
+                LOGGER_LOANIQ.info("VerbuergtKonsortialDatei: " + ivVerbuergtKonsortialDatei);
+            }
+
             // Verarbeitung starten
             startVerarbeitung();
         }
+        System.exit(0);
     }
 
     /**
@@ -328,10 +352,10 @@ public class LoanIQVerarbeitung
         }
         
         // SAP CMS-Daten einlesen
-        ivSapcms = new SAPCMS_Neu(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, LOGGER_LOANIQ);
+        ivSicherheitenDaten = new SicherheitenDaten(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, SicherheitenDaten.SAPCMS, LOGGER_LOANIQ);
         
         // Darlehen XML-Datei im TXS-Format
-        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivLoanIQOutputDatei);
+        ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivLoanIQOutputDatei, LOGGER_LOANIQ);
         ivOutputDarlehenXML.openXML();
         ivOutputDarlehenXML.printXMLStart();
         ivOutputDarlehenXML.printTXSImportDatenStart();
@@ -395,8 +419,8 @@ public class LoanIQVerarbeitung
     private void readLoanIQ(String pvDateiname)
     {
         String lvZeile = null;
-        ivVorlaufsatz = new Vorlaufsatz();
-        ivDarlehenLoanIQBlock = new DarlehenLoanIQBlock();
+        ivVorlaufsatz = new Vorlaufsatz(LOGGER_LOANIQ);
+        ivDarlehenBlock = new DarlehenBlock(ivVorlaufsatz, ivSicherheitenDaten.getSicherheiten2Pfandbrief(), LOGGER_LOANIQ);
               
         // Oeffnen der Dateien
         FileInputStream lvFis = null;
@@ -433,30 +457,38 @@ public class LoanIQVerarbeitung
                 else
                 {
                     //System.out.println("lvZeile: " + lvZeile);
-                    if (!ivDarlehenLoanIQBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ)) // Parsen der Felder
+                    if (!ivDarlehenBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ)) // Parsen der Felder
                     {        
-                    	// Unterschiedliche Kontonummer -> Darlehen verarbeiten                    	
-                    	verarbeiteDarlehen();
+                    	// Unterschiedliche Kontonummer -> Darlehen verarbeiten 
+                    	if (isAusplatzierungsmerkmalRelevant())
+                    	{
+                    		ivDarlehenBlock
+                            .verarbeiteDarlehenLoanIQ(ivFosVerbuergtKonsortial, ivFosCashflowQuellsystem, ivOutputDarlehenXML);
+                    	}
                         // Neuen LoanIQ-Block anlegen
-                        ivDarlehenLoanIQBlock = new DarlehenLoanIQBlock();
+                        ivDarlehenBlock = new DarlehenBlock(ivVorlaufsatz, new Sicherheiten2Pfandbrief(ivSicherheitenDaten, LOGGER_LOANIQ), LOGGER_LOANIQ);
                         // Zeile mit neuer Kontonummer muss noch verarbeitet werden
-                        if (ivDarlehenLoanIQBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ)) // Parsen der Felder
+                        if (ivDarlehenBlock.parseDarlehen(lvZeile, LOGGER_LOANIQ)) // Parsen der Felder
                         {
-                        	if (lvZeile.charAt(56) == 'B') ivZaehlerFinanzgeschaefteBrutto++;
-                        	if (lvZeile.charAt(56) == 'N') ivZaehlerFinanzgeschaefteNetto++;
-                        	if (lvZeile.charAt(56) == 'F') ivZaehlerFinanzgeschaefteFremd++;
+                            if (lvZeile.contains(";B;")) ivZaehlerFinanzgeschaefteBrutto++;
+                            if (lvZeile.contains(";N;")) ivZaehlerFinanzgeschaefteNetto++;
+                            if (lvZeile.contains(";F;")) ivZaehlerFinanzgeschaefteFremd++;
                         }
                     }
                     else
                     {
-                    	if (lvZeile.charAt(56) == 'B') ivZaehlerFinanzgeschaefteBrutto++;
-                    	if (lvZeile.charAt(56) == 'N') ivZaehlerFinanzgeschaefteNetto++;
-                    	if (lvZeile.charAt(56) == 'F') ivZaehlerFinanzgeschaefteFremd++;
+                        if (lvZeile.contains(";B;")) ivZaehlerFinanzgeschaefteBrutto++;
+                        if (lvZeile.contains(";N;")) ivZaehlerFinanzgeschaefteNetto++;
+                        if (lvZeile.contains(";F;")) ivZaehlerFinanzgeschaefteFremd++;
                     }
                 }
             }
             // Letzten Kredit auch verarbeiten - CT 13.09.2017
-            verarbeiteDarlehen();
+            if (isAusplatzierungsmerkmalRelevant())
+            {
+            	ivDarlehenBlock
+                  .verarbeiteDarlehenLoanIQ(ivFosVerbuergtKonsortial, ivFosCashflowQuellsystem, ivOutputDarlehenXML);
+            }
         }
         catch (Exception e)
         {
@@ -495,331 +527,78 @@ public class LoanIQVerarbeitung
         
         return lvOut.toString();
     }
-
-    /**
-     * Verarbeite den DarlehenLoanIQBlock
-     */
-    private void verarbeiteDarlehen()
-    {  
-          // LoanIQ Verarbeitung
-    	if (ivDarlehenLoanIQBlock.existsDarlehenLoanIQNetto())
-    	{
-    		//LOGGER_LOANIQ.info("Einzelkonten;" + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKontonummer() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKundennummer() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getDeckungsschluessel() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getSolldeckung() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getVerwaltendeOE() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getProduktschluessel() + ";;;" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getZusagedatum() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAuszahlungsdatum() + ";" +
-    		//		           ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getLaufzeitende());
-            
-    		if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("A") || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("C") ||
-    			ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("D") || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("E") ||	
-    			ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("P") || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("R") ||
-    			ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("W") || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("N"))
-    		{
-    			try
-    			{                    		  
-    				ivFosAusplatzierungsmerkmal.write((ivDarlehenLoanIQBlock.getKontonummer() + ";" + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal() + StringKonverter.lineSeparator).getBytes());
-    			}
-    			catch (Exception e)
-    			{
-    				LOGGER_LOANIQ.error("Fehler beim Schreiben in die Ausplatzierungsmerkmal-Datei");
-    			}
-    			LOGGER_LOANIQ.info("Kontonummer " + ivDarlehenLoanIQBlock.getKontonummer() + " - Nicht relevantes Ausplatzierungsmerkmal " + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal());        		  
-    			return;
-    		}
-    		
-    		if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().endsWith("0") && StringKonverter.convertString2Double(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital()) == 0.0)
-    		{
-        		LOGGER_LOANIQ.info("Kein Import von " + ivDarlehenLoanIQBlock.getKontonummer() + ": Ausplatzierungsmerkmal " + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal() + " mit Restkapital == " + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital()); 
-        		return;
-    		}
-    		
-    		// Buergennummer in die KundeRequest-Datei schreiben
-    		if (!ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergennummer().isEmpty())
-    		{
-    			ivKundennummernOutput.printKundennummer(MappingKunde.extendKundennummer(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergennummer(), LOGGER_LOANIQ));   
-    		}
-    		// Kundennummer in die KundeRequest-Datei schreiben
-    		if (!ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKundennummer().isEmpty())
-    		{
-    			ivKundennummernOutput.printKundennummer(MappingKunde.extendKundennummer(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKundennummer(), LOGGER_LOANIQ));
-    		}
-  
-    		// TXS-Transaktionen mit Darlehensinformationen fuellen
-    		if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("K") || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("H") ||
-    			ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("F") || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("S") ||
-    			ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("O"))
-    		{
-    			LOGGER_LOANIQ.info("Kontonummer " + ivDarlehenLoanIQBlock.getKontonummer() + " - Ausplatzierungsmerkmal: " + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal());
-    			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("K")) ivAnzahlK++;
-    			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("H")) ivAnzahlH++;
-    			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("F")) ivAnzahlF++;
-    			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("S")) ivAnzahlS++;
-    			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("O")) ivAnzahlO++;
-                      
-    			// Verbuergte Geschaefte und Konsortialgeschaefte in die VerbuergtKonsortial-Datei schreiben
-    			if (StringKonverter.convertString2Double(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergschaftprozent()) > 0.0 || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKennzeichenKonsortialkredit().equals("J"))
-    			{
-    				if (StringKonverter.convertString2Double(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital()) == 0.0)
-    				{
-    					LOGGER_LOANIQ.info("Kontonummer " + ivDarlehenLoanIQBlock.getKontonummer() + " - Restkapital(Netto-Zeile): " + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital());        		  
-    				}
-    				BigDecimal lvKonsortialFaktor = new BigDecimal("1.00");
-    				BigDecimal lvRestkapitalNetto = StringKonverter.convertString2BigDecimal(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital());
-    				if (StringKonverter.convertString2Double(ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getRestkapital()) > 0.0 &&
-    					lvRestkapitalNetto.doubleValue() > 0.0)
-    				{
-    					lvKonsortialFaktor = lvRestkapitalNetto.divide(StringKonverter.convertString2BigDecimal(ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getRestkapital()),  9, RoundingMode.HALF_UP);
-    				}
-    				else
-    				{
-    					LOGGER_LOANIQ.info("Kontonummer " + ivDarlehenLoanIQBlock.getKontonummer() + " - Restkapital(Netto-Zeile): " + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital());
-    					LOGGER_LOANIQ.info("Kontonummer " + ivDarlehenLoanIQBlock.getKontonummer() + " - Restkapital(Brutto-Zeile): " + ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getRestkapital());
-    				}
-                    	  
-    				BigDecimal lvVerbuergtFaktor = StringKonverter.convertString2BigDecimal(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergschaftprozent()).divide(new BigDecimal("100.00"),  9, RoundingMode.HALF_UP);
-    				if (lvVerbuergtFaktor.doubleValue() == 0.0)
-    				{
-    					lvVerbuergtFaktor = new BigDecimal("1.00");
-    				}
-    				try
-    				{                    		  
-    					ivFosVerbuergtKonsortial.write((ivDarlehenLoanIQBlock.getKontonummer() + ";" + lvVerbuergtFaktor.toPlainString() + ";" + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getKennzeichenKonsortialkredit() + ";" + lvKonsortialFaktor.toPlainString() + ";" + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital() + ";" + ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getRestkapital() + ";" + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getSolldeckung() + ";" + ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getSolldeckung() + StringKonverter.lineSeparator).getBytes());
-    				}
-    				catch (Exception e)
-    				{
-    					LOGGER_LOANIQ.error("Fehler beim Schreiben in die VerbuergtKonsortial-Datei");
-    				}
-    			}
-                      
-    			importDarlehen2Transaktion();
-    		}
-    		else
-    		{
-    			LOGGER_LOANIQ.info("Kontonummer " + ivDarlehenLoanIQBlock.getKontonummer() + " nicht verarbeitet - Ausplatzierungsmerkmal: " + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal());
-    		}
-    	}
-    	else
-    	{
-    		LOGGER_LOANIQ.info("Keine Nettozeile: " + ivDarlehenLoanIQBlock.getKontonummer());
-    	}
-    }
       
     /**
-     * Importiert die Darlehensinformationen in die TXS-Transaktionen
+     * Pruefung ob das Ausplatzierungsmerkmal relevant ist und schreibt die nicht relevanten Ausplatzierungsmerkmale in eine Datei
+     * @return true -> relevant; false -> nicht relevant
      */
-    private void importDarlehen2Transaktion()
+    private boolean isAusplatzierungsmerkmalRelevant()
     {
-          ivFinanzgeschaeft.initTXSFinanzgeschaeft();
-          ivSliceInDaten.initTXSSliceInDaten();
-          ivFinanzgeschaeftDaten.initTXSFinanzgeschaeftDaten();
-          ivKondDaten.initTXSKonditionenDaten();
-          ivKredkunde.initTXSKreditKunde();
+    	 boolean lvRelevant = false;
+      	 if (ivDarlehenBlock.existsDarlehenNetto())
+       	 {                
+       		if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("A") ||
+              ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("C") ||
+       			  ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("D") ||
+              ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("E") ||
+       			  ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("P") ||
+              ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("R") ||
+       			  ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("W") ||
+              ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("N"))
+       		{
+       			try
+       			{                    		  
+       				ivFosAusplatzierungsmerkmal.write((ivDarlehenBlock.getKontonummer() + ";" +
+                  ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal() + StringKonverter.lineSeparator).getBytes());
+       			}
+       			catch (Exception e)
+       			{
+       				LOGGER_LOANIQ.error("Fehler beim Schreiben in die Ausplatzierungsmerkmal-Datei");
+       			}
+       			LOGGER_LOANIQ.info("Kontonummer " + ivDarlehenBlock.getKontonummer() + " - Nicht relevantes Ausplatzierungsmerkmal " +
+                ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal());
+       			lvRelevant = false;
+       		}
+       		else
+       		{
+       	   		if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("K") ||
+                  ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("H") ||
+       	   			  ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("F") ||
+                  ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("S") ||
+       	   		    ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("O"))
+       	   		{
+           			try
+           			{                    		  
+           				ivFosAusplatzierungsmerkmal.write((ivDarlehenBlock.getKontonummer() + ";" +
+                      ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal() + StringKonverter.lineSeparator).getBytes());
+           			}
+           			catch (Exception e)
+           			{
+           				LOGGER_LOANIQ.error("Fehler beim Schreiben in die Ausplatzierungsmerkmal-Datei");
+           			}
 
-          TXSKreditSicherheit lvKredsh = new TXSKreditSicherheit();
-          TXSSicherheitDaten lvShdaten = new TXSSicherheitDaten();
-          TXSSicherheitPerson lvShperson = new TXSSicherheitPerson(); 
-          
-          boolean lvOkayDarlehen = true;
-          
-          //DarlehenLoanIQ lvHelpDarlehenLoanIQ = null;
-          
-          if (lvOkayDarlehen)
-          {
-        	  lvOkayDarlehen = ivFinanzgeschaeft.importLoanIQ(ivDarlehenLoanIQBlock, ivVorlaufsatz, LOGGER_LOANIQ);
-          }
-             
-          if (lvOkayDarlehen)
-          {              
-        	  lvOkayDarlehen = ivFinanzgeschaeftDaten.importLoanIQ(ivDarlehenLoanIQBlock, ivVorlaufsatz, LOGGER_LOANIQ);
-          }
-          
-          if (lvOkayDarlehen)
-          {
-              lvOkayDarlehen = ivSliceInDaten.importLoanIQ(ivDarlehenLoanIQBlock, ivVorlaufsatz, LOGGER_LOANIQ);
-          }
-          
-          if (lvOkayDarlehen)
-          {
-              lvOkayDarlehen = ivKondDaten.importLoanIQ(ivDarlehenLoanIQBlock, ivVorlaufsatz, LOGGER_LOANIQ);
-          }
-          
-          if (lvOkayDarlehen)
-          {
-              lvOkayDarlehen = ivKredkunde.importLoanIQ(ivDarlehenLoanIQBlock, ivVorlaufsatz, LOGGER_LOANIQ);
-          }
-                   
-           // Transaktionen in die Datei schreiben
-          if (lvOkayDarlehen)
-          {
-              // Daten in CashflowQuellsystem-Datei schreiben 
-              try
-              {
-                String lvBuergschaft = new String();  
-                if (StringKonverter.convertString2Double(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergschaftprozent()) > 0.0)
-                {
-                    lvBuergschaft = "J";  
-                }
-                else
-                {
-                    lvBuergschaft = "N";
-                }
-                ivFosCashflowQuellsystem.write((ivDarlehenLoanIQBlock.getKontonummer() + ";" + ivFinanzgeschaeft.getKey() + ";" + ivFinanzgeschaeft.getOriginator() + ";" + ivFinanzgeschaeft.getQuelle() + ";" + lvBuergschaft + ";" + ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergschaftprozent() + ";" + StringKonverter.lineSeparator).getBytes());
-              }
-              catch (Exception e)
-              {
-                  LOGGER_LOANIQ.error("Fehler bei der Ausgabe in die CashflowQuellsystem-Datei");
-              }
-              // Daten in CashflowQuellsystem-Datei schreiben
-        	  
-              ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeft.printTXSTransaktionStart());
-   
-              ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionStart());
-              ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionDaten());
-              ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeftDaten.printTXSTransaktionEnde());
-   
-              ivOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSTransaktionStart());
-              ivOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSTransaktionDaten());
-              ivOutputDarlehenXML.printTransaktion(ivSliceInDaten.printTXSTransaktionEnde());
-
-              ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionStart());
-              ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionDaten());
-              ivOutputDarlehenXML.printTransaktion(ivKondDaten.printTXSTransaktionEnde());
-   
-              ivOutputDarlehenXML.printTransaktion(ivKredkunde.printTXSTransaktionStart());
-              ivOutputDarlehenXML.printTransaktion(ivKredkunde.printTXSTransaktionDaten());
-              ivOutputDarlehenXML.printTransaktion(ivKredkunde.printTXSTransaktionEnde());
-          }
-          
-          // Ermittle Kredittyp
-          int lvKredittyp = ValueMapping.ermittleKredittyp(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal(), ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergschaftprozent());
-          // Sonder-/Uebergangsloesung MIDAS -> Ausplatzierungsmerkmal nicht vorhanden
-          // Nicht verwendete Produktschluessel 450, 503, 505, 802, 805 und 811
-          if (ivDarlehenLoanIQBlock.getQuellsystem().startsWith("MID"))
-          {
-              if (ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getProduktschluessel().equals("402") || ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getProduktschluessel().equals("404") || ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getProduktschluessel().equals("412"))
-              {
-                  if (!ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getBuergschaftprozent().isEmpty())
-                  {
-                      lvKredittyp = DarlehenLoanIQ.VERBUERGT_KOMMUNAL;
-                  }
-                  else
-                  {
-                    lvKredittyp = DarlehenLoanIQ.REIN_KOMMUNAL;
-                  }
-              }
-              if (ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getProduktschluessel().equals("821") || ivDarlehenLoanIQBlock.getDarlehenLoanIQBrutto().getProduktschluessel().equals("827"))
-              {
-                  lvKredittyp = DarlehenLoanIQ.FLUGZEUGDARLEHEN;
-              }
-          }
-
-          //System.out.println("Konto " + ivDarlehenLoanIQBlock.getKontonummer() + " lvKredittyp: " + lvKredittyp);
-          
-          if (lvOkayDarlehen)
-          {
-        	  // Wenn SAP CMS Daten geladen, dann verarbeiten
-        	  if (ivSapcms != null)
-        	  {
-        		  if (lvKredittyp == DarlehenLoanIQ.HYPOTHEK_1A)//|| lvKredittyp == DarlehenLoanIQ.REIN_KOMMUNAL)
-        		  {
-        			  //ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitObjekte(ivDarlehen.getKontonummer(), "1", ivDarlehen.getBuergschaftprozent(), ivDarlehen.getDeckungsschluessel()));
-        			  ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitHypotheken(ivDarlehenLoanIQBlock.getKontonummer(), new String(), "1", ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergschaftprozent(), "ALIQPFBG"));
-        		  }
-        		  //// CT 19.02.2018 - Noch in der Testphase
-        		  ////if (lvKredittyp == DarlehenLoanIQ.VERBUERGT_KOMMUNAL)
-        		  ////{
-        		  ////	  ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitBuergschaft(ivDarlehenLoanIQBlock.getKontonummer(), "ALIQPFBG", ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getRestkapital(), ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergschaftprozent(), ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal()));
-        		  ////}
-        		  if (lvKredittyp == DarlehenLoanIQ.SCHIFFSDARLEHEN)
-        		  {
-        			  ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitSchiff(ivDarlehenLoanIQBlock.getKontonummer(), "ALIQSCHF"));
-        		  }
-        		  if (lvKredittyp == DarlehenLoanIQ.FLUGZEUGDARLEHEN)
-        		  {
-        			  ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitFlugzeug(ivDarlehenLoanIQBlock.getKontonummer(), "ALIQFLUG"));
-        		  }
-        	  }
-          }            
-          
-          if (lvOkayDarlehen)
-          {
-        	  // Verbuergte Darlehen
-        	  if (lvKredittyp == DarlehenLoanIQ.KOMMUNALVERBUERGTE_HYPOTHEK || lvKredittyp == DarlehenLoanIQ.VERBUERGT_KOMMUNAL)
-        	  {
-        		  if (lvKredsh.importDarlehen(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto(), ivVorlaufsatz.getInstitutsnummer(), LOGGER_LOANIQ))
-        		  {
-        			  // Transaktionen in die Datei schreiben
-        			  ivOutputDarlehenXML.printTransaktion(lvKredsh.printTXSTransaktionStart());
-        			  ivOutputDarlehenXML.printTransaktion(lvKredsh.printTXSTransaktionDaten());
-                  
-        			  // TXSSicherheitDaten
-        			  lvShdaten.importDarlehen(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto());
-        			  ivOutputDarlehenXML.printTransaktion(lvShdaten.printTXSTransaktionStart());
-        			  ivOutputDarlehenXML.printTransaktion(lvShdaten.printTXSTransaktionDaten());
-        			  ivOutputDarlehenXML.printTransaktion(lvShdaten.printTXSTransaktionEnde());
-                  
-        			  // TXSSicherheitPerson
-        			  lvShperson.setTXSSicherheitPerson(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getBuergennummer(), ivVorlaufsatz.getInstitutsnummer());
-        			  ivOutputDarlehenXML.printTransaktion(lvShperson.printTXSTransaktionStart());
-        			  ivOutputDarlehenXML.printTransaktion(lvShperson.printTXSTransaktionDaten());
-        			  ivOutputDarlehenXML.printTransaktion(lvShperson.printTXSTransaktionEnde());
-                  
-        			  ivOutputDarlehenXML.printTransaktion(lvKredsh.printTXSTransaktionEnde());
-        		  }
-        	  }
-          }
-          
-          if (lvOkayDarlehen)
-          {
-              ivOutputDarlehenXML.printTransaktion(ivFinanzgeschaeft.printTXSTransaktionEnde());
-          } 
-          
-          if (lvOkayDarlehen)
-          {
-          	// Bei fuer Deckung vorgesehenen Krediten eine Default-Finanzierung anlegen
-          	// nur Schiffe und Flugzeuge
-        	  if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().equals("S0") || ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().equals("F0"))
-        	  {
-          			// TXSFinanzgeschaeft setzen --> eigentlich Finanzierung!!!
-          			TXSFinanzgeschaeft lvFinanzierung = new TXSFinanzgeschaeft();
-          			lvFinanzierung.setKey(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getFacilityReferenz());
-          			lvFinanzierung.setOriginator(ValueMapping.changeMandant(ivVorlaufsatz.getInstitutsnummer()));
-          			lvFinanzierung.setQuelle("TXS");           
-              
-          			// TXSFinanzgeschaeftDaten setzen
-          			TXSFinanzgeschaeftDaten lvFgdaten = new TXSFinanzgeschaeftDaten();
-          			lvFgdaten.setAz(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getFacilityReferenz());
-          			lvFgdaten.setAktivpassiv("1");
-          			lvFgdaten.setKat("8");
-          			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("S"))
-          			{
-          				lvFgdaten.setTyp("70");
-          			}
-          			if (ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal().startsWith("F"))
-          			{
-          				lvFgdaten.setTyp("71");
-          			}
-              
-          			// TXSKonditionenDaten setzen
-          			TXSKonditionenDaten lvKond = new TXSKonditionenDaten();
-          			lvKond.setKondkey(ivDarlehenLoanIQBlock.getDarlehenLoanIQNetto().getFacilityReferenz());
-                     
-          			// TXSFinanzierungKredit
-          			ivOutputDarlehenXML.printTransaktion(lvFinanzierung.printTXSTransaktionStart());
-          			ivOutputDarlehenXML.printTransaktion(lvFgdaten.printTXSTransaktionStart());
-          			ivOutputDarlehenXML.printTransaktion(lvFgdaten.printTXSTransaktionDaten());
-          			ivOutputDarlehenXML.printTransaktion(lvFgdaten.printTXSTransaktionEnde());            
-          			ivOutputDarlehenXML.printTransaktion(lvKond.printTXSTransaktionStart());
-          			ivOutputDarlehenXML.printTransaktion(lvKond.printTXSTransaktionDaten());
-          			ivOutputDarlehenXML.printTransaktion(lvKond.printTXSTransaktionEnde());
-          			ivOutputDarlehenXML.printTransaktion(lvFinanzierung.printTXSTransaktionEnde());                    
-        	  }
-          } 
+       	   			lvRelevant = true;
+       	   			// Buergennummer in die KundeRequest-Datei schreiben
+       	   			if (!ivDarlehenBlock.getDarlehenNetto().getBuergennummer().isEmpty())
+       	   			{
+       	   				ivKundennummernOutput.printKundennummer(MappingKunde.extendKundennummer(
+                      ivDarlehenBlock.getDarlehenNetto().getBuergennummer(), LOGGER_LOANIQ));
+       	   			}
+       	   			// Kundennummer in die KundeRequest-Datei schreiben
+       	   			if (!ivDarlehenBlock.getDarlehenNetto().getKundennummer().isEmpty())
+       	   			{
+       	   				ivKundennummernOutput.printKundennummer(MappingKunde.extendKundennummer(
+                      ivDarlehenBlock.getDarlehenNetto().getKundennummer(), LOGGER_LOANIQ));
+       	   			}
+       	   			
+       	   			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("K")) ivAnzahlK++;
+       	   			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("H")) ivAnzahlH++;
+       	   			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("F")) ivAnzahlF++;
+       	   			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("S")) ivAnzahlS++;
+       	   			if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("O")) ivAnzahlO++;
+       	   		}
+       		}
+       	 }
+      	 return lvRelevant;
     }
 }

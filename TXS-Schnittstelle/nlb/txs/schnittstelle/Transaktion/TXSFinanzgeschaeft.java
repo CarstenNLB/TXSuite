@@ -6,17 +6,16 @@
 
 package nlb.txs.schnittstelle.Transaktion;
 
-import org.apache.log4j.Logger;
-
 import nlb.txs.schnittstelle.Darlehen.DarlehenVerarbeiten;
-import nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen;
-import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQBlock;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenBlock;
 import nlb.txs.schnittstelle.LoanIQ.DarlehenPassiv.Daten.LoanIQPassivDaten;
+import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
+import nlb.txs.schnittstelle.Termingeld.Daten.Termingeld;
 import nlb.txs.schnittstelle.Utilities.MappingMIDAS;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
 import nlb.txs.schnittstelle.Wertpapier.Bestand.Bestandsdaten;
+import org.apache.log4j.Logger;
 
 /**
  * @author tepperc
@@ -48,7 +47,7 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     }
     
     /**
-     * 
+     * Initialisiert die Instanzvariablen mit leeren Strings
      */
     public void initTXSFinanzgeschaeft() 
     {
@@ -58,6 +57,7 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     }
 
     /**
+     * Liefert die Kontonummer (sprich den Key)
      * @return the key
      */
     public String getKey() {
@@ -65,6 +65,7 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     }
 
     /**
+     * Setzt die Kontonummer
      * @param pvKey the key to set
      */
     public void setKey(String pvKey) {
@@ -72,6 +73,7 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     }
 
     /**
+     * Liefert den Originator
      * @return the originator
      */
     public String getOriginator() {
@@ -79,6 +81,7 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     }
 
     /**
+     * Setzt den Originator
      * @param pvOriginator the originator to set
      */
     public void setOriginator(String pvOriginator) {
@@ -86,6 +89,7 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     }
 
     /**
+     * Liefert das Quellsystem
      * @return the quelle
      */
     public String getQuelle() {
@@ -93,13 +97,12 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     }
 
     /**
+     * Setzt das Quellsystem
      * @param pvQuelle the quelle to set
      */
     public void setQuelle(String pvQuelle) {
         this.ivQuelle = pvQuelle;
     }
-
-    
     
     /**
      * TXSFinanzgeschaeftStart in die XML-Datei schreiben
@@ -137,7 +140,7 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
      * @param pvDarlehen 
      * @return 
      */
-    public boolean importDarlehen(int pvModus, Darlehen pvDarlehen)
+    public boolean importDarlehen(int pvModus, nlb.txs.schnittstelle.Darlehen.Daten.Extrakt.Darlehen pvDarlehen)
     {
         this.ivKey = pvDarlehen.getKontonummer();
         this.ivOriginator = ValueMapping.changeMandant(pvDarlehen.getInstitutsnummer());
@@ -219,97 +222,108 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
             case DarlehenVerarbeiten.DPP:
                 this.ivQuelle = "DPP";
                 break;
-            default:
+            case DarlehenVerarbeiten.KEV:
+                this.ivQuelle = "ADARLKEV";
+                break;
+          default:
                 System.out.println("TXSFinanzgeschaeft: Unbekannter Modus");
         }        
         return true;
     }
-    
-    /**
+
+  /**
      * Importiert die Darlehensinformationen aus LoanIQ
-     * @param pvDarlehenLoanIQBlock 
+     * @param pvDarlehenBlock
      * @param pvVorlaufsatz 
      * @return 
      */
-    public boolean importLoanIQ(DarlehenLoanIQBlock pvDarlehenLoanIQBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+    public boolean importLoanIQ(DarlehenBlock pvDarlehenBlock, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
     {
-    	DarlehenLoanIQ lvHelpDarlehenLoanIQ = pvDarlehenLoanIQBlock.getDarlehenLoanIQNetto();
+    	Darlehen lvHelpDarlehen = pvDarlehenBlock.getDarlehenNetto();
    	
         // LoanIQ-Daten(Key und Quelle) setzen
-    	this.ivKey = lvHelpDarlehenLoanIQ.getKontonummer();
+    	this.ivKey = lvHelpDarlehen.getKontonummer();
         // Definition des Kredittyps
-        int lvHelpKredittyp = ValueMapping.ermittleKredittyp(lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal(), lvHelpDarlehenLoanIQ.getBuergschaftprozent());
+        int lvHelpKredittyp = ValueMapping.ermittleKredittyp(lvHelpDarlehen.getAusplatzierungsmerkmal(), lvHelpDarlehen.getBuergschaftprozent());
           
         //if (lvHelpKredittyp.equals("undefiniert"))
         //{
-        //	pvLogger.error("Darlehen " + lvHelpDarlehenLoanIQ.getKontonummer() + ": Kredittyp undefiniert...");
+        //	pvLogger.error("Darlehen " + lvHelpDarlehen.getKontonummer() + ": Kredittyp undefiniert...");
         //	return false;
         //}
 
-    	//int lvHelpKredittyp = lvHelpDarlehenLoanIQ.ermittleKredittyp();
-    	//System.out.println("Kredittyp: " + lvHelpKredittyp);
-          
+      StringBuilder lvHelpQuellsystem = new StringBuilder();
+      lvHelpQuellsystem.append("A");
+      if (pvDarlehenBlock.getQuellsystem().equals("IWHS"))
+      {
+        lvHelpQuellsystem.append("AZ6");
+      }
+    if (pvDarlehenBlock.getQuellsystem().equals("LOANIQ"))
+    {
+      lvHelpQuellsystem.append("LIQ");
+    }
     	switch (lvHelpKredittyp)
     	{
-            case DarlehenLoanIQ.HYPOTHEK_1A:
-            case DarlehenLoanIQ.KOMMUNALVERBUERGTE_HYPOTHEK:
-            case DarlehenLoanIQ.REIN_KOMMUNAL:
-            case DarlehenLoanIQ.VERBUERGT_KOMMUNAL:
-                if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("O"))
+            case Darlehen.HYPOTHEK_1A:
+            case Darlehen.KOMMUNALVERBUERGTE_HYPOTHEK:
+            case Darlehen.REIN_KOMMUNAL:
+            case Darlehen.VERBUERGT_KOMMUNAL:
+                if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("O"))
                 {
-                  this.ivQuelle = "ALIQOEPG";   
+                  lvHelpQuellsystem.append("OEPG");
                 }
                 else
-                {	
-                  this.ivQuelle = "ALIQPFBG";
+                {
+                  lvHelpQuellsystem.append("PFBG");
                 }
                 break;
-            case DarlehenLoanIQ.SCHIFFSDARLEHEN:
-                  this.ivQuelle = "ALIQSCHF";
+            case Darlehen.SCHIFFSDARLEHEN:
+                lvHelpQuellsystem.append("SCHF");
                 break;
-            case DarlehenLoanIQ.FLUGZEUGDARLEHEN:
-                 this.ivQuelle = "ALIQFLUG";
+            case Darlehen.FLUGZEUGDARLEHEN:
+              lvHelpQuellsystem.append("FLUG");
                 break;
-            case DarlehenLoanIQ.BANKKREDIT:
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("O"))
+            case Darlehen.BANKKREDIT:
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("O"))
             	{
-            		this.ivQuelle = "ALIQOEPG";
+                lvHelpQuellsystem.append("OEPG");
             	}
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("H"))
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K") || lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("H"))
             	{
-            		this.ivQuelle = "ALIQPFBG";
+                lvHelpQuellsystem.append("PFBG");
             	}
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("F"))
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("F"))
             	{
-            		this.ivQuelle = "ALIQFLUG";
+                lvHelpQuellsystem.append("FLUG");
             	}
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("S"))
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("S"))
             	{
-            		this.ivQuelle = "ALIQSCHF";
+                lvHelpQuellsystem.append("SCHF");
             	}
             	break;	            	
-            case DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG:
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("O"))
+            case Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG:
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("O"))
             	{
-            		this.ivQuelle = "ALIQWPOEPG";
+                lvHelpQuellsystem.append("WPOEPG");
             	}
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K") || lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("H"))
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("K") || lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("H"))
             	{
-            		this.ivQuelle = "ALIQWPPFBG";
+                lvHelpQuellsystem.append("WPPFBG");
             	}
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("F"))
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("F"))
             	{
-            		this.ivQuelle = "ALIQWPFLUG";
+                lvHelpQuellsystem.append("WPFLUG");
             	}
-            	if (lvHelpDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("S"))
+            	if (lvHelpDarlehen.getAusplatzierungsmerkmal().startsWith("S"))
             	{
-            		this.ivQuelle = "ALIQWPSCHF";
+                lvHelpQuellsystem.append("WPSCHF");
             	}
             	break;
             default:
                 System.out.println("TXSFinanzgeschaeft - Quellsystem: Unbekannter Kredittyp " + lvHelpKredittyp);       
     	}
-        
+
+      this.ivQuelle = lvHelpQuellsystem.toString();
         // Originator per Institutsnummer setzen
         this.ivOriginator = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
         
@@ -355,19 +369,20 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
     
     /**
      * Importiert die Darlehensinformationen aus MIDAS
-     * @param pvDarlehenLoanIQ
+     * @param pvDarlehen
      * @param pvVorlaufsatz 
      * @return 
      */
-    public boolean importMIDAS(DarlehenLoanIQ pvDarlehenLoanIQ, Vorlaufsatz pvVorlaufsatz)
+    public boolean importMIDAS(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz)
     {
         // MIDAS-Daten(Key und Quelle) setzen
-    	this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehenLoanIQ.getQuellsystem(), pvDarlehenLoanIQ.getKontonummer());
-    	if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("H") || pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("K"))
+        this.ivKey = MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen.getKontonummer());
+
+    	if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("H") || pvDarlehen.getAusplatzierungsmerkmal().startsWith("K"))
     	{
     		this.ivQuelle = "AMIDPFBG";
         }
-    	if (pvDarlehenLoanIQ.getAusplatzierungsmerkmal().startsWith("F"))
+    	if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("F"))
     	{
     		this.ivQuelle = "AMIDFLUG";
         }
@@ -420,6 +435,84 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
         this.ivOriginator = ValueMapping.changeMandant(pvInstitutsnummer);
         
         return true;
-    }   
+    }
+
+
+  /**
+   * Importiert die Wertpapier-Informationen fuer KEV
+   * @param pvBestandsdaten
+   * @param pvInstitutsnummer
+   * @return
+   */
+  public boolean importKEVWertpapier(Bestandsdaten pvBestandsdaten, String pvInstitutsnummer)
+  {
+    this.ivKey = pvBestandsdaten.getProdukt();
+
+    StringBuilder lvQuelle = new StringBuilder();
+    if (pvBestandsdaten.getAktivPassiv().equals("1"))
+    {
+      lvQuelle.append("A");
+    }
+    if (pvBestandsdaten.getAktivPassiv().equals("2"))
+    {
+      lvQuelle.append("P");
+    }
+
+    if (pvBestandsdaten.getSystem().equals("MIDASAKTIV"))
+    {
+      lvQuelle.append("MIDKEV");
+    }
+    if (pvBestandsdaten.getSystem().equals("MAVISAKTIV"))
+    {
+      lvQuelle.append("MAVIKEV");
+    }
+    this.ivQuelle = lvQuelle.toString();
+
+    // Originator per Institutsnummer setzen
+    this.ivOriginator = ValueMapping.changeMandant(pvInstitutsnummer);
+
+    return true;
+  }
+
+  /**
+   * Importiert die Darlehensinformationen aus LoanIQ fuer KEV
+   * @param pvDarlehen
+   * @param pvVorlaufsatz
+   * @return
+   */
+  public boolean importKEVLoanIQ(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz)
+  {
+    // LoanIQ-Daten(Key und Quelle) setzen
+    this.ivKey = pvDarlehen.getKontonummer();
+    this.ivQuelle = "ALIQKEV";
+
+    // Originator per Institutsnummer setzen
+    this.ivOriginator = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
+
+    return true;
+  }
+
+  /**
+   * Importiert die Termingeldinformationen
+   * @param pvTermingeld Termingeld
+   * @param pvVorlaufsatz Vorlaufsatz
+   * @param pvLogger log4j-Logger
+   * @return
+   */
+  public boolean importTermingeld(Termingeld pvTermingeld, Vorlaufsatz pvVorlaufsatz, Logger pvLogger)
+  {
+    // Termingeld-Daten(Key und Quelle) setzen
+    this.ivKey = pvTermingeld.getKontonummer();
+
+    //if (pvTermingeld.getAusplatzierungsmerkmal().startsWith("H") || pvTermingeld.getAusplatzierungsmerkmal().startsWith("K"))
+    //{
+    this.ivQuelle = "AGELDPFBG";
+    //}
+
+    // Originator per Institutsnummer setzen
+    this.ivOriginator = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
+
+    return true;
+  }
 
 }

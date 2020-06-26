@@ -21,12 +21,7 @@ public class InputObjektZuweisungsbetrag
      * 
      */
     private String ivFilename;
-    
-    /**
-     * 
-     */
-    private File ivFile;
-    
+
     /**
      * 
      */
@@ -46,7 +41,7 @@ public class InputObjektZuweisungsbetrag
       */
     public void open()
     {
-      ivFile = new File(ivFilename);
+      File ivFile = new File(ivFilename);
       try
       {
         ivFis = new FileInputStream(ivFile);

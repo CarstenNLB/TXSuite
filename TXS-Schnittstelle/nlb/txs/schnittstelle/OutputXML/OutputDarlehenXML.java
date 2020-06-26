@@ -8,27 +8,38 @@ package nlb.txs.schnittstelle.OutputXML;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import org.apache.log4j.Logger;
 
 /**
+ * Diese Klasse schreibt die XML-Daten/-Zeilen in die Ausgabedatei
  * @author tepperc
- *
  */
 public class OutputDarlehenXML 
 {
-    private String ivFilename;
-    
-    private File ivXmlFile;
-    private FileOutputStream ivXmlOS;
-    
-    /**
-     * Konstruktor
-     * @param pvFilename 
-     * @param mandant 
-     */
-    public OutputDarlehenXML(String pvFilename) //, String mandant)
+  /**
+   * Name der Ausgabedatei
+   */
+  private String ivFilename;
+
+  /**
+   * FileOutputStream in die Ausgabedatei
+   */
+  private FileOutputStream ivXmlFos;
+
+  /**
+   * log4j-Logger
+   */
+  private Logger ivLogger;
+
+  /**
+   * Konstruktor
+   * @param pvFilename Name der Ausgabedatei
+   * @param pvLogger log4j-Logger
+   */
+    public OutputDarlehenXML(String pvFilename, Logger pvLogger)
     {
-        this.ivFilename = pvFilename;
-        //this.mandant = mandant;
+      this.ivLogger = pvLogger;
+      this.ivFilename = pvFilename;
     }
     
     /**
@@ -36,14 +47,14 @@ public class OutputDarlehenXML
       */
     public void openXML()
     {
-      ivXmlFile = new File(ivFilename);
+      File ivXmlFile = new File(ivFilename);
       try
       {
-        ivXmlOS = new FileOutputStream(ivXmlFile);
+        ivXmlFos = new FileOutputStream(ivXmlFile);
       }
       catch (Exception e)
       {
-        System.out.println("Konnte XML-Datei nicht oeffnen!");
+        ivLogger.error("Konnte XML-Datei nicht oeffnen!");
       }    
     }
 
@@ -54,11 +65,11 @@ public class OutputDarlehenXML
     {
       try
       {
-        ivXmlOS.close();
+        ivXmlFos.close();
       }
       catch (Exception e)
       {
-          System.out.println("Konnte XML-Datei nicht schliessen!");       
+          ivLogger.error("Konnte XML-Datei nicht schliessen!");
       }
     }
 
@@ -70,94 +81,91 @@ public class OutputDarlehenXML
       // Start der XML-Datei schreiben
       try
       {
-        ivXmlOS.write((new String("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n")).getBytes());
+        ivXmlFos.write(("<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>\n").getBytes());
       }
       catch (Exception e)
       {
-        System.out.println("Start: Fehler bei Ausgabe in XML-Datei");
+        ivLogger.error("Start: Fehler bei Ausgabe in XML-Datei");
       }
     }
     
     /**
      * Schreibt den TXSHeader in die XML-Datei
-     * @param pvValdate 
-     * @return 
+     * @param pvValdate Datum
      */
     public void printTXSHeader(String pvValdate) 
     {
         try
         {
-          ivXmlOS.write((new String("  <txsi:header valdate=\"" + pvValdate + "\"/>\n")).getBytes());
+          ivXmlFos.write(("  <txsi:header valdate=\"" + pvValdate + "\"/>\n").getBytes());
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe in XML-Datei");
+          ivLogger.error("Header: Fehler bei Ausgabe in XML-Datei");
         }
     }
 
     /**
      * Schreibt den Start der TXSImportDaten in die XML-Datei
-     * @return 
      */
     public void printTXSImportDatenStart()
     {
         try
         {
-          ivXmlOS.write((new String("<txsi:importdaten xmlns:txsi=\"http://agens.com/txsimport.xsd\">\n")).getBytes());
+          ivXmlFos.write(("<txsi:importdaten xmlns:txsi=\"http://agens.com/txsimport.xsd\">\n").getBytes());
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe in XML-Datei");
+          ivLogger.error("ImportDaten: Fehler bei Ausgabe in XML-Datei");
         }
     }
 
     /**
      * Schreibt das Ende der TXSImportDaten in die XML-Datei
-     * @return 
      */
     public void printTXSImportDatenEnde()
     {
         try
         {
-          ivXmlOS.write((new String("</txsi:importdaten>")).getBytes());
+          ivXmlFos.write(("</txsi:importdaten>").getBytes());
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe in XML-Datei");
+          ivLogger.error("Ende: Fehler bei Ausgabe in XML-Datei");
         }
     }
     
     /**
      * Schreibt eine Transaktion in die XML-Datei
-     * @param pvText 
+     * @param pvText Ausgabetext der Transaktion
      */
     public void printTransaktion(String pvText)
     {
         // Transaktion in die XML-Datei schreiben
         try
         {
-           ivXmlOS.write(pvText.getBytes());
+           ivXmlFos.write(pvText.getBytes());
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe einer Transaktion in die XML-Datei");
+          ivLogger.error("Fehler bei Ausgabe einer Transaktion in die XML-Datei");
         }
     }
     
     /**
      * Schreibt eine Transaktion in die XML-Datei
-     * @param pvText 
+     * @param pvText Ausgabetext der Transaktion
      */
     public void printTransaktion(StringBuffer pvText)
     {
         // Transaktion in die XML-Datei schreiben
         try
         {
-           ivXmlOS.write(pvText.toString().getBytes());
+           ivXmlFos.write(pvText.toString().getBytes());
         }
         catch (Exception e)
         {
-          System.out.println("Start: Fehler bei Ausgabe einer Transaktion in die XML-Datei");
+          ivLogger.error("Fehler bei Ausgabe einer Transaktion in die XML-Datei");
         }        
     }
 

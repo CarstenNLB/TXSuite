@@ -14,12 +14,7 @@ public class OutputXML
 	 * Der Name der XML-Datei 
 	 */
 	private String ivFilename;
-	
-	/**
-	 * 
-	 */
-	private File ivXmlFile;
-  
+
 	/**
 	 * 
 	 */
@@ -46,7 +41,7 @@ public class OutputXML
     */
   public void openXML()
   {
-    ivXmlFile = new File(ivFilename);
+    File ivXmlFile = new File(ivFilename);
     try
     {
       ivXmlOS = new FileOutputStream(ivXmlFile);

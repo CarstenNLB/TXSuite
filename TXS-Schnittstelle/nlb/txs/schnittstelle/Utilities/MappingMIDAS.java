@@ -6,11 +6,11 @@
 
 package nlb.txs.schnittstelle.Utilities;
 
-import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.DarlehenLoanIQ;
+import nlb.txs.schnittstelle.LoanIQ.Darlehen.Daten.Darlehen;
 
 /**
- * @author tepperc
- *
+ * Diese Klasse stellt Mappings/Ermittlungen fuer die MIDAS-Verarbeitung bereit.
+ * @author Carsten Tepper
  */
 public abstract class MappingMIDAS 
 {
@@ -18,14 +18,14 @@ public abstract class MappingMIDAS
      * Ermittelt die MIDAS-Kontonummer
      * @param pvNiederlassung Niederlassung (London, New York, Singapur und Shanghai)
      * @param pvKontonummer Ausgangskontonummer
-     * @return
+     * @return 10-stellige MIDAS-Kontonummer
      */
     public static String ermittleMIDASKontonummer(String pvNiederlassung, String pvKontonummer)
     {
         // Generierung von 10-stelligen MIDAS-Kontonummern:
         // 45                3           3                   0*                         5429
         // Schluessel fuer   Kredit      Niederlassung       mit '0' auffuellen,        6-stellige Ausgangskontonummer
-        // ausl. Nieder-                 0 ... London        wenn Ausgangskontonummer   gemaeß Kreditakte
+        // ausl. Nieder-                 0 ... London        wenn Ausgangskontonummer   gemaeï¿½ Kreditakte
         // lassung                       1 ... New York      nicht 6-stellig ist.
         //                               3 ... Singapur
         //                               7 ... Shanghai
@@ -80,23 +80,23 @@ public abstract class MappingMIDAS
     
     /**
      * Ermittelt den Kredittyp anhand des Ausplatzierungsmerkmals und Buergschaftprozent
-     * @return 
+     * @return Kredittyp
      */
     public static int ermittleKredittyp(String pvAusplatzierungsmerkmal, String pvBuergschaftprozent)
     {
     	// Defaultmaessig undefiniert
-        int lvKredittyp = DarlehenLoanIQ.UNDEFINIERT;
+        int lvKredittyp = Darlehen.UNDEFINIERT;
         
         // Hypothekendarlehen
         if (pvAusplatzierungsmerkmal.startsWith("H") || pvAusplatzierungsmerkmal.equals("O1") || pvAusplatzierungsmerkmal.equals("O2"))
         {        
             if (StringKonverter.convertString2Double(pvBuergschaftprozent) > 0.0)
             {
-              lvKredittyp = DarlehenLoanIQ.KOMMUNALVERBUERGTE_HYPOTHEK;   
+              lvKredittyp = Darlehen.KOMMUNALVERBUERGTE_HYPOTHEK;
             }
             else
             {
-              lvKredittyp = DarlehenLoanIQ.HYPOTHEK_1A;
+              lvKredittyp = Darlehen.HYPOTHEK_1A;
             }
         }
         
@@ -105,36 +105,36 @@ public abstract class MappingMIDAS
         {
             if (StringKonverter.convertString2Double(pvBuergschaftprozent) > 0.0)
             {
-                lvKredittyp = DarlehenLoanIQ.VERBUERGT_KOMMUNAL;
+                lvKredittyp = Darlehen.VERBUERGT_KOMMUNAL;
             }
             else
             {
-                lvKredittyp = DarlehenLoanIQ.REIN_KOMMUNAL;
+                lvKredittyp = Darlehen.REIN_KOMMUNAL;
             }
         }
         
         // Flugzeugdarlehen
         if (pvAusplatzierungsmerkmal.startsWith("F"))
         {
-            lvKredittyp = DarlehenLoanIQ.FLUGZEUGDARLEHEN;
+            lvKredittyp = Darlehen.FLUGZEUGDARLEHEN;
         }
         
         // Schiffsdarlehen
         if (pvAusplatzierungsmerkmal.startsWith("S"))
         {
-            lvKredittyp = DarlehenLoanIQ.SCHIFFSDARLEHEN;
+            lvKredittyp = Darlehen.SCHIFFSDARLEHEN;
         }
         
         // Bankkredit
         if (pvAusplatzierungsmerkmal.endsWith("3"))
         {
-        	lvKredittyp = DarlehenLoanIQ.BANKKREDIT;
+        	lvKredittyp = Darlehen.BANKKREDIT;
         }
         
         // Sonstige Schuldverschreibung
         if (pvAusplatzierungsmerkmal.endsWith("2"))
         {
-        	lvKredittyp = DarlehenLoanIQ.SONSTIGE_SCHULDVERSCHREIBUNG;
+        	lvKredittyp = Darlehen.SONSTIGE_SCHULDVERSCHREIBUNG;
         }
         
         return lvKredittyp;        
@@ -142,30 +142,32 @@ public abstract class MappingMIDAS
 
     
     /**
-     * Aendert den MIDAS-Schluessel auf den TXS-Schluessel
-     * @param pvText
-     * @return
+     * Mapping Zinsrhythmus
+     * Aendert den MIDAS-Schluessel auf den TXS-Schluessel fuer den Zinsrhythmus
+     * @param pvText MIDAS-Schluessel fuer den Zinsrhythmus
+     * @return TXS-Schluessel fuer den Zinsrhythmus
      */
+    /*
     public static String changeZinsrhythmus(String pvText)
     {
         // 0   keine Zinstermine
-        // 1   täglich
+        // 1   tï¿½glich
         // 3   3 Tage
-        // 7   wöchentlich
-        // 14  zweiwöchentlich
-        // 21  dreiwöchentlich
+        // 7   wï¿½chentlich
+        // 14  zweiwï¿½chentlich
+        // 21  dreiwï¿½chentlich
         // 30  monatlich
         // 60  zweimonatlich
-        // 90  vierteljährl.
+        // 90  vierteljï¿½hrl.
         // 120 viermonatlich
         // 150 5 Monate
-        // 180 halbjährlich
+        // 180 halbjï¿½hrlich
         // 210 7 Monate
         // 240 8 Monate
         // 270 neunmonatlich
         // 300 10 Monate
         // 330 11 Monate
-        // 360 jährlich
+        // 360 jï¿½hrlich
         // 720 2 Jahre
         // 1.080   3 Jahre
         // 1.440   4 Jahre
@@ -227,13 +229,13 @@ public abstract class MappingMIDAS
         }
             
         return lvHelpText;
-    }
+    } */
     
     /**
-     * Mapping vom Zins- und Tilgungsrhythmus
-     * Aendert den LoanIQ-Schluessel auf den TXS-Schluessel 
-     * @param pvText
-     * @return
+     * Mapping Zins- und Tilgungsrhythmus
+     * Aendert den LoanIQ-Schluessel auf den TXS-Schluessel fuer Zins- und Tilgungsrhythmus
+     * @param pvText LoanIQ-Schluessel fuer Zins- und Tilgungsrhythmus
+     * @return TXS-Schluessel fuer Zins- und Tilgungsrhythmus
      */
     public static String changeZinsrhythmusTilgungsrhythmus(String pvText)
     {
@@ -250,13 +252,13 @@ public abstract class MappingMIDAS
         // 2000   Zweitaegig
         // 3      Vierteljaehrlich
         // 3000   Dreitaegig
-        // 30000  Dreißigtaegig
+        // 30000  Dreiï¿½igtaegig
         // 4      Alle 4 Monate
         // 4000   Viertaegig
         // 5      Alle 5 Monate
-        // 5000   Fünftägig
+        // 5000   Fï¿½nftï¿½gig
         // 6      Halbjaehrlich
-        // 6000   Sechstägig
+        // 6000   Sechstï¿½gig
         // 60000  Sechzigtaegig
         // 7      Alle 7 Monate
         // 7000   Siebentaegig
@@ -340,11 +342,11 @@ public abstract class MappingMIDAS
     }
 
     /**
-     * @param pvReferenzzins 
-     * @param pvWaehrung 
-     * @param pvLaufzeit
-     * @return 
-     * 
+     * Ermittelt den TXS-Schluessel fuer den Referenzzins
+     * @param pvReferenzzins Referenzzins aus LoanIQ
+     * @param pvWaehrung Waehrung aus LoanIQ
+     * @param pvLaufzeit Laufzeit aus LoanIQ
+     * @return TXS-Schluessel fuer den Referenzzins
      */
     public static String changeReferenzzins(String pvReferenzzins, String pvWaehrung, String pvLaufzeit)
     {

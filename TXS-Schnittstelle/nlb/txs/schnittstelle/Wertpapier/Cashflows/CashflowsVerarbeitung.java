@@ -15,8 +15,8 @@ import java.util.Collections;
 
 import org.apache.log4j.Logger;
 
-import nlb.txs.schnittstelle.LoanIQ.Cashflows.QuellsystemListe;
-import nlb.txs.schnittstelle.LoanIQ.Cashflows.Daten.QuellsystemDaten;
+import nlb.txs.schnittstelle.QuellsystemDaten.QuellsystemListe;
+import nlb.txs.schnittstelle.QuellsystemDaten.QuellsystemDaten;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
 import nlb.txs.schnittstelle.Transaktion.TXSCashflowDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeft;
@@ -171,7 +171,7 @@ public class CashflowsVerarbeitung
                   if (lvQuellsystemDatenZeile != null)
                   {
                     //System.out.println(lvQuellsystemDatenZeile);
-                    ivQuellsystemDatenListe.parseQuellsystemDaten(lvQuellsystemDatenZeile, 1); // Verarbeitungsmodus LoanIQ --> 1, Wertpapiere wie LoanIQ
+                    ivQuellsystemDatenListe.parseQuellsystemDaten(lvQuellsystemDatenZeile, LOGGER_CASHFLOWS);
                     lvZaehlerQuellsysteme++;
                   }
                 }
@@ -198,7 +198,7 @@ public class CashflowsVerarbeitung
     	LOGGER_CASHFLOWS.info("Anzahl Quellsysteme: " + lvZaehlerQuellsysteme);               
         
     	// Darlehen XML-Datei im TXS-Format
-    	ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivCashflowsOutputDatei);
+    	ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivCashflowsOutputDatei, LOGGER_CASHFLOWS);
     	ivOutputDarlehenXML.openXML();
     	ivOutputDarlehenXML.printXMLStart();
     	ivOutputDarlehenXML.printTXSImportDatenStart();
@@ -362,6 +362,9 @@ public class CashflowsVerarbeitung
                 return;
             }
             
+            String lvManTilg = "0";
+            String lvManZins = "0";
+            
             TXSCashflowDaten lvCfdaten; 
             ArrayList<TXSCashflowDaten> lvListeCashflows = new ArrayList<TXSCashflowDaten>();
             for (int i = 0; i < pvListeCashflow.size(); i++)
@@ -405,10 +408,23 @@ public class CashflowsVerarbeitung
                     	lvCfdaten.setZbetrag(lvHelpZbetrag.toString());
                     }
                 }
+               
                 if (StringKonverter.convertString2Double(lvCfdaten.getTbetrag()) > 0.0 || StringKonverter.convertString2Double(lvCfdaten.getZbetrag()) > 0.0)
                 {
                   lvListeCashflows.add(lvCfdaten);
                 }
+                
+                // Es wird ueberprueft, ob Tilgung oder Zinsen geliefert werden
+                if (StringKonverter.convertString2Double(lvCfdaten.getTbetrag()) > 0.0)
+                {
+                	lvManTilg = "1";
+                }
+
+                if (StringKonverter.convertString2Double(lvCfdaten.getZbetrag()) > 0.0)
+                {
+                	lvManZins = "1";
+                }
+
             }
             
             // Cashflows in Datei schreiben
@@ -422,5 +438,24 @@ public class CashflowsVerarbeitung
                 ivOutputDarlehenXML.printTransaktion(lvFg.printTXSTransaktionEnde());
                 ivZaehlerWriteFinanzgeschaefte++;
             }
+            
+            // Stimmt 'mantilg' und 'manzins'
+            if (ivQuellsystemDatenListe.get(pvListeCashflow.get(0).getISIN()) != null)
+            {
+            	if (!ivQuellsystemDatenListe.get(pvListeCashflow.get(0).getISIN()).getManTilg().equals(lvManTilg))
+            	{
+            		LOGGER_CASHFLOWS.info("Unterschiedliche Tilgungsschalter:" + pvListeCashflow.get(0).getISIN() + ";" + lvFg.getKey() + ";" + lvFg.getQuelle() + ";" + lvManTilg + ";" + ivQuellsystemDatenListe.get(pvListeCashflow.get(0).getISIN()).getManTilg());
+            	}
+
+            	if (!ivQuellsystemDatenListe.get(pvListeCashflow.get(0).getISIN()).getManZins().equals(lvManZins))
+            	{
+            		LOGGER_CASHFLOWS.info("Unterschiedliche Zinsschalter:" + pvListeCashflow.get(0).getISIN() + ";" + lvFg.getKey() + ";" + lvFg.getQuelle() + ";" + lvManZins + ";" + ivQuellsystemDatenListe.get(pvListeCashflow.get(0).getISIN()).getManZins());
+            	}
+            }
+            else
+            {
+            	LOGGER_CASHFLOWS.info("Mantilg/Manzins - Keine QuellsystemDaten gefunden - " + pvListeCashflow.get(0).getISIN());
+            }
+
         }
 }
