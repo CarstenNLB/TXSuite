@@ -589,7 +589,7 @@ public class MIDASVerarbeitung
               if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("H"))
               {
                 lvBuffer.append(((Sicherheiten2Pfandbrief)ivSapcms.getSicherheitenDaten().getSicherheiten2Pfandbrief()).importSicherheitHypotheken(MappingMIDAS.ermittleMIDASKontonummer(pvDarlehen.getQuellsystem(), pvDarlehen
-                    .getKontonummer()), pvDarlehen.getGegenkontoPassiv(), "", "A", pvDarlehen.getBuergschaftprozent(), "AMIDPFBG", ivVorlaufsatz.getInstitutsnummer()));
+                    .getKontonummer()), pvDarlehen.getGegenkontoPassiv(), "", "A", pvDarlehen.getBuergschaftprozent(), "AMIDPFBG", ivVorlaufsatz.getInstitutsnummer(), null));
               }
               // Herausgenommen, da die Flugzeugdarlehen nicht mehr benoetigt werden - CT 04.03.2020
               //if (pvDarlehen.getAusplatzierungsmerkmal().startsWith("F"))

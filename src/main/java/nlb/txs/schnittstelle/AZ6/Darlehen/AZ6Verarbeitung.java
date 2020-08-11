@@ -18,6 +18,7 @@ import nlb.txs.schnittstelle.Sicherheiten.SicherheitenDaten;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.IniReader;
 import nlb.txs.schnittstelle.Utilities.MappingKunde;
+import nlb.txs.schnittstelle.Utilities.ObjekteListe;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import org.apache.log4j.Logger;
 
@@ -77,19 +78,19 @@ public class AZ6Verarbeitung
   private SicherheitenDaten ivSicherheitenDaten;
 
   /**
-   * Quellsystem-Datei fuer die FRISCO-Verarbeitung
+   * Quellsystem-Datei fuer die Cashflow-Verarbeitung
    */
   private String ivCashflowQuellsystemDatei;
-
-  /**
-   * Import-Verzeichnis der Rueckmeldung
-   */
-  //private String ivImportVerzeichnisRueckmeldung;
 
   /**
    * KundeRequest-Datei
    */
   private String ivKundeRequestDatei;
+
+  /**
+   * MappingRueckmeldungDatei
+   */
+  private String ivMappingRueckmeldungDatei;
 
   /**
    * FileOutputStream fuer CashflowQuellsystem-Datei
@@ -115,6 +116,11 @@ public class AZ6Verarbeitung
    * Ausgabedatei der TXS-Importdaten
    */
   private OutputDarlehenXML ivOutputDarlehenXML;
+
+  /**
+   * Liste der Mappings fuer die Rueckmeldung VVS
+   */
+  private ObjekteListe ivMappingRueckmeldungListe;
 
   // Zaehlvariablen für die unterschiedlichen Ausplatzierungsmerkmale
   private int ivAnzahlK = 0;
@@ -268,27 +274,16 @@ public class AZ6Verarbeitung
         LOGGER_AZ6.info("KundeRequestDatei: " + ivKundeRequestDatei);
       }
 
-      /*
-      ivImportVerzeichnisRueckmeldung = pvReader.getPropertyString("Rueckmeldung", "ImportVerzeichnis", "Fehler");
-      if (ivImportVerzeichnisRueckmeldung.equals("Fehler"))
+      ivMappingRueckmeldungDatei = pvReader.getPropertyString("AZ6", "MappingRueckmeldungDatei", "Fehler");
+      if (ivMappingRueckmeldungDatei.equals("Fehler"))
       {
-        LOGGER_LOANIQ.error("Kein Import-Verzeichnis fuer die Rueckmeldung in der ini-Datei...");
+        LOGGER_AZ6.error("Kein MappingRueckmeldung-Dateiname in der ini-Datei...");
         System.exit(1);
       }
-
-      ivAusplatzierungsmerkmalDatei = pvReader.getPropertyString("Rueckmeldung", "AusplatzierungsmerkmalLoanIQ-Datei", "Fehler");
-      if (ivAusplatzierungsmerkmalDatei.equals("Fehler"))
+      else
       {
-        LOGGER_LOANIQ.error("Kein Ausplatzierungsmerkmal-Dateiname in der ini-Datei...");
-        System.exit(1);
+        LOGGER_AZ6.info("MappingRueckmeldungDatei: " + ivMappingRueckmeldungDatei);
       }
-
-      ivVerbuergtKonsortialDatei = pvReader.getPropertyString("Rueckmeldung", "VerbuergtKonsortialDatei", "Fehler");
-      if (ivVerbuergtKonsortialDatei.equals("Fehler"))
-      {
-        LOGGER_LOANIQ.error("Kein VerbuergtKonsortial-Dateiname in der ini-Datei...");
-        System.exit(1);
-      } */
 
       // Verarbeitung starten
       startVerarbeitung();
@@ -307,6 +302,7 @@ public class AZ6Verarbeitung
     ivZaehlerFinanzgeschaefteNetto = 0;
     ivZaehlerFinanzgeschaefteFremd = 0;
 
+    ivMappingRueckmeldungListe = new ObjekteListe(ivImportVerzeichnisVVS + "\\" + ivMappingRueckmeldungDatei, LOGGER_AZ6);
   /*
   // VerbuergtKonsortial-Datei oeffnen (zum Schreiben)
   File lvFileVerbuergtKonsortial = new File(ivImportVerzeichnisRueckmeldung + "\\" + ivVerbuergtKonsortialDatei);
@@ -408,7 +404,10 @@ public class AZ6Verarbeitung
     {
       LOGGER_AZ6.error("Fehler beim Schliessen der KundeRequest-Datei");
     }
-}
+
+    // MappingRueckmeldung schreiben
+    ivMappingRueckmeldungListe.schreibeObjekteListe();
+  }
 
   /**
    * Einlesen und Verarbeiten der AZ6-Daten
@@ -460,7 +459,7 @@ public class AZ6Verarbeitung
             // Unterschiedliche Kontonummer -> Darlehen verarbeiten
             if (isAusplatzierungsmerkmalRelevant())
             {
-              ivDarlehenBlock.verarbeiteDarlehenAZ6(ivFosCashflowQuellsystem, ivOutputDarlehenXML);
+              ivDarlehenBlock.verarbeiteDarlehenAZ6(ivFosCashflowQuellsystem, ivOutputDarlehenXML, ivMappingRueckmeldungListe);
             }
             // Neuen LoanIQ-Block anlegen
             ivDarlehenBlock = new DarlehenBlock(ivVorlaufsatz, ivSicherheitenDaten.getSicherheiten2Pfandbrief(), LOGGER_AZ6);

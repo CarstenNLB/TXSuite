@@ -35,6 +35,7 @@ import nlb.txs.schnittstelle.Transaktion.TXSVerzeichnisVBlatt;
 import nlb.txs.schnittstelle.Transaktion.TXSVerzeichnisblattDaten;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.MappingKunde;
+import nlb.txs.schnittstelle.Utilities.ObjekteListe;
 import nlb.txs.schnittstelle.Utilities.String2XML;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
@@ -70,9 +71,10 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
      * @param pvBuergschaftprozent Buergschaftprozent
      * @param pvQuellsystem Quellsystem
      * @param pvInstitutsnummer Institutsnummer
+     * @param pvMappingRueckmeldungListe
      * @return
      */
-    public StringBuffer importSicherheitHypotheken(String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer)
+    public StringBuffer importSicherheitHypotheken(String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer, ObjekteListe pvMappingRueckmeldungListe)
     {
         StringBuffer lvBuffer = new StringBuffer();
 
@@ -95,7 +97,7 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
 
                 if (StringKonverter.convertString2Double(lvShum.getZuweisungsbetrag()) > 0.0)
                 {
-                    lvBuffer.append(this.import2TXSKreditSicherheit(lvShum, pvKontonummer, pvPassivkontonummer, pvKundennummer, pvKredittyp, pvBuergschaftprozent, pvQuellsystem, pvInstitutsnummer));
+                    lvBuffer.append(this.import2TXSKreditSicherheit(lvShum, pvKontonummer, pvPassivkontonummer, pvKundennummer, pvKredittyp, pvBuergschaftprozent, pvQuellsystem, pvInstitutsnummer, pvMappingRueckmeldungListe));
                 }
             }
         }
@@ -350,9 +352,10 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
      * @param pvBuergschaftprozent Buergschaftprozent
      * @param pvQuellsystem Quellsystem
      * @param pvInstitutsnummer Institutsnummer
+     * @param pvMappingRueckmeldungListe
      * @return 
      */
-    public StringBuffer import2TXSKreditSicherheit(Sicherungsumfang pvShum, String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer)
+    private StringBuffer import2TXSKreditSicherheit(Sicherungsumfang pvShum, String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer, ObjekteListe pvMappingRueckmeldungListe)
     {
         StringBuffer lvHelpString = new StringBuffer(); 
         ivLogger.info("import2TXSKreditSicherheit");
@@ -464,7 +467,11 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                 	 lvKredsh.setZuwbetrag(lvZuwBetragRe.toString());            
                  }
                  lvKredsh.setWhrg(pvShum.getZuweisungsbetragWaehrung());
-                 
+                 if (pvMappingRueckmeldungListe != null)
+                 {
+                   pvMappingRueckmeldungListe.put(lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId(), lvSicherheitenvereinbarung.getId());
+                 }
+
                  // TXSSicherheitDaten
                  lvShdaten = new TXSSicherheitDaten();
 
@@ -988,6 +995,10 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                      lvVepo.setQuelle(pvQuellsystem);
                      lvHelpStringGrundbuchblatt.append(lvVepo.printTXSTransaktionStart());
                      lvHelpStringGrundbuchblatt.append(lvVepo.printTXSTransaktionDaten());
+                     if (pvMappingRueckmeldungListe != null)
+                     {
+                       pvMappingRueckmeldungListe.put(lvImmobilie.getObjektId(), lvImmobilie.getId());
+                     }
                      // TXSPfandobjektDaten
                      lvPodaten = new TXSPfandobjektDaten();
                  
@@ -1337,7 +1348,7 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
      * @param pvQuellsystem Quellsystem
      * @param pvInstitutsnummer Institutsnummer
      */
-    public StringBuffer import2TXSKreditSicherheitFlugzeug(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, String pvInstitutsnummer)
+    private StringBuffer import2TXSKreditSicherheitFlugzeug(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, String pvInstitutsnummer)
     {
         StringBuffer lvHelpString = new StringBuffer(); 
         ivLogger.info("Start - import2TXSKreditSicherheitFlugzeug");
@@ -1758,7 +1769,7 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
      * @param pvQuellsystem
      * @param pvInstitutsnummer
      */
-    public StringBuffer import2TXSKreditSicherheitSchiff(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, String pvInstitutsnummer)
+    private StringBuffer import2TXSKreditSicherheitSchiff(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, String pvInstitutsnummer)
     {
         StringBuffer lvHelpString = new StringBuffer(); 
         ivLogger.info("import2TXSKreditSicherheitSchiffe");
@@ -2101,7 +2112,7 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
      * @param pvAusplatzierungsmerkmal
      * @param pvInstitutsnummer
      */
-    public StringBuffer import2TXSKreditSicherheitBuerge(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, String pvRestkapital, String pvBuergschaftprozent, String pvAusplatzierungsmerkmal, String pvNominalbetrag, String pvKundennummer, String pvBuergennummer, String pvInstitutsnummer)
+    private StringBuffer import2TXSKreditSicherheitBuerge(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, String pvRestkapital, String pvBuergschaftprozent, String pvAusplatzierungsmerkmal, String pvNominalbetrag, String pvKundennummer, String pvBuergennummer, String pvInstitutsnummer)
     {
         StringBuffer lvHelpString = new StringBuffer(); 
         ivLogger.info("import2TXSKreditSicherheitBuerge - " + pvKontonummer);

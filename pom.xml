@@ -92,6 +92,26 @@
           </execution>
 
           <execution>
+            <id>KEVXMLMerger</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>de.nordlbit.prost.tools.KEVXMLMerger.KEVXMLMerger</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>KEVXMLMerger</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
             <id>VorgangView</id>
             <phase>package</phase>
             <goals>
@@ -775,6 +795,14 @@
           </execution>
 
        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>6</source>
+          <target>6</target>
+        </configuration>
       </plugin>
     </plugins>
   </build>

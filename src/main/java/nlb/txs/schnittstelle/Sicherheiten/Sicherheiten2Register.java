@@ -4,6 +4,8 @@
 
 package nlb.txs.schnittstelle.Sicherheiten;
 
+import nlb.txs.schnittstelle.Utilities.ObjekteListe;
+
 public abstract interface Sicherheiten2Register {
 
   /**
@@ -15,8 +17,9 @@ public abstract interface Sicherheiten2Register {
    * @param pvBuergschaftprozent Buergschaftprozent
    * @param pvQuellsystem Quellsystem
    * @param pvInstitutsnummer Institutsnummer
+   * @param pvMappingRueckmeldungListe
    */
-  public abstract StringBuffer importSicherheitHypotheken(String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer);
+  public abstract StringBuffer importSicherheitHypotheken(String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer, ObjekteListe pvMappingRueckmeldungListe);
 
   /**
    * Liefert die Sicherheit Buergschaft in einem StringBuffer

@@ -21,6 +21,7 @@ import nlb.txs.schnittstelle.Transaktion.TXSKreditSicherheit;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheitDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheitPerson;
 import nlb.txs.schnittstelle.Transaktion.TXSSliceInDaten;
+import nlb.txs.schnittstelle.Utilities.ObjekteListe;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
 import org.apache.log4j.Logger;
@@ -71,7 +72,7 @@ public class DarlehenBlock
      */
     private ArrayList<Darlehen> ivListeDarlehenFremd;
 
-    /**
+  /**
      * Konstruktor
      */
     public DarlehenBlock(Vorlaufsatz pvVorlaufsatz, Sicherheiten2Register pvSicherheiten2Register, Logger pvLogger)
@@ -319,7 +320,7 @@ public class DarlehenBlock
    				}
    			}
                      
-   			importDarlehen2Transaktion(pvFosCashflowQuellsystem, pvOutputDarlehenXML);
+   			importDarlehen2Transaktion(pvFosCashflowQuellsystem, pvOutputDarlehenXML, null);
    		}
    		else
    		{
@@ -336,8 +337,9 @@ public class DarlehenBlock
    * Verarbeite den DarlehenBlock fuer AZ6
    * @param pvFosCashflowQuellsystem
    * @param pvOutputDarlehenXML
+   * @param pvMappingRueckmeldungListe
    */
-  public void verarbeiteDarlehenAZ6(FileOutputStream pvFosCashflowQuellsystem, OutputDarlehenXML pvOutputDarlehenXML)
+  public void verarbeiteDarlehenAZ6(FileOutputStream pvFosCashflowQuellsystem, OutputDarlehenXML pvOutputDarlehenXML, ObjekteListe pvMappingRueckmeldungListe)
   {
     // AZ6 Verarbeitung
     if (this.existsDarlehenNetto())
@@ -377,7 +379,7 @@ public class DarlehenBlock
 
         }
 
-        importDarlehen2Transaktion(pvFosCashflowQuellsystem, pvOutputDarlehenXML);
+        importDarlehen2Transaktion(pvFosCashflowQuellsystem, pvOutputDarlehenXML, pvMappingRueckmeldungListe);
       }
       else
       {
@@ -394,8 +396,9 @@ public class DarlehenBlock
     * Importiert die Darlehensinformationen in die TXS-Transaktionen
     * @param pvFosCashflowQuellsystem
     * @param pvOutputDarlehenXML
+    * @param pvMappingRueckmeldungListe
     */
-   private void importDarlehen2Transaktion(FileOutputStream pvFosCashflowQuellsystem, OutputDarlehenXML pvOutputDarlehenXML)
+   private void importDarlehen2Transaktion(FileOutputStream pvFosCashflowQuellsystem, OutputDarlehenXML pvOutputDarlehenXML, ObjekteListe pvMappingRueckmeldungListe)
    {
 	   	    
 	    // Transaktionen
@@ -528,12 +531,12 @@ public class DarlehenBlock
        		  if (lvKredittyp == Darlehen.HYPOTHEK_1A)//|| lvKredittyp == Darlehen.REIN_KOMMUNAL)
        		  {
        			  //ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitObjekte(ivDarlehen.getKontonummer(), "1", ivDarlehen.getBuergschaftprozent(), ivDarlehen.getDeckungsschluessel()));
-       			    pvOutputDarlehenXML.printTransaktion(ivSicherheiten2Register.importSicherheitHypotheken(this.getKontonummer(), "", "","1", this.getDarlehenNetto().getBuergschaftprozent(), lvFinanzgeschaeft.getQuelle(), ivVorlaufsatz.getInstitutsnummer()));
+       			    pvOutputDarlehenXML.printTransaktion(ivSicherheiten2Register.importSicherheitHypotheken(this.getKontonummer(), "", "","1", this.getDarlehenNetto().getBuergschaftprozent(), lvFinanzgeschaeft.getQuelle(), ivVorlaufsatz.getInstitutsnummer(), pvMappingRueckmeldungListe));
        		  }
        		  //// CT 06.11.2019 - Noch in der Testphase
        		  ////if (lvKredittyp == Darlehen.VERBUERGT_KOMMUNAL)
        		  ////{
-       		  ////	  pvOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitBuergschaft(this.getKontonummer(), "ALIQPFBG", this.getDarlehenNetto().getRestkapital(), this.getDarlehenNetto().getBuergschaftprozent(), this.getDarlehenNetto().getAusplatzierungsmerkmal(), this.getDarlehenNetto().getNennbetrag(), this.getDarlehenNetto().getKundennummer(), this.getDarlehenNetto().getBuergennummer()));
+       		  ////	  pvOutputDarlehenXML.printTransaktion(ivSicherheiten2Register.importSicherheitBuergschaft(this.getKontonummer(), lvFinanzgeschaeft.getQuelle(), this.getDarlehenNetto().getRestkapital(), this.getDarlehenNetto().getBuergschaftprozent(), this.getDarlehenNetto().getAusplatzierungsmerkmal(), this.getDarlehenNetto().getNennbetrag(), this.getDarlehenNetto().getKundennummer(), this.getDarlehenNetto().getBuergennummer(), ivVorlaufsatz.getInstitutsnummer()));
        		  ////}
             //// CT 06.11.2019 - Noch in der Testphase
             if (lvKredittyp == Darlehen.SCHIFFSDARLEHEN)

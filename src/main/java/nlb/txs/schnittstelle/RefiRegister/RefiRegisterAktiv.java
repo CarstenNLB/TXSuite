@@ -336,7 +336,7 @@ public class RefiRegisterAktiv
     ////}
 
     Sicherheiten2RefiRegister lvSicherheiten2RefiRegister = new Sicherheiten2RefiRegister(pvSicherheitenDaten, ivLogger);
-    pvOutputDarlehenXML.printTransaktion(lvSicherheiten2RefiRegister.importSicherheitHypotheken(pvZielDarlehen.getKontonummer(), pvZielDarlehen.getKontonummer(), pvZielDarlehen.getKundennummer(), pvZielDarlehen.getKredittyp(), pvZielDarlehen.getBuergschaftProzent(), "ADARLREFI", pvZielDarlehen.getInstitutsnummer()));
+    pvOutputDarlehenXML.printTransaktion(lvSicherheiten2RefiRegister.importSicherheitHypotheken(pvZielDarlehen.getKontonummer(), pvZielDarlehen.getKontonummer(), pvZielDarlehen.getKundennummer(), pvZielDarlehen.getKredittyp(), pvZielDarlehen.getBuergschaftProzent(), "ADARLREFI", pvZielDarlehen.getInstitutsnummer(), null));
 
     if (lvOkayDarlehen)
     {

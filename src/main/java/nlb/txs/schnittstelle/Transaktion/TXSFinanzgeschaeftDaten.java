@@ -3481,6 +3481,7 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
             ("H2".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // sichernde Ueberdeckung Hypo
             ("S2".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // sichernde Ueberdeckung Schiffe
             ("F2".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // sichernde Ueberdeckung Flugzeuge
+            ("S3".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Weitere Deckung Schiffe
             ("K4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve KO
             ("H4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve HPF
             ("S4".equals(pvBestandsdaten.getAusplatzierungsmerkmal())) ||  // Liquiditaetsreserve Schiffe

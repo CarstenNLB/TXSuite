@@ -188,11 +188,16 @@ public class KEVCheckLog
         while ((lvLine = lvBR.readLine()) != null)
         {
           lvLine = lvLine.trim();
-          if (lvLine.contains("files downloadable for FtPoA 'KEVEA'"))
+          // Zeile mit der Anzahl der herunterladbaren Dateien finden
+          if (lvLine.contains("files downloadable for FtPoA"))
           {
-            //System.out.println(lvLine);
-            // Ist schon eine Quittung vorhanden?
-            if (!lvLine.contains("ExtraNet-Test: 0 files downloadable for FtPoA 'KEVEA'"))
+            // Zahl aus der Zeile ermitteln
+            String lvZahl = lvLine.substring(lvLine.indexOf("ExtraNet-Test: ") + 15);
+            lvZahl = lvZahl.substring(0, lvZahl.indexOf(" "));
+            // String in Zahl konvertieren
+            int lvIntZahl  = StringKonverter.convertString2Int(lvZahl);
+            // Ist die Zahl > 0, dann gibt es eine Quittung
+            if (lvIntZahl > 0)
             {
               lvResult = true;
             }

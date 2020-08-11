@@ -32,6 +32,7 @@ import nlb.txs.schnittstelle.Transaktion.TXSVerzeichnisPfandobjekt;
 import nlb.txs.schnittstelle.Transaktion.TXSVerzeichnisVBlatt;
 import nlb.txs.schnittstelle.Transaktion.TXSVerzeichnisblattDaten;
 import nlb.txs.schnittstelle.Utilities.DatumUtilities;
+import nlb.txs.schnittstelle.Utilities.ObjekteListe;
 import nlb.txs.schnittstelle.Utilities.String2XML;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
@@ -142,10 +143,11 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
      * @param pvBuergschaftprozent 
      * @param pvQuellsystem
      * @param pvInstitutsnummer
+     * @param pvMappingRueckmeldungListe
      * @return 
      * 
      */
-    public StringBuffer import2TXSKreditSicherheit(Sicherungsumfang pvShum, String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer)
+    private StringBuffer import2TXSKreditSicherheit(Sicherungsumfang pvShum, String pvKontonummer, String pvPassivkontonummer, String pvKundennummer, String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer, ObjekteListe pvMappingRueckmeldungListe)
     {
         StringBuffer lvHelpString = new StringBuffer(); 
         ivLogger.info("import2TXSKreditSicherheit");
@@ -999,7 +1001,7 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
      * @param pvQuellsystem
      * @param pvListeRefiDeepSeaZusatz
      */
-    public StringBuffer import2TXSKreditSicherheitSchiff(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, HashMap<String, RefiDeepSeaZusatz> pvListeRefiDeepSeaZusatz)
+    private StringBuffer import2TXSKreditSicherheitSchiff(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, HashMap<String, RefiDeepSeaZusatz> pvListeRefiDeepSeaZusatz)
     {
         StringBuffer lvHelpString = new StringBuffer(); 
         ivLogger.info("RefiRegister: import2TXSKreditSicherheitSchiffe");
@@ -1376,7 +1378,7 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
     }
 
     /**
-     *
+     * Liefert die TXSTransaktionen einer Hypothek/Immobilie in einem StringBuffer
      * @param pvKontonummer Kontonummer
      * @param pvPassivkontonummer Passivkontonummer
      * @param pvKundennummer Kundennummer
@@ -1384,11 +1386,12 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
      * @param pvBuergschaftprozent Buergschaftprozent
      * @param pvQuellsystem Quellsystem
      * @param pvInstitutsnummer Institutsnummer
+     * @param pvMappingRueckmeldungListe
      * @return
      */
     @Override
     public StringBuffer importSicherheitHypotheken(String pvKontonummer, String pvPassivkontonummer, String pvKundennummer,
-        String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer) {
+        String pvKredittyp, String pvBuergschaftprozent, String pvQuellsystem, String pvInstitutsnummer, ObjekteListe pvMappingRueckmeldungListe) {
         StringBuffer lvBuffer = new StringBuffer();
 
         Sicherungsumfang lvShum = null;
@@ -1410,7 +1413,7 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
                 ////{
                 ////  lvBuffer.append(ivSAPCMS2Pfandbrief.import2TXSKreditSicherheitBuerge(lvShum, pvKontonummer, pvQuellsystem, "0.01", pvBuergschaftprozent, pvAusplatzierungsmerkmal));
                 ////}
-                lvBuffer.append(this.import2TXSKreditSicherheit(lvShum, pvKontonummer, pvPassivkontonummer, pvKundennummer, pvKredittyp, pvBuergschaftprozent, pvQuellsystem, pvInstitutsnummer));
+                lvBuffer.append(this.import2TXSKreditSicherheit(lvShum, pvKontonummer, pvPassivkontonummer, pvKundennummer, pvKredittyp, pvBuergschaftprozent, pvQuellsystem, pvInstitutsnummer, null));
                 ////lvBuffer.append(ivSAPCMS2Pfandbrief.import2TXSKreditSicherheitSchiff(lvShum, pvKontonummer, "ADARLREFI"));
             }
         }
@@ -1418,6 +1421,7 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
     }
 
     /**
+     * Liefert einen leeren StringBuffer zurueck, da im RefiRegister keine Buergschaften eingespielt werden.
      * @param pvKontonummer Kontonummer
      * @param pvQuellsystem Quellsystem
      * @param pvRestkapital Restkapital
@@ -1437,7 +1441,7 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
     }
 
     /**
-     *
+     * Liefert einen leeren StringBuffer zurueck, da im RefiRegister keine Schiffe eingespielt werden.
      * @param pvKontonummer Kontonummer
      * @param pvQuellsystem Quellsystem
      * @param pvInstitut Institutsnummer (009/004 oder NLB/BLB)
@@ -1450,7 +1454,7 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
     }
 
     /**
-     *
+     * Liefert einen leeren StringBuffer zurueck, da im RefiRegister keine Flugzeuge eingespielt werden.
      * @param pvKontonummer Kontonummer
      * @param pvQuellsystem Quellsystem
      * @param pvInstitut Institutsnummer (009/004 oder NLB/BLB)

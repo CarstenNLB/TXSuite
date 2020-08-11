@@ -1825,7 +1825,7 @@ public class DarlehenVerarbeiten
                 ////ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitObjekte(ivZielDarlehen.getKontonummer(), ivZielDarlehen.getKredittyp(), ivZielDarlehen.getBuergschaftProzent(), ivZielDarlehen.getDeckungsschluessel()));
                 try
                 {
-            	  ivOutputDarlehenXML.printTransaktion(ivSapcms.getSicherheitenDaten().getSicherheiten2Pfandbrief().importSicherheitHypotheken(ivZielDarlehen.getKontonummer(), new String(), "", ivZielDarlehen.getKredittyp(), ivZielDarlehen.getBuergschaftProzent(), "ADARLPFBG", ivInstitutsnummer));
+            	  ivOutputDarlehenXML.printTransaktion(ivSapcms.getSicherheitenDaten().getSicherheiten2Pfandbrief().importSicherheitHypotheken(ivZielDarlehen.getKontonummer(), new String(), "", ivZielDarlehen.getKredittyp(), ivZielDarlehen.getBuergschaftProzent(), "ADARLPFBG", ivInstitutsnummer, null));
 
                 }
             	catch (Exception exp)

@@ -406,6 +406,6 @@ public class RefiRegisterPassiv
          //System.out.println("ivFinanzgeschaeftDaten.getTyp(): " +  ivFinanzgeschaeftDaten.getTyp());
        Sicherheiten2RefiRegister lvSicherheiten2RefiRegister = new Sicherheiten2RefiRegister(pvSicherheitenDaten, ivLogger);
 
-       pvOutputDarlehenXML.printTransaktion(lvSicherheiten2RefiRegister.importSicherheitHypotheken(lvHelpKontonummer, pvZielDarlehen.getKontonummer(), pvZielDarlehen.getKundennummer(), ivFinanzgeschaeftDaten.getTyp(), pvZielDarlehen.getBuergschaftProzent(), "ADARLREFI", pvZielDarlehen.getInstitutsnummer()));
+       pvOutputDarlehenXML.printTransaktion(lvSicherheiten2RefiRegister.importSicherheitHypotheken(lvHelpKontonummer, pvZielDarlehen.getKontonummer(), pvZielDarlehen.getKundennummer(), ivFinanzgeschaeftDaten.getTyp(), pvZielDarlehen.getBuergschaftProzent(), "ADARLREFI", pvZielDarlehen.getInstitutsnummer(), null));
      }
 }
