@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">   
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">      
+  <appender name="TXSConsoleAppender" class="org.apache.log4j.ConsoleAppender">       
+    <param name="Threshold" value="INFO" />       
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>      
+  <appender name="TXSMarktdatenAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\Marktdaten.log" />       
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSRueckmeldungAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\Rueckmeldung.log" />       
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSDarlehenFilternAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\DarlehenFiltern.log" />       
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSDarKaAppender" class="org.apache.log4j.RollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\DarKa.log" />
+    <param name="MaxFileSize" value="100MB" />
+    <param name="RollingStyle" value="Date" />
+    <param name="Append" value="false" />      
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSDarKaFlugzeugeAppender" class="org.apache.log4j.RollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\DarKaFlugzeuge.log" />
+    <param name="MaxFileSize" value="100MB" />
+    <param name="RollingStyle" value="Date" />
+    <param name="Append" value="false" />      
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSDarKaSchiffeAppender" class="org.apache.log4j.RollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\DarKaSchiffe.log" />
+    <param name="MaxFileSize" value="100MB" />
+    <param name="RollingStyle" value="Date" />
+    <param name="Append" value="false" />      
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSDarKaOEPGAppender" class="org.apache.log4j.RollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\DarKaOEPG.log" />
+    <param name="MaxFileSize" value="100MB" />
+    <param name="RollingStyle" value="Date" />
+    <param name="Append" value="false" />      
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="DPPKundeAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\Kunde_DPP.log" />       
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSfriscoAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\Frisco.log" /> 
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout> 
+ </appender>
+ <appender name="TXSmavisAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\mavis.log" /> 
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout> 
+ </appender>  
+ <appender name="TXSdarlwpAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\darlwp.log" /> 
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>   
+  </appender>
+ <appender name="TXSfriscoNeuAppender" class="org.apache.log4j.DailyRollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="DatePattern" value="'.'yyyy-MM-dd_HH-mm" />
+    <param name="File" value="F:\\TXS_009_PROD\\PROTOKOLL\\LB\\FriscoNeu.log" /> 
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <appender name="TXSMarktdaten_chainsaw" class="org.apache.log4j.net.SocketAppender">     
+    	<param name="locationInfo" value="true" />
+    	<param name="port" value="4560" /> 
+	<param name="remoteHost" value="localhost" />      	
+  </appender>
+  <!-- LOGGER LIST -->
+  <!-- log all classes in org.developers package -->
+  <logger name="TXSConsoleLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSConsoleAppender"/>
+  </logger>
+  <logger name="TXSMarktdatenLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSMarktdatenAppender"/>
+    <appender-ref ref="TXSMarktdaten_chainsaw"/>
+  </logger>
+  <logger name="TXSRueckmeldungLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSRueckmeldungAppender"/>
+  </logger>
+  <logger name="TXSDarlehenFilternLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSDarlehenFilternAppender"/>
+  </logger>
+  <logger name="TXSDarKaLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSDarKaAppender"/>
+  </logger>
+  <logger name="TXSDarKaFlugzeugeLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSDarKaFlugzeugeAppender"/>
+  </logger>
+  <logger name="TXSDarKaSchiffeLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSDarKaSchiffeAppender"/>
+  </logger>
+  <logger name="TXSDarKaOEPGLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSDarKaOEPGAppender"/>
+  </logger>
+  <logger name="DPPKundeLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="DPPKundeAppender"/>
+  </logger>
+  <logger name="friscoLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSfriscoAppender"/>
+  </logger>
+<logger name="darlwpLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSdarlwpAppender"/>
+  </logger>
+<logger name="mavisLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSmavisAppender"/>
+  </logger>
+<logger name="friscoNeuLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSfriscoNeuAppender"/>
+  </logger>
+
+  <root>
+    <priority value="debug"></priority>
+    <!-- log all log entries on console -->
+    <appender-ref ref="TXSConsoleAppender"/>
+   </root>
+ </log4j:configuration> 
