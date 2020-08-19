@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">   
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">      
+  <appender name="TXSConsoleAppender" class="org.apache.log4j.ConsoleAppender">       
+    <param name="Threshold" value="INFO" />       
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>      
+  <appender name="TXSDarKaAppender" class="org.apache.log4j.RollingFileAppender">     
+    <param name="Threshold" value="INFO" />
+    <param name="File" value="F:\\TXS_009_PROD\\Protokoll\\LB\\DarKa.log" />
+    <param name="MaxFileSize" value="100MB" />
+    <param name="Append" value="false" />      
+    <layout class="org.apache.log4j.PatternLayout">          
+      <param name="ConversionPattern" value="%d{ISO8601} %-5p [%t] %c: %m%n" />       
+    </layout>    
+  </appender>
+  <!-- LOGGER LIST -->
+  <!-- log all classes in org.developers package -->
+  <logger name="TXSConsoleLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSConsoleAppender"/>
+  </logger>
+  <logger name="TXSDarKaLogger">
+    <!-- level info logs -->
+    <level value="INFO" />
+    <appender-ref ref="TXSDarKaAppender"/>
+  </logger>
+  <root>
+    <priority value="debug"></priority>
+    <!-- log all log entries on console -->
+    <appender-ref ref="TXSConsoleAppender"/>
+   </root>
+ </log4j:configuration> 
