@@ -680,7 +680,7 @@ public class CashflowsLoanIQVerarbeitung
                   if (pvListeCashflow.get(i).getArtNummer().equals("17"))
                   {
                       // Ablaufart 17 fuer beide Geschaefte nicht anliefern - CT 03.06.2020
-                    if (!(pvListeCashflow.get(i).getISIN().equals("XFNB00NJU130") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJU155") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJW003")))
+                    if (!(pvListeCashflow.get(i).getISIN().equals("XFNB00NJU130") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJU155") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJW003") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJW961")))
                     {
                       lvCfdaten.setTbetrag(pvListeCashflow.get(i).getWert());
                       LOGGER_CASHFLOWS.info("Ablaufart17;" + pvListeCashflow.get(i).getKontonummer() + ";" + pvListeCashflow.get(i).getISIN() + ";" + pvListeCashflow.get(i).getBuchungsdatum()
