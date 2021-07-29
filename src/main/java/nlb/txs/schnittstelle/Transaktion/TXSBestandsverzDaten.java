@@ -144,7 +144,9 @@ public class TXSBestandsverzDaten implements TXSTransaktion
         //}       
         //if (this.ivGem.length() > 0)
         //{
-          lvHelpXML.append("gem=\"" + String2XML.change2XML(this.ivGem) + "\" ");  
+          lvHelpXML.append("gem=\"" + String2XML.change2XML(this.ivGem) + "\" ");
+        //// CT 04.05.2021 - lvHelpXML.append("gem=\"\" ");
+
         //}
         //if (this.ivLfdnr.length() > 0)
         //{

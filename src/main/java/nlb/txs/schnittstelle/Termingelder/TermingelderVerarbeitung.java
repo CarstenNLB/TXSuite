@@ -102,7 +102,7 @@ public class TermingelderVerarbeitung
         LOGGER_TERMINGELD.info("Institutsnummer: " + ivInstitutsnummer);
       }
 
-      ivImportVerzeichnis = pvReader.getPropertyString("Termingeld", "ImportVerzeichnis", "Fehler");
+      ivImportVerzeichnis = pvReader.getPropertyString("Termingelder", "ImportVerzeichnis", "Fehler");
       if (ivImportVerzeichnis.equals("Fehler"))
       {
         LOGGER_TERMINGELD.error("Kein Import-Verzeichnis in der ini-Datei...");
@@ -113,7 +113,7 @@ public class TermingelderVerarbeitung
         LOGGER_TERMINGELD.info("ImportVerzeichnis: " + ivImportVerzeichnis);
       }
 
-      ivExportVerzeichnis = pvReader.getPropertyString("Termingeld", "ExportVerzeichnis", "Fehler");
+      ivExportVerzeichnis = pvReader.getPropertyString("Termingelder", "ExportVerzeichnis", "Fehler");
       if (ivExportVerzeichnis.equals("Fehler"))
       {
         LOGGER_TERMINGELD.error("Kein Export-Verzeichnis in der ini-Datei...");
@@ -124,7 +124,7 @@ public class TermingelderVerarbeitung
         LOGGER_TERMINGELD.info("ExportVerzeichnis: " + ivExportVerzeichnis);
       }
 
-      ivTermingeldInputDatei =  pvReader.getPropertyString("Termingeld", "TermingeldInput-Datei", "Fehler");
+      ivTermingeldInputDatei =  pvReader.getPropertyString("Termingelder", "TermingeldInput-Datei", "Fehler");
       if (ivTermingeldInputDatei.equals("Fehler"))
       {
         LOGGER_TERMINGELD.error("Kein TermingeldInput-Dateiname in der ini-Datei...");
@@ -135,7 +135,7 @@ public class TermingelderVerarbeitung
         LOGGER_TERMINGELD.info("TermingeldInput-Datei: " + ivTermingeldInputDatei);
       }
 
-      ivTermingeldOutputDatei =  pvReader.getPropertyString("Termingeld", "TermingeldOutput-Datei", "Fehler");
+      ivTermingeldOutputDatei =  pvReader.getPropertyString("Termingelder", "TermingeldOutput-Datei", "Fehler");
       if (ivTermingeldOutputDatei.equals("Fehler"))
       {
         LOGGER_TERMINGELD.error("Kein TermingeldOutput-Dateiname in der ini-Datei...");
@@ -146,7 +146,7 @@ public class TermingelderVerarbeitung
         LOGGER_TERMINGELD.info("TermingeldOutput-Datei: " + ivTermingeldOutputDatei);
       }
 
-      ivKundeRequestDatei = pvReader.getPropertyString("Termingeld", "KundeRequestDatei", "Fehler");
+      ivKundeRequestDatei = pvReader.getPropertyString("Termingelder", "KundeRequestDatei", "Fehler");
       if (ivKundeRequestDatei.equals("Fehler"))
       {
         LOGGER_TERMINGELD.error("Kein KundeRequest-Dateiname in der ini-Datei...");
@@ -245,11 +245,16 @@ public class TermingelderVerarbeitung
           //System.out.println("lvZeile: " + lvZeile);
           if (ivTermingeld.parseTermingeld(lvZeile)) // Parsen der Felder
           {
-            if (isAusplatzierungsmerkmalRelevant())
+            if (isAusplatzierungsmerkmalRelevant() && StringKonverter.convertString2Double(ivTermingeld.getSaldo()) > 0.0)
             {
               ivKundennummernOutput.printKundennummer(ivTermingeld.getGeschaeftspartnernummer());
               ivTermingeld.verarbeiteTermingeld(ivOutputDarlehenXML, ivVorlaufsatz);
             }
+            else
+            {
+              LOGGER_TERMINGELD.info("Konto " + ivTermingeld.getKontonummer() + " - Ausplatzierungsmerkmal: " + ivTermingeld.getAusplatzierungsmerkmal() + " - Saldo: " + ivTermingeld.getSaldo());
+            }
+
             ivZaehlerTermingelder++;
           }
         }

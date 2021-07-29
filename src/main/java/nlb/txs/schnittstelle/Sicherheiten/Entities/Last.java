@@ -302,7 +302,7 @@ public class Last
               this.setReihenfolge(pvWert);
               break;
           case 8:
-              pvWert = pvWert.replace(".", "");
+              //pvWert = pvWert.replace(".", "");
               pvWert = pvWert.replace(",", ".");
               this.setVerfuegungsbetrag(pvWert.trim());
               break;

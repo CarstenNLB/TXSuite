@@ -104,7 +104,7 @@ public class CashflowsAZ6Verarbeitung
     private BigDecimal ivSummeAblaufart17AAZ6PFBG = new BigDecimal("0.0");
 
     /**
-     * Konstruktor fuer Verarbeitung Cashflows 
+     * Konstruktor fuer Verarbeitung Cashflows aus AZ6
      * @param pvReader
      */
     public CashflowsAZ6Verarbeitung(IniReader pvReader)
@@ -161,7 +161,7 @@ public class CashflowsAZ6Verarbeitung
     }
 
     /**
-     * 
+     * Startet die Verabeitung
      */
     private void startVerarbeitung()
     {    
@@ -233,7 +233,7 @@ public class CashflowsAZ6Verarbeitung
     }
     
     /**
-     * Liest die Cashflows
+     * Liest die Cashflows ein
      */
     private void readCashflows(String pvDateiname)
     {
@@ -327,7 +327,7 @@ public class CashflowsAZ6Verarbeitung
 
     /**
      * Liefert eine Statistik als String
-     * @return 
+     * @return Statistik als String
      */
     private String printStatistik()
     {
@@ -343,8 +343,8 @@ public class CashflowsAZ6Verarbeitung
     }
 
     /**
-     * Verarbeite Cashflows
-     * @param pvListeCashflow 
+     * Verarbeitet die Cashflows einer Kontonummer
+     * @param pvListeCashflow Liste der Cashflows zu einer Kontonummer
      */
     private void verarbeiteCashflows(ArrayList<Cashflow> pvListeCashflow)
     {
@@ -390,57 +390,24 @@ public class CashflowsAZ6Verarbeitung
             return;
         }
 
-        /*
-      // Bei Zeros Zins und Tilgung am Ende (bei Faelligkeit) hinterlegen
-		if (lvQuellsystemDaten.getMerkmalZinstyp().equals("ZERO"))
-		{
-		  Cashflow lvErsteCashflow = pvListeCashflow.get(0);
-		  ArrayList<Cashflow> lvHelpListeCashflow = new ArrayList<Cashflow>();
-		  for (Cashflow lvHelpCashflow:pvListeCashflow)
-      {
-        if (lvHelpCashflow.getArtNummer().equals("17"))
+        // Die Cashflows werden bei Ablaufart 13 abgeschnitten. Ausnahme sind Rollover, die lang ausgerollt werden.
+        LOGGER_CASHFLOWS.info("Anzahl ungefilterter Cashflows - Kontonummer " +  pvListeCashflow.get(0).getKontonummer() + ": " + pvListeCashflow.size());
+        if (!(lvQuellsystemDaten.getRolloverKennzeichen().equals("F") || lvQuellsystemDaten.getRolloverKennzeichen().equals("V")))
         {
-          lvHelpListeCashflow.add(lvHelpCashflow);
+          //Cashflow lvErsteCashflow = pvListeCashflow.get(0);
+          ArrayList<Cashflow> lvHelpListeCashflow = new ArrayList<Cashflow>();
+          for (Cashflow lvHelpCashflow:pvListeCashflow)
+          {
+            if (lvHelpCashflow.getArtNummer().equals("13"))
+            {
+              lvHelpListeCashflow.add(lvHelpCashflow);
+              break;
+            }
+            lvHelpListeCashflow.add(lvHelpCashflow);
+          }
+          pvListeCashflow = lvHelpListeCashflow;
         }
-      }
-		  pvListeCashflow = lvHelpListeCashflow;
-
-		  LOGGER_CASHFLOWS.info(lvQuellsystemDaten.getUrsprungskontonummer() + " - " + lvQuellsystemDaten.getNennbetrag());
-		  LOGGER_CASHFLOWS.info(lvQuellsystemDaten.getUrsprungskontonummer() + " - " + lvQuellsystemDaten.getAmortisierungsbetrag());
-		  // Tilgung bei Zeros
-      BigDecimal lvNennbetrag = StringKonverter.convertString2BigDecimal(lvQuellsystemDaten.getNennbetrag());
-      BigDecimal lvAmortisierungsbetrag = StringKonverter.convertString2BigDecimal(lvQuellsystemDaten.getAmortisierungsbetrag());
-      BigDecimal lvRestkapital = lvNennbetrag.subtract(lvAmortisierungsbetrag);
-      LOGGER_CASHFLOWS.info("Zero - Tilgung " + lvErsteCashflow.getISIN() + "_" + lvErsteCashflow.getKontonummer() + ":" + lvRestkapital.toPlainString());
-      Cashflow lvZeroTilgungCashflow = new Cashflow();
-      lvZeroTilgungCashflow.setArtNummer("ZET"); // Zero-Tilgung
-      lvZeroTilgungCashflow.setBruttoNetto("N"); // Netto
-      lvZeroTilgungCashflow.setBuchungsdatum(DatumUtilities.changeDatePoints(lvQuellsystemDaten.getFaelligkeit().replace("-", "")));
-      lvZeroTilgungCashflow.setInstitutsnummer(lvErsteCashflow .getInstitutsnummer());
-      lvZeroTilgungCashflow.setISIN(lvErsteCashflow .getISIN());
-      lvZeroTilgungCashflow.setKontonummer(lvErsteCashflow .getKontonummer());
-      lvZeroTilgungCashflow.setQuellsystem(lvErsteCashflow .getQuellsystem());
-      lvZeroTilgungCashflow.setWaehrung(lvErsteCashflow .getWaehrung());
-      lvZeroTilgungCashflow.setWert(lvRestkapital.toPlainString());
-      lvZeroTilgungCashflow.setWertstellungsdatum(DatumUtilities.changeDatePoints(lvQuellsystemDaten.getFaelligkeit().replace("-", "")));
-      pvListeCashflow.add(lvZeroTilgungCashflow);
-
-      // Zinsen bei Zeros
-      //BigDecimal lvZinsbetrag = lvNennbetrag.subtract(lvRestkapital);
-      LOGGER_CASHFLOWS.info("Zero - Zinsen " + lvErsteCashflow.getISIN() + "_" + lvErsteCashflow.getKontonummer() + ":" + lvQuellsystemDaten.getAmortisierungsbetrag());
-			Cashflow lvZeroZinsenCashflow = new Cashflow();
-      lvZeroZinsenCashflow.setArtNummer("ZEZ"); // Zero-Zinsen
-      lvZeroZinsenCashflow.setBruttoNetto("N"); // Netto
-      lvZeroZinsenCashflow.setBuchungsdatum(DatumUtilities.changeDatePoints(lvQuellsystemDaten.getFaelligkeit().replace("-", "")));
-      lvZeroZinsenCashflow.setInstitutsnummer(lvErsteCashflow.getInstitutsnummer());
-      lvZeroZinsenCashflow.setISIN(lvErsteCashflow.getISIN());
-      lvZeroZinsenCashflow.setKontonummer(lvErsteCashflow.getKontonummer());
-      lvZeroZinsenCashflow.setQuellsystem(lvErsteCashflow.getQuellsystem());
-      lvZeroZinsenCashflow.setWaehrung(lvErsteCashflow .getWaehrung());
-      lvZeroZinsenCashflow.setWert(lvQuellsystemDaten.getAmortisierungsbetrag());
-      lvZeroZinsenCashflow.setWertstellungsdatum(DatumUtilities.changeDatePoints(lvQuellsystemDaten.getFaelligkeit().replace("-", "")));
-			pvListeCashflow.add(lvZeroZinsenCashflow);
-		} */
+        LOGGER_CASHFLOWS.info("Anzahl gefilterter Cashflows - Kontonummer " + pvListeCashflow.get(0).getKontonummer() + ": " + pvListeCashflow.size());
 
         String lvManTilg = "0";
         String lvManZins = "0";
@@ -479,18 +446,6 @@ public class CashflowsAZ6Verarbeitung
              		  lvCfdaten.setTbetrag(pvListeCashflow.get(i).getWert());
             	}
 
-            	/*
-              if (pvListeCashflow.get(i).getArtNummer().equals("17") && lvQuellsystemDaten.getMerkmalZinstyp().equals("ZERO"))
-              {
-                BigDecimal lvNennbetrag = StringKonverter.convertString2BigDecimal(lvQuellsystemDaten.getNennbetrag());
-                BigDecimal lvAmortisierungsbetrag = StringKonverter.convertString2BigDecimal(lvQuellsystemDaten.getAmortisierungsbetrag());
-                BigDecimal lvRestkapital = lvNennbetrag.subtract(lvAmortisierungsbetrag);
-
-                BigDecimal lvResultZinsen = StringKonverter.convertString2BigDecimal(pvListeCashflow.get(i).getWert()).subtract(lvRestkapital);
-                LOGGER_CASHFLOWS.info("Zero - Kuendigungstermin - Zinsen " + pvListeCashflow.get(0).getISIN() + "_" + pvListeCashflow.get(0).getKontonummer() + ":" + lvResultZinsen.toPlainString());
-                lvCfdaten.setTbetrag(lvResultZinsen.toPlainString());
-              } */
-
             	if (pvListeCashflow.get(i).getArtNummer().equals("21"))
             	{
              			lvCfdaten.setZbetrag(pvListeCashflow.get(i).getWert());
@@ -508,29 +463,6 @@ public class CashflowsAZ6Verarbeitung
                 			lvCfdaten.setZbetrag(pvListeCashflow.get(i).getWert());
                 	}
             }
-
-            /*
-          //Zero-Tilgung anhaengen
-          if (pvListeCashflow.get(i).getArtNummer().equals("ZET"))
-          {
-            if (ivModus == CashflowsVerarbeitung.LOANIQ)
-            {
-              //lvHelpTbetrag = lvHelpTbetrag.add(lvHelpWert);
-              lvCfdaten.setTbetrag(pvListeCashflow.get(i).getWert());
-              LOGGER_CASHFLOWS.info("ZET: "  + lvCfdaten.getCfkey() + " - " + pvListeCashflow.get(i).getWert());
-            }
-          }
-
-          //Zero-Zinsen anhaengen
-          if (pvListeCashflow.get(i).getArtNummer().equals("ZEZ"))
-          {
-            if (ivModus == CashflowsVerarbeitung.LOANIQ)
-            {
-              //lvHelpZbetrag = lvHelpZbetrag.add(lvHelpWert);
-              lvCfdaten.setZbetrag(pvListeCashflow.get(i).getWert());
-              LOGGER_CASHFLOWS.info("ZEZ: "  + lvCfdaten.getCfkey() + " - " + pvListeCashflow.get(i).getWert());
-            }
-          } */
 
           if (pvListeCashflow.get(i).getArtNummer().equals("17"))
         	{		 
@@ -550,49 +482,15 @@ public class CashflowsAZ6Verarbeitung
                 BigDecimal lvHelpWert = StringKonverter.convertString2BigDecimal(pvListeCashflow.get(i).getWert());
                 if (pvListeCashflow.get(i).getArtNummer().equals("11") || pvListeCashflow.get(i).getArtNummer().equals("13"))
                 {
-                  //if (!lvQuellsystemDaten.getMerkmalZinstyp().equals("ZERO"))
-                  //{
-                      lvHelpTbetrag = lvHelpTbetrag.add(lvHelpWert);
-                      lvCfdaten.setTbetrag(lvHelpTbetrag.toString());
-                      //LOGGER_CASHFLOWS.info("Summierung: " + lvCfdaten.getCfkey() + " - " + lvCfdaten.getTbetrag() + " - " + lvCfdaten.getZbetrag());
-                  //}
+                  lvHelpTbetrag = lvHelpTbetrag.add(lvHelpWert);
+                  lvCfdaten.setTbetrag(lvHelpTbetrag.toString());
                 }
 
               if (pvListeCashflow.get(i).getArtNummer().equals("21"))
                 {
-                	//if (ivModus == CashflowsVerarbeitung.LOANIQ)
-                	//{
-                		//if (!lvQuellsystemDaten.getMerkmalZinstyp().equals("ZERO"))
-                		//{
-                			lvHelpZbetrag = lvHelpZbetrag.add(lvHelpWert);
-                			lvCfdaten.setZbetrag(lvHelpZbetrag.toString());
-                		//}
-                	//}
-                }
-
-              /*
-              //Zero-Tilgung anhaengen
-              if (pvListeCashflow.get(i).getArtNummer().equals("ZET"))
-              {
-                if (ivModus == CashflowsVerarbeitung.LOANIQ)
-                {
-                  lvHelpTbetrag = lvHelpTbetrag.add(lvHelpWert);
-                  lvCfdaten.setTbetrag(lvHelpTbetrag.toPlainString());
-                  //LOGGER_CASHFLOWS.info("ZET: "  + lvCfdaten.getCfkey() + " - " + lvHelpTbetrag.toPlainString());
-                }
-              }
-
-              //Zero-Zinsen anhaengen
-              if (pvListeCashflow.get(i).getArtNummer().equals("ZEZ"))
-              {
-                if (ivModus == CashflowsVerarbeitung.LOANIQ)
-                {
                   lvHelpZbetrag = lvHelpZbetrag.add(lvHelpWert);
-                  lvCfdaten.setZbetrag(lvHelpZbetrag.toPlainString());
-                  //LOGGER_CASHFLOWS.info("ZEZ: "  + lvCfdaten.getCfkey() + " - " + lvHelpZbetrag.toPlainString());
+                  lvCfdaten.setZbetrag(lvHelpZbetrag.toString());
                 }
-              } */
-
             }
             // Es wird ueberprueft, ob Tilgung oder Zinsen geliefert werden
             if (StringKonverter.convertString2Double(lvCfdaten.getTbetrag()) > 0.0)

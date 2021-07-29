@@ -12,6 +12,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import nlb.txs.schnittstelle.LoanIQ.Vorlaufsatz;
 import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
+import nlb.txs.schnittstelle.Sicherheiten.Sicherheiten2Pfandbrief;
 import nlb.txs.schnittstelle.Sicherheiten.Sicherheiten2Register;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeft;
 import nlb.txs.schnittstelle.Transaktion.TXSFinanzgeschaeftDaten;
@@ -21,6 +22,7 @@ import nlb.txs.schnittstelle.Transaktion.TXSKreditSicherheit;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheitDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheitPerson;
 import nlb.txs.schnittstelle.Transaktion.TXSSliceInDaten;
+import nlb.txs.schnittstelle.Utilities.DatumUtilities;
 import nlb.txs.schnittstelle.Utilities.ObjekteListe;
 import nlb.txs.schnittstelle.Utilities.StringKonverter;
 import nlb.txs.schnittstelle.Utilities.ValueMapping;
@@ -366,6 +368,30 @@ public class DarlehenBlock
           }
           BigDecimal lvKonsortialFaktor = new BigDecimal("1.00");
           BigDecimal lvRestkapitalNetto = StringKonverter.convertString2BigDecimal(this.getDarlehenNetto().getRestkapital());
+          if (this.getDarlehenBrutto() != null)
+          {
+            if (StringKonverter.convertString2Double(this.getDarlehenBrutto().getRestkapital()) > 0.0 &&
+                lvRestkapitalNetto.doubleValue() > 0.0)
+            {
+              lvKonsortialFaktor = lvRestkapitalNetto.divide(StringKonverter.convertString2BigDecimal(this.getDarlehenBrutto().getRestkapital()),  9, RoundingMode.HALF_UP);
+            }
+            else
+            {
+              ivLogger.info("Kontonummer " + this.getKontonummer() + " - Restkapital(Netto-Zeile): " + this.getDarlehenNetto().getRestkapital());
+              ivLogger.info("Kontonummer " + this.getKontonummer() + " - Restkapital(Brutto-Zeile): " + this.getDarlehenBrutto().getRestkapital());
+            }
+          }
+
+        /*
+        // Verbuergte Geschaefte und Konsortialgeschaefte in die VerbuergtKonsortial-Datei schreiben
+        if (StringKonverter.convertString2Double(this.getDarlehenNetto().getBuergschaftprozent()) > 0.0 || this.getDarlehenNetto().getKennzeichenKonsortialkredit().equals("J"))
+        {
+          if (StringKonverter.convertString2Double(this.getDarlehenNetto().getRestkapital()) == 0.0)
+          {
+            ivLogger.info("Kontonummer " + this.getKontonummer() + " - Restkapital(Netto-Zeile): " + this.getDarlehenNetto().getRestkapital());
+          }
+          BigDecimal lvKonsortialFaktor = new BigDecimal("1.00");
+          BigDecimal lvRestkapitalNetto = StringKonverter.convertString2BigDecimal(this.getDarlehenNetto().getRestkapital());
           if (StringKonverter.convertString2Double(this.getDarlehenBrutto().getRestkapital()) > 0.0 &&
               lvRestkapitalNetto.doubleValue() > 0.0)
           {
@@ -376,7 +402,7 @@ public class DarlehenBlock
             ivLogger.info("Kontonummer " + this.getKontonummer() + " - Restkapital(Netto-Zeile): " + this.getDarlehenNetto().getRestkapital());
             ivLogger.info("Kontonummer " + this.getKontonummer() + " - Restkapital(Brutto-Zeile): " + this.getDarlehenBrutto().getRestkapital());
           }
-
+          */
         }
 
         importDarlehen2Transaktion(pvFosCashflowQuellsystem, pvOutputDarlehenXML, pvMappingRueckmeldungListe);
@@ -432,7 +458,7 @@ public class DarlehenBlock
          //{
          lvOkayDarlehen = lvFinanzgeschaeft.importLoanIQ(this, ivVorlaufsatz, ivLogger);
          //}
-            
+
          if (lvOkayDarlehen)
          {              
        	  lvOkayDarlehen = lvFinanzgeschaeftDaten.importLoanIQ(this, ivVorlaufsatz, ivLogger);
@@ -445,7 +471,15 @@ public class DarlehenBlock
          
          if (lvOkayDarlehen)
          {
-             lvOkayDarlehen = lvKondDaten.importLoanIQ(this, ivVorlaufsatz, ivLogger);
+           lvOkayDarlehen = lvKondDaten.importLoanIQ(this, ivVorlaufsatz, ivLogger);
+           if (ivDarlehenNetto.getQuellsystem().equals("IWHS"))
+           {
+             if (ivDarlehenNetto.getFaelligkeit().equals("31.12.2099"))
+             {
+               lvKondDaten.setFaellig(DatumUtilities.changeDate(ivDarlehenNetto.getNaechsteZinsanpassung()));
+               lvKondDaten.setEnddat(DatumUtilities.changeDate(ivDarlehenNetto.getLaufzeitende()));
+             }
+           }
          }
          
          if (lvOkayDarlehen)
@@ -520,6 +554,13 @@ public class DarlehenBlock
                  lvKredittyp = Darlehen.FLUGZEUGDARLEHEN;
              }
          }
+         if (this.getQuellsystem().startsWith("IWHS"))
+         {
+           if (this.getDarlehenNetto().getAusplatzierungsmerkmal().equals("K1") && StringKonverter.convertString2Double(((Sicherheiten2Pfandbrief)ivSicherheiten2Register).getSicherheitenDaten().getBuergschaftprozent(ivKontonummer)) > 0.0)
+           {
+             lvKredittyp = Darlehen.VERBUERGT_KOMMUNAL;
+           }
+         }
 
          //System.out.println("Konto " + ivDarlehenLoanIQBlock.getKontonummer() + " lvKredittyp: " + lvKredittyp);
          
@@ -534,10 +575,10 @@ public class DarlehenBlock
        			    pvOutputDarlehenXML.printTransaktion(ivSicherheiten2Register.importSicherheitHypotheken(this.getKontonummer(), "", "","1", this.getDarlehenNetto().getBuergschaftprozent(), lvFinanzgeschaeft.getQuelle(), ivVorlaufsatz.getInstitutsnummer(), pvMappingRueckmeldungListe));
        		  }
        		  //// CT 06.11.2019 - Noch in der Testphase
-       		  ////if (lvKredittyp == Darlehen.VERBUERGT_KOMMUNAL)
-       		  ////{
-       		  ////	  pvOutputDarlehenXML.printTransaktion(ivSicherheiten2Register.importSicherheitBuergschaft(this.getKontonummer(), lvFinanzgeschaeft.getQuelle(), this.getDarlehenNetto().getRestkapital(), this.getDarlehenNetto().getBuergschaftprozent(), this.getDarlehenNetto().getAusplatzierungsmerkmal(), this.getDarlehenNetto().getNennbetrag(), this.getDarlehenNetto().getKundennummer(), this.getDarlehenNetto().getBuergennummer(), ivVorlaufsatz.getInstitutsnummer()));
-       		  ////}
+       		  if (lvKredittyp == Darlehen.VERBUERGT_KOMMUNAL)
+       		  {
+       		  	  pvOutputDarlehenXML.printTransaktion(ivSicherheiten2Register.importSicherheitBuergschaft(this.getKontonummer(), lvFinanzgeschaeft.getQuelle(), this.getDarlehenNetto().getRestkapital(), this.getDarlehenNetto().getBuergschaftprozent(), this.getDarlehenNetto().getAusplatzierungsmerkmal(), this.getDarlehenNetto().getNennbetrag(), this.getDarlehenNetto().getKundennummer(), this.getDarlehenNetto().getBuergennummer(), ivVorlaufsatz.getInstitutsnummer()));
+       		  }
             //// CT 06.11.2019 - Noch in der Testphase
             if (lvKredittyp == Darlehen.SCHIFFSDARLEHEN)
        		  {
@@ -548,9 +589,9 @@ public class DarlehenBlock
        		  	  pvOutputDarlehenXML.printTransaktion(ivSicherheiten2Register.importSicherheitFlugzeug(this.getKontonummer(), lvFinanzgeschaeft.getQuelle(), ivVorlaufsatz.getInstitutsnummer()));
        		  }
        	  }
-         }            
-         
-         if (lvOkayDarlehen)
+         }
+
+         if (lvOkayDarlehen && !ivQuellsystem.startsWith("IWHS"))
          {
        	   // Verbuergte Darlehen
        	   if (lvKredittyp == Darlehen.KOMMUNALVERBUERGTE_HYPOTHEK || lvKredittyp == Darlehen.VERBUERGT_KOMMUNAL)

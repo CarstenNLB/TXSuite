@@ -205,7 +205,7 @@ public class CashflowsAZ6Filtern
 
   /**
    * Filtert die Cashflows
-   * Nur Netto-Zeilen sind relevant und die Kontonummer muss in der Liste stehen
+   * Nur Netto-Zeilen sind relevant und die Kontonummer muss in der Liste stehen.
    * @param pvDateiInput Eingabedatei der Cashflows
    * @param pvDateiOutput Ausgabedatei der Cashflows
    */

@@ -89,20 +89,47 @@ public class VgAufgabe {
             try 
             {
                 String lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname();
+
                 if (((Dateisuche)this.getAufgabe()).getQualifier() != null)
                 {
-                  if (((Dateisuche)this.getAufgabe()).getQualifier().equals("_jjjjmmdd.xml"))
-                  {
-                    lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname() + "_" + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2)+ ".xml";
-                  }
-                  if (((Dateisuche)this.getAufgabe()).getQualifier().equals("_jjjjmmdd.csv"))
-                  {
-                    lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname() + "_" + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2)+ ".csv"; 
-                  }
-                  if (((Dateisuche)this.getAufgabe()).getQualifier().equals(".Djjmmdd"))
-                  { 
-                    lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname() + ".D" + this.getBuchungstag().substring(8) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2);
-                  }
+                    if (((Dateisuche)this.getAufgabe()).getDateiname().contains("|"))
+                    {
+                        if (((Dateisuche)this.getAufgabe()).getQualifier().equals("_jjjjmmdd.xml"))
+                        {
+                            lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname().substring(0, ((Dateisuche)this.getAufgabe()).getDateiname().indexOf('|')) + "_" + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2)+ ".xml";
+                        }
+                        if (((Dateisuche)this.getAufgabe()).getQualifier().equals("_jjjjmmdd.csv"))
+                        {
+                            lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname().substring(0, ((Dateisuche)this.getAufgabe()).getDateiname().indexOf('|')) + "_" + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2)+ ".csv";
+                        }
+                        if (((Dateisuche)this.getAufgabe()).getQualifier().equals(".Djjmmdd"))
+                        {
+                            lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname().substring(0, ((Dateisuche)this.getAufgabe()).getDateiname().indexOf('|')) + ".D" + this.getBuchungstag().substring(8) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2);
+                        }
+                        if (((Dateisuche)this.getAufgabe()).getQualifier().equals("jjjjmmdd_"))
+                        {
+                            lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2) + "_" + ((Dateisuche)this.getAufgabe()).getDateiname().substring(0, ((Dateisuche)this.getAufgabe()).getDateiname().indexOf('|'));
+                        }
+                    }
+                    else
+                    {
+                      if (((Dateisuche)this.getAufgabe()).getQualifier().equals("_jjjjmmdd.xml"))
+                      {
+                        lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname() + "_" + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2)+ ".xml";
+                      }
+                      if (((Dateisuche)this.getAufgabe()).getQualifier().equals("_jjjjmmdd.csv"))
+                      {
+                        lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname() + "_" + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2)+ ".csv";
+                      }
+                      if (((Dateisuche)this.getAufgabe()).getQualifier().equals(".Djjmmdd"))
+                      {
+                        lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + ((Dateisuche)this.getAufgabe()).getDateiname() + ".D" + this.getBuchungstag().substring(8) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2);
+                      }
+                      if (((Dateisuche)this.getAufgabe()).getQualifier().equals("jjjjmmdd_"))
+                      {
+                        lvDateiname = ((Dateisuche)this.getAufgabe()).getDateiPfad() + this.getBuchungstag().substring(6) + this.getBuchungstag().substring(3,5) + this.getBuchungstag().substring(0,2) + "_" + ((Dateisuche)this.getAufgabe()).getDateiname();
+                      }
+                    }
                 }
 
                 System.out.println("Parameter: " + lvDateiname + " " + this.getVorgang().getId() + " " + this.getMandant().getId() + " " + this.getAufgabe().getFertigstellungsEreignis().getId() + " " + this.getAufgabenVektorID());
@@ -112,7 +139,7 @@ public class VgAufgabe {
                 //(new FilePingThread(lvDateiname, this.getVorgang().getId(), this.getMandant().getId(), this.getAufgabe().getFertigstellungsEreignis().getId(), this.getAufgabenVektorID(), this.getMandant().getInstitutsId())).start();
                 // CT 19.12.2014
                 //new ProcessBuilder("D:\\FilePing\\FilePing.bat", lvDateiname, this.getId(), this.getMandant().getId(), this.getAufgabe().getFertigstellungsEreignis().getId(), lvAufgabenVektorID).start();
-                //Process p = Runtime.getRuntime().exec("D:\\FilePing\\FilePing.bat " + lvDateiname + " " + this.getId() + " " + this.getMandant().getId() + " " + this.getAufgabe().getFertigstellungsEreignis().getId() + " " + lvAufgabenVektorID); 
+                //Process p = Runtime.getRuntime().exec("D:\\FilePing\\FilePing.bat " + lvDateiname + " " + this.getId() + " " + this.getMandant().getId() + " " + this.getAufgabe().getFertigstellungsEreignis().getId() + " " + lvAufgabenVektorID);
                 //Thread.sleep(1000);
                 //System.out.println("Exit-Value: " + p.exitValue());
             }

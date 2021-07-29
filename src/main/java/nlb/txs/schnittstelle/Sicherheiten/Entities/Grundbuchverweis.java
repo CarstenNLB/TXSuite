@@ -268,12 +268,12 @@ public class Grundbuchverweis
           case 4:
               this.setLaufendeNrAbt3(pvWert);
               break;
-          //case 5:
-        	//  this.setLoeschkennzeichen(pvWert);
-        	//  break;
           case 5:
               this.setSicherheitenvereinbarungId(pvWert);
               break;
+          case 6:
+            this.setLoeschkennzeichen(pvWert);
+            break;
           default:
               ivLogger.info("Grundbuchverweis: undefiniert - Feld: " + pvPos + " Wert: " + pvWert);
         }

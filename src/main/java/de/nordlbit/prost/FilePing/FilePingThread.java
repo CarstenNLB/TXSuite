@@ -163,7 +163,7 @@ public class FilePingThread extends Thread
         
     /**
      * Existiert das File?
-     * @param filename Name des Files
+     * @param pvFilePingTask Verweis auf FilePingTask
      * @return true -> File existiert; false -> File existiert nicht
      */ 
     private boolean existsFile(FilePingTask pvFilePingTask)
@@ -224,9 +224,8 @@ public class FilePingThread extends Thread
     
     /**
      * Mounten eines Verzeichnisses
-     * @param system
      */
-    private void mountDrive()  //Logging pvLogging)
+    private void mountDrive()
     {
         long timeout = 300000;
         String command = "net.exe use ";
@@ -275,9 +274,8 @@ public class FilePingThread extends Thread
     
     /**
      * Unmounten eines Verzeichnisses
-     * @param system
      */
-    private void unmountDrive()  //Logging pvLogging)
+    private void unmountDrive()
     {
         long timeout = 300000;
         String command = "c:\\windows\\system32\\net.exe use ";

@@ -677,15 +677,42 @@ public class CashflowsLoanIQVerarbeitung
             	{
             	  if (!lvQuellsystemDaten.getMerkmalZinstyp().equals("ZERO"))
                 {
-                  if (pvListeCashflow.get(i).getArtNummer().equals("17"))
+                  if (pvListeCashflow.get(i).getArtNummer().equals("17") || pvListeCashflow.get(i).getArtNummer().equals("13"))
                   {
-                      // Ablaufart 17 fuer beide Geschaefte nicht anliefern - CT 03.06.2020
-                    if (!(pvListeCashflow.get(i).getISIN().equals("XFNB00NJU130") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJU155") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJW003") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJW961")))
+                    if (pvListeCashflow.get(i).getArtNummer().equals("17"))
                     {
-                      lvCfdaten.setTbetrag(pvListeCashflow.get(i).getWert());
-                      LOGGER_CASHFLOWS.info("Ablaufart17;" + pvListeCashflow.get(i).getKontonummer() + ";" + pvListeCashflow.get(i).getISIN() + ";" + pvListeCashflow.get(i).getBuchungsdatum()
+                      // Ablaufart 17 fuer die hinterlegten Geschaefte nicht anliefern - CT 03.06.2020
+                      if (!(pvListeCashflow.get(i).getISIN().equals("XFNB00NJU130") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJU155") ||
+                          pvListeCashflow.get(i).getISIN().equals("XFNB00NJW003") || pvListeCashflow.get(i).getISIN().equals("XFNB00NJW961") ||
+                          pvListeCashflow.get(i).getISIN().equals("XFNB00N48702") || pvListeCashflow.get(i).getISIN().equals("XFNB00N48785") ||
+                          pvListeCashflow.get(i).getISIN().equals("XFNB00N47977") || pvListeCashflow.get(i).getISIN().equals("XFBL00NZ0644") ||
+                          pvListeCashflow.get(i).getISIN().equals("XFNB00NJF917")))
+                      {
+                        lvCfdaten.setTbetrag(pvListeCashflow.get(i).getWert());
+                        LOGGER_CASHFLOWS.info("Ablaufart17;" + pvListeCashflow.get(i).getKontonummer() + ";" + pvListeCashflow.get(i).getISIN() + ";" + pvListeCashflow.get(i).getBuchungsdatum()
                           + ";" + pvListeCashflow.get(i).getWert() + ";" + pvListeCashflow.get(i).getWaehrung());
 
+                      }
+                    }
+                    if (pvListeCashflow.get(i).getArtNummer().equals("13"))
+                    {
+                      // Ablaufart 13 fuer das hinterlegte Geschaeft nicht anliefern - CT 27.05.2021
+                      if (!lvQuellsystemDaten.getMerkmalZinstyp().equals("FLOAT"))
+                      {
+                        if (!(pvListeCashflow.get(i).getISIN().equals("XFNB00NJF917") || pvListeCashflow.get(i).getISIN().equals("XFNB00N47977"))) {
+                          lvCfdaten.setTbetrag(pvListeCashflow.get(i).getWert());
+                        }
+                        else
+                        {
+                          LOGGER_CASHFLOWS.info("Ablaufart 13 entfernt;" + pvListeCashflow.get(i).getKontonummer() + ";" + pvListeCashflow.get(i).getISIN() + ";" + pvListeCashflow.get(i).getBuchungsdatum()
+                              + ";" + pvListeCashflow.get(i).getWert() + ";" + pvListeCashflow.get(i).getWaehrung());
+                        }
+                      }
+                      else
+                      {
+                        LOGGER_CASHFLOWS.info("Ablaufart 13 entfernt;" + pvListeCashflow.get(i).getKontonummer() + ";" + pvListeCashflow.get(i).getISIN() + ";" + pvListeCashflow.get(i).getBuchungsdatum()
+                            + ";" + pvListeCashflow.get(i).getWert() + ";" + pvListeCashflow.get(i).getWaehrung());
+                      }
                     }
                   }
                   else
@@ -735,7 +762,7 @@ public class CashflowsLoanIQVerarbeitung
             else
             {
                 // Ablaufart 13 nur beruecksichtigen, wenn kein Rollover
-               LOGGER_CASHFLOWS.info("Rollover Kennzeichen: " + lvQuellsystemDaten.getRolloverKennzeichen());
+               //LOGGER_CASHFLOWS.info("Rollover Kennzeichen: " + lvQuellsystemDaten.getRolloverKennzeichen());
                 if (pvListeCashflow.get(i).getArtNummer().equals("13") && (!lvQuellsystemDaten.getRolloverKennzeichen().equals("F") && !lvQuellsystemDaten.getRolloverKennzeichen().equals("V")))
                 {
                   lvCfdaten.setTbetrag(pvListeCashflow.get(i).getWert());

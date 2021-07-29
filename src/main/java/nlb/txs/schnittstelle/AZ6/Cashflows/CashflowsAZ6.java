@@ -14,8 +14,8 @@ import org.apache.log4j.xml.DOMConfigurator;
 public class CashflowsAZ6
 {
     /**
-     * Startroutine Zahlungsstrom
-     * @param argv 
+     * Startroutine CashflowsAZ6
+     * @param argv Aufrufparameter
      */
     public static void main(String argv[])
     { 

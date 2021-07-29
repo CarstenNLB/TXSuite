@@ -20,12 +20,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import nlb.txs.schnittstelle.MAVIS.RueckmeldeDatenMAVIS;
+import nlb.txs.schnittstelle.Rueckmeldung.Sicherheiten.RueckmeldungSicherheiten;
 import nlb.txs.schnittstelle.Utilities.CalendarHelper;
 import nlb.txs.schnittstelle.Utilities.IniReader;
 import nlb.txs.schnittstelle.Utilities.ObjekteListe;
@@ -72,7 +72,7 @@ public class Rueckmeldung
     /**
      * Liste der nicht-TXS Ausplatzierungsmerkmale DarKa
      */
-    private ObjekteListe ivListeAusplatzierungsmerkmalDarKa;
+    //private ObjekteListe ivListeAusplatzierungsmerkmalDarKa;
     
     /**
      * Liste der nicht-TXS Ausplatzierungsmerkmale LoanIQ
@@ -92,7 +92,7 @@ public class Rueckmeldung
     /**
      * Liste der RueckmeldungDarKaObjekte
      */
-    private HashSet<RueckmeldungDarKaObjekt> ivListeRueckmeldungDarKaObjekte;
+    //private HashSet<RueckmeldungDarKaObjekt> ivListeRueckmeldungDarKaObjekte;
     
     /**
      * log4j-Logger
@@ -183,14 +183,26 @@ public class Rueckmeldung
                 String lvRueckmeldungTXS =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungTXS", "Fehler");
                 if (lvRueckmeldungTXS.equals("Fehler"))
                 {
-                	LOGGER.error("Kein [Rueckmeldung][RueckmeldungTXS] in der ini-Datei...");
-                	System.exit(1);
+                  LOGGER.error("Kein [Rueckmeldung][RueckmeldungTXS] in der ini-Datei...");
+                  System.exit(1);
                 }
                 else
                 {
-                    LOGGER.info("RueckmeldungTXS=" + lvRueckmeldungTXS);                    
+                    LOGGER.info("RueckmeldungTXS=" + lvRueckmeldungTXS);
                 }
- 
+
+                String lvRueckmeldungSicherheitenTXS = lvReader.getPropertyString("Rueckmeldung", "RueckmeldungSicherheitenTXS", "Fehler");
+                if (lvRueckmeldungSicherheitenTXS.equals("Fehler"))
+                {
+                  LOGGER.error("Kein [Rueckmeldung][RueckmeldungSicherheitenTXS] in der ini-Datei...");
+                  System.exit(1);
+                }
+                else
+                {
+                  LOGGER.info("RueckmeldungSicherheitenTXS=" + lvRueckmeldungSicherheitenTXS);
+                }
+
+                /*
                 String lvRueckmeldungDarlehen_NLB =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungDarlehen_NLB", "Fehler");
                 if (lvRueckmeldungDarlehen_NLB.equals("Fehler"))
                 {
@@ -212,7 +224,7 @@ public class Rueckmeldung
                 {
                     LOGGER.info("RueckmeldungDarlehen_BLB=" + lvRueckmeldungDarlehen_BLB);                    
                 }
-
+*/
                 
                 String lvRueckmeldungLoanIQ =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungLoanIQ", "Fehler");
                 if (lvRueckmeldungLoanIQ.equals("Fehler"))
@@ -225,18 +237,29 @@ public class Rueckmeldung
                     LOGGER.info("RueckmeldungLoanIQ=" + lvRueckmeldungLoanIQ);                    
                 }
 
-                String lvRueckmeldungAZ6 =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungAZ6", "Fehler");
-                if (lvRueckmeldungAZ6.equals("Fehler"))
+                String lvRueckmeldungAZ6_NLB =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungAZ6_NLB", "Fehler");
+                if (lvRueckmeldungAZ6_NLB.equals("Fehler"))
                 {
-                    LOGGER.error("Kein [Rueckmeldung][RueckmeldungAZ6] in der ini-Datei...");
+                    LOGGER.error("Kein [Rueckmeldung][RueckmeldungAZ6_NLB] in der ini-Datei...");
                     System.exit(1);
                 }
                 else
                 {
-                    LOGGER.info("RueckmeldungAZ6=" + lvRueckmeldungAZ6);
+                    LOGGER.info("RueckmeldungAZ6_NLB=" + lvRueckmeldungAZ6_NLB);
                 }
 
-                String lvRueckmeldungSAPCMS_NLB =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungSAPCMS_NLB", "Fehler");
+              String lvRueckmeldungAZ6_BLB =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungAZ6_BLB", "Fehler");
+              if (lvRueckmeldungAZ6_BLB.equals("Fehler"))
+              {
+                LOGGER.error("Kein [Rueckmeldung][RueckmeldungAZ6_BLB] in der ini-Datei...");
+                System.exit(1);
+              }
+              else
+              {
+                LOGGER.info("RueckmeldungAZ6_BLB=" + lvRueckmeldungAZ6_BLB);
+              }
+
+              String lvRueckmeldungSAPCMS_NLB =  lvReader.getPropertyString("Rueckmeldung", "RueckmeldungSAPCMS_NLB", "Fehler");
                 if (lvRueckmeldungSAPCMS_NLB.equals("Fehler"))
                 {
                     LOGGER.error("Kein [Rueckmeldung][RueckmeldungSAPCMS_NLB] in der ini-Datei...");
@@ -315,7 +338,7 @@ public class Rueckmeldung
                 }
 
                 // AusplatzierungsmerkmalDarKa-Datei enthaelt die nicht relevanten Ausplatzierungsmerkmale aus DarKa
-                String lvAusplatzierungsmerkmalDarKaDatei = lvReader.getPropertyString("Rueckmeldung", "AusplatzierungsmerkmalDarKa-Datei", "Fehler");
+                /* String lvAusplatzierungsmerkmalDarKaDatei = lvReader.getPropertyString("Rueckmeldung", "AusplatzierungsmerkmalDarKa-Datei", "Fehler");
                 if (lvAusplatzierungsmerkmalDarKaDatei.equals("Fehler"))
                 {
                     LOGGER.error("Kein [Rueckmeldung][AusplatzierungsmerkmalDarKa-Datei] in der ini-Datei...");
@@ -324,7 +347,7 @@ public class Rueckmeldung
                 else
                 {
                     LOGGER.info("AusplatzierungsmerkmalDarKa-Datei=" + lvAusplatzierungsmerkmalDarKaDatei);                    
-                }
+                } */
                 
                 // AusplatzierungsmerkmalLoanIQ-Datei enthaelt die nicht relevanten Ausplatzierungsmerkmale aus LoanIQ
                 String lvAusplatzierungsmerkmalLoanIQDatei = lvReader.getPropertyString("Rueckmeldung", "AusplatzierungsmerkmalLoanIQ-Datei", "Fehler");
@@ -386,7 +409,19 @@ public class Rueckmeldung
                   LOGGER.info("ImportVerzeichnis VVS=" + lvImportVerzeichnisVVS);
                 }
 
-                // MappingRueckmeldungDatei VVS
+              // AbgangFilternRueckmeldungDatei VVS
+              String lvAbgangFilternRueckmeldungDateiVVS = lvReader.getPropertyString("Rueckmeldung", "AbgangFilternVVS", "Fehler");
+              if (lvAbgangFilternRueckmeldungDateiVVS.equals("Fehler"))
+              {
+                LOGGER.error("Kein [Rueckmeldung][AbgangFilternVVSDatei] in der ini-Datei...");
+                System.exit(1);
+              }
+              else
+              {
+                LOGGER.info("AbgangFilternVVSDatei=" + lvAbgangFilternRueckmeldungDateiVVS);
+              }
+
+              // MappingRueckmeldungDatei VVS
                 String lvMappingRueckmeldungDateiVVS = lvReader.getPropertyString("AZ6", "MappingRueckmeldungDatei", "Fehler");
                 if (lvMappingRueckmeldungDateiVVS.equals("Fehler"))
                 {
@@ -398,10 +433,22 @@ public class Rueckmeldung
                   LOGGER.info("MappingRueckmeldungDatei VVS=" + lvMappingRueckmeldungDateiVVS);
                 }
 
-              new Rueckmeldung(lvInstitut, lvImportVerzeichnis, lvExportVerzeichnis, lvRueckmeldungTXS, lvRueckmeldungDarlehen_NLB, lvRueckmeldungDarlehen_BLB,
-                		         lvRueckmeldungLoanIQ, lvRueckmeldungAZ6, lvRueckmeldungSAPCMS_NLB, lvRueckmeldungSAPCMS_BLB, lvRueckmeldungVVS_NLB, lvRueckmeldungVVS_BLB, lvRueckmeldungInMAVIS_NLB,
+              // DeltaRueckmeldungDatei VVS
+              String lvDeltaRueckmeldungDateiVVS = lvReader.getPropertyString("Rueckmeldung", "DeltaVVS", "Fehler");
+              if (lvDeltaRueckmeldungDateiVVS.equals("Fehler"))
+              {
+                LOGGER.error("Kein [Rueckmeldung][DeltaVVSDatei] in der ini-Datei...");
+                System.exit(1);
+              }
+              else
+              {
+                LOGGER.info("DeltaVVSDatei=" + lvDeltaRueckmeldungDateiVVS);
+              }
+
+              new Rueckmeldung(lvInstitut, lvImportVerzeichnis, lvExportVerzeichnis, lvRueckmeldungTXS,
+                		         lvRueckmeldungLoanIQ, lvRueckmeldungAZ6_NLB, lvRueckmeldungAZ6_BLB, lvRueckmeldungSAPCMS_NLB, lvRueckmeldungSAPCMS_BLB, lvRueckmeldungVVS_NLB, lvRueckmeldungVVS_BLB, lvRueckmeldungInMAVIS_NLB,
                 		         lvRueckmeldungOutMAVIS_NLB, lvVerbuergtKonsortial, lvAbgangslisteKredite, lvAbgangslisteSicherheiten,
-                		         lvAusplatzierungsmerkmalDarKaDatei, lvAusplatzierungsmerkmalLoanIQDatei, lvBagatellgrenze, lvImportVerzeichnisVVS, lvMappingRueckmeldungDateiVVS, lvDaypointerFileout);
+                		         lvAusplatzierungsmerkmalLoanIQDatei, lvBagatellgrenze, lvRueckmeldungSicherheitenTXS, lvImportVerzeichnisVVS, lvAbgangFilternRueckmeldungDateiVVS, lvMappingRueckmeldungDateiVVS, lvDeltaRueckmeldungDateiVVS, lvDaypointerFileout);
                 
              }
         }
@@ -414,10 +461,9 @@ public class Rueckmeldung
    * @param pvImportVerzeichnis Import-Verzeichnis
    * @param pvExportVerzeichnis Export-Verzeichnis
    * @param pvRueckmeldungTXS
-   * @param pvRueckmeldungDarlehen_NLB
-   * @param pvRueckmeldungDarlehen_BLB
    * @param pvRueckmeldungLoanIQ
-   * @param pvRueckmeldungAZ6
+   * @param pvRueckmeldungAZ6_NLB
+   * @param pvRueckmeldungAZ6_BLB
    * @param pvRueckmeldungSAPCMS_NLB
    * @param pvRueckmeldungSAPCMS_BLB
    * @param pvRueckmeldungVVS_NLB
@@ -427,11 +473,13 @@ public class Rueckmeldung
    * @param pvVerbuergtKonsortial
    * @param pvAbgangslisteKredite
    * @param pvAbgangslisteSicherheiten
-   * @param pvAusplatzierungsmerkmalDarKaDatei
    * @param pvAusplatzierungsmerkmalLoanIQDatei
    * @param pvBagatellgrenze Bagatellgrenze
+   * @param pvRueckmeldungSicherheitenTXS Rueckmeldung Sicherheiten TXS
    * @param pvImportVerzeichnisVVS Import-Verzeichnis VVS
+   * @param pvAbgangFilternRueckmeldungDateiVVS AbgangFiltern VVS
    * @param pvMappingRueckmeldungDateiVVS MappingRueckmeldungDatei VVS
+   * @param pvDeltaRueckmeldungDateiVVS Delta VVS
    * @param pvDaypointerFileout
    */
   public Rueckmeldung(
@@ -439,10 +487,9 @@ public class Rueckmeldung
       String pvImportVerzeichnis,
       String pvExportVerzeichnis,
       String pvRueckmeldungTXS,
-      String pvRueckmeldungDarlehen_NLB,
-      String pvRueckmeldungDarlehen_BLB,
       String pvRueckmeldungLoanIQ,
-      String pvRueckmeldungAZ6,
+      String pvRueckmeldungAZ6_NLB,
+      String pvRueckmeldungAZ6_BLB,
       String pvRueckmeldungSAPCMS_NLB,
       String pvRueckmeldungSAPCMS_BLB,
       String pvRueckmeldungVVS_NLB,
@@ -452,11 +499,13 @@ public class Rueckmeldung
       String pvVerbuergtKonsortial,
       String pvAbgangslisteKredite,
       String pvAbgangslisteSicherheiten,
-      String pvAusplatzierungsmerkmalDarKaDatei,
       String pvAusplatzierungsmerkmalLoanIQDatei,
       String pvBagatellgrenze,
+      String pvRueckmeldungSicherheitenTXS,
       String pvImportVerzeichnisVVS,
+      String pvAbgangFilternRueckmeldungDateiVVS,
       String pvMappingRueckmeldungDateiVVS,
+      String pvDeltaRueckmeldungDateiVVS,
       String pvDaypointerFileout) {
         LOGGER.info("Start der Rueckmeldung");
 
@@ -469,9 +518,9 @@ public class Rueckmeldung
         ivListeAbgangKredite.leseObjekteListe(null);
 
         // Liste der nicht-TXS Ausplatzierungsmerkmale aus DarKa einlesen
-        LOGGER.info("Nicht-TXS Ausplatzierungsmerkmal DarKa:");
-        ivListeAusplatzierungsmerkmalDarKa = new ObjekteListe(pvImportVerzeichnis + "\\" + pvAusplatzierungsmerkmalDarKaDatei, LOGGER);
-        ivListeAusplatzierungsmerkmalDarKa.leseObjekteListe(Arrays.asList(ivNichtTXSAusplatzierungsmerkmale));
+        //LOGGER.info("Nicht-TXS Ausplatzierungsmerkmal DarKa:");
+        //ivListeAusplatzierungsmerkmalDarKa = new ObjekteListe(pvImportVerzeichnis + "\\" + pvAusplatzierungsmerkmalDarKaDatei, LOGGER);
+        //ivListeAusplatzierungsmerkmalDarKa.leseObjekteListe(Arrays.asList(ivNichtTXSAusplatzierungsmerkmale));
 
         // Liste der nicht-TXS Ausplatzierungsmerkmale aus LoanIQ einlesen - CT 04.09.2017
         LOGGER.info("Nicht-TXS Ausplatzierungsmerkmal LoanIQ:");
@@ -538,18 +587,23 @@ public class Rueckmeldung
         //lvKontonummernListe.leseObjekteListe();
         
         String lvFilenameIn  = pvImportVerzeichnis + "\\" + pvRueckmeldungTXS;      
-        String lvFilenameOutDarlehen_NLB = pvExportVerzeichnis + "\\" + pvRueckmeldungDarlehen_NLB;        
-        String lvFilenameOutDarlehen_BLB = pvExportVerzeichnis + "\\" + pvRueckmeldungDarlehen_BLB;        
+        //String lvFilenameOutDarlehen_NLB = pvExportVerzeichnis + "\\" + pvRueckmeldungDarlehen_NLB;
+        //String lvFilenameOutDarlehen_BLB = pvExportVerzeichnis + "\\" + pvRueckmeldungDarlehen_BLB;
         String lvFilenameOutLoanIQ = pvExportVerzeichnis + "\\" + pvRueckmeldungLoanIQ;
-        String lvFilenameOutAZ6 = pvExportVerzeichnis + "\\" + pvRueckmeldungAZ6;
+        String lvFilenameOutAZ6_BLB = pvExportVerzeichnis + "\\" + pvRueckmeldungAZ6_BLB;
+        String lvFilenameOutAZ6_NLB = pvExportVerzeichnis + "\\" + pvRueckmeldungAZ6_NLB;
         String lvFilenameOutSAPCMS_NLB = pvExportVerzeichnis + "\\" + pvRueckmeldungSAPCMS_NLB;
         String lvFilenameOutSAPCMS_BLB = pvExportVerzeichnis + "\\" + pvRueckmeldungSAPCMS_BLB;
         String lvFilenameOutVVS_NLB = pvExportVerzeichnis + "\\" + pvRueckmeldungVVS_NLB;
         String lvFilenameOutVVS_BLB = pvExportVerzeichnis + "\\" + pvRueckmeldungVVS_BLB;
         String lvFilenameInMAVIS_NLB = pvRueckmeldungInMAVIS_NLB;
         String lvFilenameOutMAVIS_NLB = pvExportVerzeichnis + "\\" + pvRueckmeldungOutMAVIS_NLB;
+        String lvFilenameRueckmeldungSicherheitenDatei = pvImportVerzeichnis + "\\" + pvRueckmeldungSicherheitenTXS;
+        String lvFilenameAbgangFilternDateiVVS = pvImportVerzeichnisVVS + "\\" + pvAbgangFilternRueckmeldungDateiVVS;
         String lvFilenameMappingRueckmeldungDateiVVS = pvImportVerzeichnisVVS + "\\" + pvMappingRueckmeldungDateiVVS;
-        		
+        String lvFilenameDeltaRueckmeldungVVS = pvImportVerzeichnisVVS + "\\" +	pvDeltaRueckmeldungDateiVVS;
+
+
         // Buchungsdatum einlesen aus DPFILE
         String lvBuchungsdatum = leseBuchungsdatum(pvDaypointerFileout);
         
@@ -565,14 +619,15 @@ public class Rueckmeldung
 
         if (lvOkay)
         {
-          // Rueckmeldung DarKa  
-          schreibeRueckmeldungDarlehen(lvFilenameOutDarlehen_NLB, lvFilenameOutDarlehen_BLB);
+          // Rueckmeldung DarKa
+          // CT 20.05.2021 - DarKa wurde abgeschaltet, deshalb keine Rueckmeldung mehr erzeugen
+          //schreibeRueckmeldungDarlehen(lvFilenameOutDarlehen_NLB, lvFilenameOutDarlehen_BLB);
           
           // Rueckmeldung LoanIQ - CT 17.09.2014
           schreibeRueckmeldungLoanIQ(lvFilenameOutLoanIQ, pvBagatellgrenze);
 
           // Rueckmeldung AZ6 - CT 12.03.2020
-          schreibeRueckmeldungAZ6(lvFilenameOutAZ6, pvBagatellgrenze);
+          schreibeRueckmeldungAZ6(lvFilenameOutAZ6_NLB, lvFilenameOutAZ6_BLB, pvBagatellgrenze);
 
           // Rueckmeldung SAP CMS
           // Neue Variante - CT 10.08.2012
@@ -589,7 +644,7 @@ public class Rueckmeldung
           if (hasShPo())
           {
                 LOGGER.info("Attribute 'shpo' existiert...");
-                schreibeRueckmeldungVVS(lvFilenameOutVVS_NLB, lvFilenameOutVVS_BLB, lvFilenameMappingRueckmeldungDateiVVS);
+                schreibeRueckmeldungVVS(lvFilenameOutVVS_NLB, lvFilenameOutVVS_BLB, lvFilenameRueckmeldungSicherheitenDatei, lvFilenameAbgangFilternDateiVVS, lvFilenameMappingRueckmeldungDateiVVS, lvFilenameDeltaRueckmeldungVVS);
           }
           else {
               LOGGER.info("Attribute 'shpo' fehlt --> Keine Rueckmeldung an VVS");
@@ -704,6 +759,8 @@ public class Rueckmeldung
      * @param pvFilenameOut_NLB Dateiname der Ausgabedatei NLB
      * @param pvFilenameOut_BLB Dateiname der Ausgabedatei BLB
      */
+    /*
+    @Deprecated
     private void schreibeRueckmeldungDarlehen(String pvFilenameOut_NLB, String pvFilenameOut_BLB)
     {
         LOGGER.info("Start - schreibeRueckmeldungDarlehen");
@@ -803,7 +860,7 @@ public class Rueckmeldung
                 }
         }
 
-        /* for (RueckmeldungDarKaObjekt lvRueckmeldungDarKaObjekt:ivListeRueckmeldungDarKaObjekte)
+        ////// for (RueckmeldungDarKaObjekt lvRueckmeldungDarKaObjekt:ivListeRueckmeldungDarKaObjekte)
         {       	
         	// Deckungsstatus ueber Ausplatzierungsmerkmal ermitteln
             String lvDeckungsstatus = ermittleDeckungsstatus(lvRueckmeldungDarKaObjekt.getAusplatzierungsmerkmal(), lvRueckmeldungDarKaObjekt.getBetragBis(), lvRueckmeldungDarKaObjekt.getQuelle());
@@ -869,7 +926,7 @@ public class Rueckmeldung
                         }
                     }
                 }
-        } */
+        } //////
         
         Iterator<Entry<String, DarlehenObjekt>> iterListeDarlehen = lvListeDarlehen.entrySet().iterator();
         while (iterListeDarlehen.hasNext())
@@ -945,7 +1002,7 @@ public class Rueckmeldung
         LOGGER.info("Anzahl Rueckmeldungen an Darlehen_NLB: " + lvZaehler_NLB);
         LOGGER.info("Anzahl Rueckmeldungen an Darlehen_BLB: " + lvZaehler_BLB);
         LOGGER.info("Ende - schreibeRueckmeldungDarlehen");
-    }
+    } */
   
     /**
      * Schreibt die Rueckmeldedatei fuer Sicherheiten aus SAP CMS
@@ -1046,13 +1103,65 @@ public class Rueckmeldung
         LOGGER.info("Ende - schreibeRueckmeldungSAPCMS");
     }
 
+   /**
+    * Schreibt die Rueckmeldedatei fuer Sicherheiten aus VVS
+    * @param pvFilenameOut_NLB Dateiname der Ausgabedatei NLB
+    * @param pvFilenameOut_BLB Dateiname der Ausgabedatei BLB
+    * @param pvFilenameRueckmeldungSicherheitenDatei Dateiname der Rueckmeldung Sicherheiten Datei
+    * @param pvFilenameAbgangFilternRueckmeldungVVS Dateiname der AbgangFilternRueckmeldungDatei VVS
+    * @param pvFilenameMappingRueckmeldungDateiVVS Dateiname der MappingRueckmeldungDatei VVS
+    * @param pvFilenameDeltaRueckmeldungDateiVVS Dateiname der DeltaRueckmeldungDatei VVS
+    */
+    private void schreibeRueckmeldungVVS(String pvFilenameOut_NLB, String pvFilenameOut_BLB, String pvFilenameRueckmeldungSicherheitenDatei, String pvFilenameAbgangFilternRueckmeldungVVS,
+                                         String pvFilenameMappingRueckmeldungDateiVVS, String pvFilenameDeltaRueckmeldungDateiVVS)
+    {
+      LOGGER.info("Start - schreibeRueckmeldungVVS");
+
+      // AbgangFiltern-Datei einlesen
+      ObjekteListe lvAbgangFilternListe = new ObjekteListe(pvFilenameAbgangFilternRueckmeldungVVS, LOGGER);
+      // Ohne Filter einlesen -> Parameter null
+      lvAbgangFilternListe.leseObjekteListe(null);
+
+      // Mapping-Datei einlesen
+      ObjekteListe lvMappingListe = new ObjekteListe(pvFilenameMappingRueckmeldungDateiVVS, LOGGER);
+      // Ohne Filter einlesen -> Parameter null
+      lvMappingListe.leseObjekteListe(null);
+
+      // Delta-Datei einlesen
+      ObjekteListe lvDeltaListe = new ObjekteListe(pvFilenameDeltaRueckmeldungDateiVVS, LOGGER);
+      // Ohne Filter einlesen -> Parameter null
+      lvDeltaListe.leseObjekteListe(null);
+
+      // Rueckmeldedatei einlesen
+      HashMap<String, RueckmeldungSicherheiten> lvListeRueckmeldungSicherheiten = new HashMap<String, RueckmeldungSicherheiten>();
+      int lvZaehlerRueckmeldungSicherheiten = RueckmeldungSicherheiten
+          .readRueckmeldungSicherheiten(pvFilenameRueckmeldungSicherheitenDatei, lvListeRueckmeldungSicherheiten, LOGGER);
+      LOGGER.info(lvZaehlerRueckmeldungSicherheiten + " RueckmeldungSicherheiten eingelesen...");
+
+      OutputRueckmeldung lvOutRueck_NLB = new OutputRueckmeldung(pvFilenameOut_NLB, LOGGER);
+      lvOutRueck_NLB.open();
+      OutputRueckmeldung lvOutRueck_BLB = new OutputRueckmeldung(pvFilenameOut_BLB, LOGGER);
+      lvOutRueck_BLB.open();
+
+      StringBuilder lvRueckmeldeZeile;
+      int lvZaehler_NLB = 0;
+      int lvZaehler_BLB = 0;
+
+      lvOutRueck_NLB.close();
+      lvOutRueck_BLB.close();
+      LOGGER.info("Anzahl Rueckmeldungen an VVS_NLB: " + lvZaehler_NLB);
+      LOGGER.info("Anzahl Rueckmeldungen an VVS_BLB: " + lvZaehler_BLB);
+      LOGGER.info("Ende - schreibeRueckmeldungVVS");
+
+    }
+
     /**
      * Schreibt die Rueckmeldedatei fuer Sicherheiten aus VVS
      * @param pvFilenameOut_NLB Dateiname der Ausgabedatei NLB
      * @param pvFilenameOut_BLB Dateiname der Ausgabedatei BLB
      * @param pvFilenameMappingRueckmeldungDateiVVS Dateiname der MappingRueckmeldungDatei VVS
      */
-    private void schreibeRueckmeldungVVS(String pvFilenameOut_NLB, String pvFilenameOut_BLB, String pvFilenameMappingRueckmeldungDateiVVS)
+    private void schreibeRueckmeldungVVS_alt(String pvFilenameOut_NLB, String pvFilenameOut_BLB, String pvFilenameMappingRueckmeldungDateiVVS)
     {
         LOGGER.info("Start - schreibeRueckmeldungVVS");
         ObjekteListe lvMappingRueckmeldungListe = new ObjekteListe(pvFilenameMappingRueckmeldungDateiVVS, LOGGER);
@@ -1143,7 +1252,7 @@ public class Rueckmeldung
             lvRueckmeldeZeile.append(";");
 
             // Finanzgeschaeft
-            // Technische ID Finanzgeschäft nicht vorhanden -> Leerfeld liefern
+            // Technische ID Finanzgeschaeft nicht vorhanden -> Leerfeld liefern
             lvRueckmeldeZeile.append(";");
             lvRueckmeldeZeile.append(lvTripel.getGeschaeftswertID());
             lvRueckmeldeZeile.append(";");
@@ -1664,7 +1773,7 @@ public class Rueckmeldung
             Element lvNodeSlice = (Element)lvListSlice.get(x);  
             // Deckungsstatus per Ausplatzierungsmerkmal ermitteln
             String lvDeckungsstatus = ermittleDeckungsstatus(lvNodeSlice.getAttributeValue("ausplmerkmal"), lvNodeSlice.getAttributeValue("bis"), lvNodeSlice.getAttributeValue("quelle"));
-            if (lvNodeSlice.getAttributeValue("quelle").startsWith("ALIQ"))
+            if (lvNodeSlice.getAttributeValue("quelle").startsWith("ALIQ") && lvNodeSlice.getAttributeValue("key").startsWith("4"))
             {
                 // nicht-TXS Ausplatzierungsmerkmal darf nicht zurueckgemeldet werden
                 if (!ivListeNichtAusplatzierungsmerkmalLoanIQ.containsKey(lvNodeSlice.getAttributeValue("key")))
@@ -1858,19 +1967,23 @@ public class Rueckmeldung
 
     /**
      * Schreibt die Rueckmeldedatei fuer AZ6
-     * @param pvFilenameOut
+     * @param pvFilenameOut_NLB
+     * @param pvFilenameOut_BLB
      * @param pvBagatellgrenze
      */
-    private void schreibeRueckmeldungAZ6(String pvFilenameOut, String pvBagatellgrenze)
+    private void schreibeRueckmeldungAZ6(String pvFilenameOut_NLB, String pvFilenameOut_BLB, String pvBagatellgrenze)
     {
         LOGGER.info("Start - schreibeRueckmeldungAZ6");
-        int lvZaehlerAZ6 = 0;
+        int lvZaehlerAZ6_BLB = 0;
+        int lvZaehlerAZ6_NLB = 0;
 
         // Liste der Darlehen aus AZ6
         HashMap<String, DarlehenObjekt> lvListeDarlehen = new HashMap<String, DarlehenObjekt>();
 
-        OutputRueckmeldung lvOutRueck = new OutputRueckmeldung(pvFilenameOut, LOGGER);
-        lvOutRueck.open();
+        OutputRueckmeldung lvOutRueck_NLB = new OutputRueckmeldung(pvFilenameOut_NLB, LOGGER);
+        OutputRueckmeldung lvOutRueck_BLB = new OutputRueckmeldung(pvFilenameOut_BLB, LOGGER);
+        lvOutRueck_NLB.open();
+        lvOutRueck_BLB.open();
 
         Element lvRootNode = ivDocument.getRootElement();
 
@@ -1952,8 +2065,11 @@ public class Rueckmeldung
             }
         }
 
-        lvOutRueck.printRueckmeldezeile("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + StringKonverter.lineSeparator);
-        lvOutRueck.printRueckmeldezeile("<TXSuite_AZ6Kto>" + StringKonverter.lineSeparator);
+        lvOutRueck_NLB.printRueckmeldezeile("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + StringKonverter.lineSeparator);
+        lvOutRueck_NLB.printRueckmeldezeile("<TXSuite_AZ6Kto>" + StringKonverter.lineSeparator);
+
+        lvOutRueck_BLB.printRueckmeldezeile("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + StringKonverter.lineSeparator);
+        lvOutRueck_BLB.printRueckmeldezeile("<TXSuite_AZ6Kto>" + StringKonverter.lineSeparator);
 
         Iterator<Entry<String, DarlehenObjekt>> iterListeDarlehen = lvListeDarlehen.entrySet().iterator();
         while (iterListeDarlehen.hasNext())
@@ -1989,30 +2105,44 @@ public class Rueckmeldung
 
                 if (!lvHelpDarlehenObjekt.getAusplatzierungsmerkmal().isEmpty() && !lvHelpDarlehenObjekt.getDeckungsstatus().isEmpty())
                 {
-                    lvOutRueck.printRueckmeldezeile("  <AZ6Kto>" + StringKonverter.lineSeparator);
+                  if (lvHelpDarlehenObjekt.getOriginator().equals("29050000"))
+                  {
+                    lvOutRueck_BLB.printRueckmeldezeile("  <AZ6Kto>" + StringKonverter.lineSeparator);
 
-                    lvOutRueck.printRueckmeldezeile("    <Kontonummer>" + lvHelpEntry.getKey() + "</Kontonummer>" + StringKonverter.lineSeparator);
-                    lvOutRueck.printRueckmeldezeile("    <Ausplatzierungskennzeichen>" + lvHelpDarlehenObjekt.getAusplatzierungsmerkmal() + "</Ausplatzierungskennzeichen>" + StringKonverter.lineSeparator);
-                    //lvOutRueck.printRueckmeldezeile("    <Deckungskennzeichen>" + lvHelpDarlehenObjekt.getDeckungsstatus() + "</Deckungskennzeichen>" + StringKonverter.lineSeparator);
+                    lvOutRueck_BLB.printRueckmeldezeile("    <Kontonummer>" + lvHelpEntry.getKey() + "</Kontonummer>" + StringKonverter.lineSeparator);
+                    lvOutRueck_BLB.printRueckmeldezeile("    <Ausplatzierungskennzeichen>" + lvHelpDarlehenObjekt.getAusplatzierungsmerkmal() + "</Ausplatzierungskennzeichen>" + StringKonverter.lineSeparator);
 
-                    lvOutRueck.printRueckmeldezeile("    <Solldeckung>" + lvHelpDarlehenObjekt.getSolldeckung() + "</Solldeckung>" + StringKonverter.lineSeparator);
+                    lvOutRueck_BLB.printRueckmeldezeile("    <Solldeckung>" + lvHelpDarlehenObjekt.getSolldeckung() + "</Solldeckung>" + StringKonverter.lineSeparator);
 
-                    lvOutRueck.printRueckmeldezeile("  </AZ6Kto>" + StringKonverter.lineSeparator);
+                    lvOutRueck_BLB.printRueckmeldezeile("  </AZ6Kto>" + StringKonverter.lineSeparator);
 
-                    lvZaehlerAZ6++;
+                    lvZaehlerAZ6_BLB++;
+                   }
+                  else
+                  {
+                    lvOutRueck_NLB.printRueckmeldezeile("  <AZ6Kto>" + StringKonverter.lineSeparator);
 
-                    // Wenn das Ausplatzierungsmerkmal '99' ist, dann in die Liste der abgegangenen Kredite eintragen
-                    if (lvHelpDarlehenObjekt.getAusplatzierungsmerkmal().equals("99"))
-                    {
+                    lvOutRueck_NLB.printRueckmeldezeile("    <Kontonummer>" + lvHelpEntry.getKey() + "</Kontonummer>" + StringKonverter.lineSeparator);
+                    lvOutRueck_NLB.printRueckmeldezeile("    <Ausplatzierungskennzeichen>" + lvHelpDarlehenObjekt.getAusplatzierungsmerkmal() + "</Ausplatzierungskennzeichen>" + StringKonverter.lineSeparator);
+
+                    lvOutRueck_NLB.printRueckmeldezeile("    <Solldeckung>" + lvHelpDarlehenObjekt.getSolldeckung() + "</Solldeckung>" + StringKonverter.lineSeparator);
+
+                    lvOutRueck_NLB.printRueckmeldezeile("  </AZ6Kto>" + StringKonverter.lineSeparator);
+
+                    lvZaehlerAZ6_NLB++;
+                  }
+
+                  // Wenn das Ausplatzierungsmerkmal '99' ist, dann in die Liste der abgegangenen Kredite eintragen
+                  if (lvHelpDarlehenObjekt.getAusplatzierungsmerkmal().equals("99"))
+                  {
                         ivListeAbgangKredite.put(lvHelpEntry.getKey(), new String());
-                    }
+                  }
                 }
                 else
                 {
                     LOGGER.info("Kontonummer: " + lvHelpEntry.getKey() + " - Deckungskennzeichen oder Ausplatzierungsmerkmal leer");
                     LOGGER.info("Ausplatzierungsmerkmal: " + lvHelpDarlehenObjekt.getAusplatzierungsmerkmal());
-                    //LOGGER.info("Deckungskennzeichen: " + lvHelpDarlehenObjekt.getDeckungsstatus());
-                }
+                 }
             }
             else
             {
@@ -2020,11 +2150,14 @@ public class Rueckmeldung
             }
         }
 
-        lvOutRueck.printRueckmeldezeile("</TXSuite_AZ6Kto>" + StringKonverter.lineSeparator);
-        lvOutRueck.close();
+        lvOutRueck_BLB.printRueckmeldezeile("</TXSuite_AZ6Kto>" + StringKonverter.lineSeparator);
+        lvOutRueck_NLB.printRueckmeldezeile("</TXSuite_AZ6Kto>" + StringKonverter.lineSeparator);
+        lvOutRueck_NLB.close();
+        lvOutRueck_BLB.close();
 
-        LOGGER.info("Anzahl Rueckmeldungen an AZ6: " + lvZaehlerAZ6);
-        LOGGER.info("Ende - schreibeRueckmeldungAZ6");
+      LOGGER.info("Anzahl Rueckmeldungen an AZ6 BLB: " + lvZaehlerAZ6_BLB);
+      LOGGER.info("Anzahl Rueckmeldungen an AZ6 NLB: " + lvZaehlerAZ6_NLB);
+      LOGGER.info("Ende - schreibeRueckmeldungAZ6");
     }
 
     /**
@@ -2530,6 +2663,7 @@ public class Rueckmeldung
      * Liest die RueckmeldungDarKaObjekte ein
      * @param pvDateiname
      */
+	/*
     private void leseRueckmeldungDarKaObjekte(String pvDateiname)
     {
         LOGGER.info("Start - leseRueckmeldungDarKaObjekte");
@@ -2577,7 +2711,7 @@ public class Rueckmeldung
         } 
         LOGGER.info("Anzahl eingelesener Zeilen: " + lvZeilenNummer);
         LOGGER.info("Anzahl eingelesener RueckmeldungDarKaObjekte: " + ivListeRueckmeldungDarKaObjekte.size());
-     }
+     } */
 
     /**
      * Prueft, ob es ein Attribute 'shpo' gibt.

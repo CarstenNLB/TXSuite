@@ -87,18 +87,17 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
         // Nur Sicherheiten verwenden, wenn ZW > 0 ist
         if (lvHelpListe != null)
         {
-            //ivLogger.info("Size: " + lvHelpListe.size());
-            //ivLogger.info(lvHelpListe.toString());
-
             for (int x = 0; x < lvHelpListe.size(); x++)
             {
                 lvShum = lvHelpListe.get(x);
                 ivLogger.info("SicherungsumfangId: " + lvShum.getId() + " Zuweisungsbetrag: " + lvShum.getZuweisungsbetrag());
 
-                if (StringKonverter.convertString2Double(lvShum.getZuweisungsbetrag()) > 0.0)
-                {
+                // Deutsche Hypo - CT 21.07.2021
+                // if-Bedingung herausnehmen fuer die Deutsche Hypo Verarbeitung
+                //if (StringKonverter.convertString2Double(lvShum.getZuweisungsbetrag()) > 0.0)
+                //{
                     lvBuffer.append(this.import2TXSKreditSicherheit(lvShum, pvKontonummer, pvPassivkontonummer, pvKundennummer, pvKredittyp, pvBuergschaftprozent, pvQuellsystem, pvInstitutsnummer, pvMappingRueckmeldungListe));
-                }
+                //}
             }
         }
         else
@@ -146,9 +145,7 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                 ////{
                 if (lvShum.getDeckungsregisterRelevant().equals("01")) // Buergschaft relevant
                 {
-                //this.getLogger().info("Start...");
-                  lvBuffer.append(this.import2TXSKreditSicherheitBuerge(lvShum, pvKontonummer, pvQuellsystem, pvRestkapital, pvBuergschaftprozent, pvAusplatzierungsmerkmal, pvNominalbetrag, pvKundennummer, pvBuergennummer, pvInstitutsnummer));
-                //this.getLogger().info("Ende...");
+                   lvBuffer.append(this.import2TXSKreditSicherheitBuerge(lvShum, pvKontonummer, pvQuellsystem, pvRestkapital, pvBuergschaftprozent, pvAusplatzierungsmerkmal, pvNominalbetrag, pvKundennummer, pvBuergennummer, pvInstitutsnummer));
                 }
                 ////}
             }
@@ -404,7 +401,8 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                  lvZuwBetragRe  = lvZuwBetrag.subtract(lvZuwBetragBu);
             } // etwas da 
         } // mit Buerge .. anteilig
-                          
+        ivLogger.info("Kontonummer: " + pvKontonummer + " - Verfuegungsbetrag: " + lvSicherheitenvereinbarung.getVerfuegungsbetrag());
+
         // Last suchen
         Last lvLast = null;
         Collection<Last> lvCollectionLast = ivSicherheitenDaten.getListeLast().values();
@@ -454,19 +452,39 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                  // TXSKreditSicherheit
                  lvKredsh = new TXSKreditSicherheit();
                  lvKredsh.setKey(lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId());
-                 //lvKredsh.setOrg(ValueMapping.changeMandant(ivSAPCMS.getVorlaufsatz().getInstitut()));
                  lvKredsh.setOrg(ValueMapping.changeMandant(pvInstitutsnummer));
+                 // Deutsche Hypo - CT 21.07.2021
+                 lvKredsh.setOrg("25010600");
+
                  lvKredsh.setQuelle(pvQuellsystem);
 
                  if (pvKredittyp.equals("2"))
                  {
-                	 lvKredsh.setZuwbetrag(lvZuwBetragBu.toString());             
+                	lvKredsh.setZuwbetrag(lvZuwBetragBu.toString());
                  }
                  else
                  {
-                	 lvKredsh.setZuwbetrag(lvZuwBetragRe.toString());            
+                	 lvKredsh.setZuwbetrag(lvZuwBetragRe.toString());
                  }
                  lvKredsh.setWhrg(pvShum.getZuweisungsbetragWaehrung());
+                 // DH 29.06.2021
+                 if (pvPassivkontonummer.equals("122412215"))
+                 {
+                     lvKredsh.setZuwbetrag("332500000");
+                     lvKredsh.setWhrg("EUR");
+                 }
+                 if (pvPassivkontonummer.equals("122412318"))
+                 {
+                     lvKredsh.setZuwbetrag("120000000");
+                     lvKredsh.setWhrg("EUR");
+                 }
+                 if (pvPassivkontonummer.equals("122412411"))
+                 {
+                     lvKredsh.setZuwbetrag("80000000");
+                     lvKredsh.setWhrg("EUR");
+                 }
+
+                 // DH 29.06.2021
                  if (pvMappingRueckmeldungListe != null)
                  {
                    pvMappingRueckmeldungListe.put(lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId(), lvSicherheitenvereinbarung.getId());
@@ -476,11 +494,17 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                  lvShdaten = new TXSSicherheitDaten();
 
                  lvShdaten.setArt(ValueMapping.mapSicherheitenArt(lvImmobilie.getLaenderschluessel(), lvSicherheitenvereinbarung.getSicherheitenvereinbarungsart(), lvSicherheitenvereinbarung.getGesamtgrundschuldKennzeichen()));
+                 if (lvShdaten.getArt().length() == 0) // Wenn leer, dann Buchgrundschuld - CT 23.04.2021
+                 {
+                     lvShdaten.setArt("12");
+                 }
+
                  lvShdaten.setNbetrag(lvSicherheitenvereinbarung.getNominalwert());
                  // Test BLB - Defaultmaessig auf 'Ja' (1) - CT 04.03.2015
                  // Spaeter wieder rausnehmen
-                 //lvShdaten.setGepr("1");
-                 
+                 lvShdaten.setGepr("1");
+
+                 ivLogger.info("Kontonummer: " + pvKontonummer + " - Kredittyp: " + pvKredittyp);
                  if (pvKredittyp.equals("2"))
                  {
                      lvShdaten.setVbetrag(lvVerfBetragBu.toString());       
@@ -491,7 +515,20 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                  }
 
                  lvShdaten.setWhrg(lvSicherheitenvereinbarung.getNominalwertWaehrung());
+                 // DH 29.06.2021
+                 BigDecimal lvHelpWert = StringKonverter.convertString2BigDecimal(lvImmobilie.getBeleihungswert()).multiply(new BigDecimal("0.6"));
+                 if (StringKonverter.convertString2Double(lvHelpWert.toString()) < StringKonverter.convertString2Double(lvShdaten.getNbetrag()))
+                 {
+                     lvShdaten.setVbetrag(lvHelpWert.toPlainString());
+                 }
+                 else
+                 {
+                     lvShdaten.setVbetrag(lvShdaten.getNbetrag());
+                 }
+                 lvShdaten.setWhrg(lvImmobilie.getBeleihungswertWaehrung());
+                 // DH 29.06.2021
 
+                 /*
                  lvHelpString.append(lvKredsh.printTXSTransaktionStart());
                  lvHelpString.append(lvKredsh.printTXSTransaktionDaten());
                 
@@ -503,35 +540,49 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                  if (lvShdaten.getArt().equalsIgnoreCase("19"))
                  {
                      lvHelpString.append(importGrundpfandrechtAuslandsimmo(pvShum, lvSicherheitenvereinbarung, lvImmobilie, lvLast, lvBuergeFakt, pvQuellsystem, pvInstitutsnummer));
-                 }
+                 } */
              
                  // TXSSicherheitVerzeichnis
                  // Beleihungssatz suchen
-                 //ivLogger.info("Size: " + ivSAPCMS.getListeBeleihungssatz().size());
+                 //ivLogger.info("Beleihungssatz - Size: " + ivSicherheitenDaten.getListeBeleihungssatz().size());
                  HashMap<String, Grundstueck> lvHelpListeGrundstueck = new HashMap<String, Grundstueck>();
                  HashMap<String, Grundbuchblatt> lvHelpListeGrundbuchblatt = new HashMap<String, Grundbuchblatt>();
                  Beleihungssatz lvBeleihungssatz = null;
                  Collection<Beleihungssatz> lvCollectionBeleihungssatz = ivSicherheitenDaten.getListeBeleihungssatz().values();
                  Iterator<Beleihungssatz> lvIteratorBeleihungssatz = lvCollectionBeleihungssatz.iterator();
+
                  while (lvIteratorBeleihungssatz.hasNext())
                  {
                      Beleihungssatz lvHelpBeleihungssatz = lvIteratorBeleihungssatz.next();
-                     if (pvKontonummer.equals("4250084070"))
-                     {
-                       //ivLogger.info("Beleihungssatz - ObjektteilId: " + lvHelpBeleihungssatz.getObjektteilId());
-                       //ivLogger.info("Immobilie - ObjektteilId: " + lvImmobilie.getObjektteilId());
-                     }
                      if (lvHelpBeleihungssatz.getObjektteilId().equals(lvImmobilie.getObjektteilId()))
                      {
+                         if (pvKontonummer.equals("2040270091"))
+                         {
+                             ivLogger.info("Beleihungssatz - ObjektteilId: " + lvHelpBeleihungssatz.getObjektteilId());
+                             ivLogger.info("Immobilie - ObjektteilId: " + lvImmobilie.getObjektteilId());
+                         }
                          lvBeleihungssatz = lvHelpBeleihungssatz;
                          //ivLogger.info("GrundstueckId: " + lvBeleihungssatz.getGrundstueckId());
-                         Grundstueck lvGrundstueck = ivSicherheitenDaten.getListeGrundstueck().get(lvBeleihungssatz.getGrundstueckId());
+                         Grundstueck lvGrundstueck = null;
+                         //if (ivSicherheitenDaten.getQuelle() == SicherheitenDaten.VVS)
+                         //{
+                         //    lvGrundstueck = ivSicherheitenDaten.getListeGrundstueck().get(lvBeleihungssatz.getGrundstueckId() + );
+                         //}
+                         //else {
+                            lvGrundstueck = ivSicherheitenDaten.getListeGrundstueck().get(lvBeleihungssatz.getGrundstueckId());
+                         //}
                          if (lvGrundstueck != null)
                          {
                            if (!lvHelpListeGrundstueck.containsKey(lvGrundstueck.getId()))
                            {
                              lvHelpListeGrundstueck.put(lvGrundstueck.getId(), lvGrundstueck);
                            }
+
+                             //if (!lvHelpListeGrundstueck.containsKey(lvGrundstueck.getId() + lvGrundstueck.getLaufendeNummer()))
+                             //{
+                             //  lvHelpListeGrundstueck.put(lvGrundstueck.getId() + lvGrundstueck.getLaufendeNummer(), lvGrundstueck);
+                             //}
+
                         
                            Grundbuchblatt lvGrundbuchblatt = ivSicherheitenDaten.getListeGrundbuchblatt().get(lvGrundstueck.getGrundbuchblattId());
                            if (lvGrundbuchblatt != null)
@@ -650,9 +701,10 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                  lvCollectionGrundbuchblatt = lvHelpListeGrundbuchblatt.values();
                  lvIteratorGrundbuchblatt = lvCollectionGrundbuchblatt.iterator();
 
-                 while (lvIteratorGrundbuchblatt.hasNext())
-                 {
-                     StringBuffer lvHelpStringGrundbuchblatt = new StringBuffer();
+                 StringBuffer lvHelpStringGrundbuchblatt = new StringBuffer();
+
+                 while (lvIteratorGrundbuchblatt.hasNext()) {
+
                      Grundbuchblatt lvGrundbuchblatt = lvIteratorGrundbuchblatt.next();
                      //System.out.println("Last: " + lvLast.getId() + " Grundbuchblatt: " + lvGrundbuchblatt.getId());
 
@@ -661,27 +713,29 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                      //lvIteratorGrundbuchverweis = lvCollectionGrundbuchverweis.iterator();
                      //while (lvIteratorGrundbuchverweis.hasNext())
                      //{
-                         //Grundbuchverweis lvHelpGrundbuchverweis = lvIteratorGrundbuchverweis.next();
-                         //if (lvHelpGrundbuchverweis.getLastId().equals(lvLast.getId()) &&
-                         //    lvHelpGrundbuchverweis.getGrundbuchblattId().equals(lvGrundbuchblatt.getId()))
-                         //{
-                         //    System.out.println("Grundbuchverweis gefunden: Last " + lvLast.getId() + " Grundbuchblatt " + lvGrundbuchblatt.getId());
-                         //    lvAlleKeinenGrundbuchverweis = false;
-                         //}
+                     //Grundbuchverweis lvHelpGrundbuchverweis = lvIteratorGrundbuchverweis.next();
+                     //if (lvHelpGrundbuchverweis.getLastId().equals(lvLast.getId()) &&
+                     //    lvHelpGrundbuchverweis.getGrundbuchblattId().equals(lvGrundbuchblatt.getId()))
+                     //{
+                     //    System.out.println("Grundbuchverweis gefunden: Last " + lvLast.getId() + " Grundbuchblatt " + lvGrundbuchblatt.getId());
+                     //    lvAlleKeinenGrundbuchverweis = false;
+                     //}
                      //}              
-                     
+
+                     Grundbuchverweis lvGrundbuchverweis = null;
+                     //StringBuffer lvHelpStringGrundbuchblatt = new StringBuffer();
                      // Grundbuchblatt ueber Grundbuchverweis ermitteln
                      // Grundbuchverweis per Last-ID suchen
-                     Grundbuchverweis lvGrundbuchverweis = null;
-                     lvCollectionGrundbuchverweis = ivSicherheitenDaten.getListeGrundbuchverweis().values();
+                     lvCollectionGrundbuchverweis = ivSicherheitenDaten.getListeGrundbuchverweis()
+                         .values();
                      lvIteratorGrundbuchverweis = lvCollectionGrundbuchverweis.iterator();
-                     while (lvIteratorGrundbuchverweis.hasNext())
-                     {
-                         Grundbuchverweis lvHelpGrundbuchverweis = lvIteratorGrundbuchverweis.next();
+                     while (lvIteratorGrundbuchverweis.hasNext()) {
+                         Grundbuchverweis lvHelpGrundbuchverweis = lvIteratorGrundbuchverweis
+                             .next();
 
                          //if (pvKontonummer.equals("4250084050"))
                          //{
-                             //ivLogger.info(lvHelpGrundbuchverweis.toString());
+                         //ivLogger.info(lvHelpGrundbuchverweis.toString());
                          //    if (lvGrundbuchblatt.getId().equals("44A42C64981300C70200000006DA083F") &&
                          //        lvHelpGrundbuchverweis.getGrundbuchblattId().equals("44A42C64981300C70200000006DA083F"))
                          //    {
@@ -690,67 +744,57 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                          //   }
                          // }
 
-                           if (lvHelpGrundbuchverweis.getLastId().equals(lvLast.getId()) &&
-                             lvHelpGrundbuchverweis.getGrundbuchblattId().equals(lvGrundbuchblatt.getId()))
-                         {
+                         if (lvHelpGrundbuchverweis.getLastId().equals(lvLast.getId()) &&
+                             lvHelpGrundbuchverweis.getGrundbuchblattId()
+                                 .equals(lvGrundbuchblatt.getId())) {
                              //ivLogger.info("gefunden...");
                              lvGrundbuchverweis = lvHelpGrundbuchverweis;
                          }
                      }
-                  
-                     // Grundbuchverweis == null, dann Last-ID und Grundbuchblatt-ID protokollieren
-                     if (lvGrundbuchverweis == null)
-                     {
-                    	 ivLogger.error("Fehlender Grundbuchverweis;" + pvKontonummer + ";" + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId());
-                    	 ivLogger.error("Konnte keinen Grundbuchverweis fuer Last " + lvLast.getId() + " und Grundbuchblatt " + lvGrundbuchblatt.getId() + " ermitteln!");
 
-                    	 if (!lvAlleKeinenGrundbuchverweis)
-                    	 {
-                    	     continue;
-                    	 }
+                     // Grundbuchverweis == null, dann Last-ID und Grundbuchblatt-ID protokollieren
+                     if (lvGrundbuchverweis == null) {
+                         ivLogger.error("Fehlender Grundbuchverweis;" + pvKontonummer + ";"
+                             + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId());
+                         ivLogger.error("Konnte keinen Grundbuchverweis fuer Last " + lvLast.getId()
+                             + " und Grundbuchblatt " + lvGrundbuchblatt.getId() + " ermitteln!");
+
+                         if (!lvAlleKeinenGrundbuchverweis) {
+                             continue;
+                         }
+                     } else {
+                         ivLogger.info("Grundbuchverweis: " + lvGrundbuchverweis.toString());
                      }
-                     else
-                     {
-                    	 ivLogger.info("Grundbuchverweis: " + lvGrundbuchverweis.toString());
-                     }
- 
+
                      lvShve = new TXSSicherheitVerzeichnis();
                      // BLB verwendet die ID des Grundbuchverweis
-                     if (pvInstitutsnummer.equals("004") || pvInstitutsnummer.equals("BLB"))
-                     {
-                         if (lvVerweisVorhanden && lvGrundbuchverweis != null)
-                         {                         
-                           lvShve.setVenr(lvGrundbuchverweis.getId());
-                         }
-                         else
-                         {
-                           lvShve.setVenr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvLast.getRegisternummer());                             
+                     if (pvInstitutsnummer.equals("004") || pvInstitutsnummer.equals("BLB")) {
+                         if (lvVerweisVorhanden && lvGrundbuchverweis != null) {
+                             lvShve.setVenr(lvGrundbuchverweis.getId());
+                         } else {
+                             lvShve.setVenr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand()
+                                 + lvGrundbuchblatt.getBlatt() + lvLast.getRegisternummer());
                          }
                      }
                      // NLB verwendet einen zusammengesetzten Schluessel
-                     if (pvInstitutsnummer.equals("009") || pvInstitutsnummer.equals("NLB"))
-                     {
-                         if (lvVerweisVorhanden && lvGrundbuchverweis != null)
-                         {
+                     if (pvInstitutsnummer.equals("009") || pvInstitutsnummer.equals("NLB")) {
+                         if (lvVerweisVorhanden && lvGrundbuchverweis != null) {
                              ////lvShve.setVenr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvGrundbuchverweis.getLaufendeNrAbt3());  
-                        	 lvShve.setVenr(lvGrundbuchverweis.getId());
-                         }
-                         else
-                         {
-                        	 //continue; - auch eine Moeglichkeit - CT 06.07.2017
-                        	 return new StringBuffer();
+                             lvShve.setVenr(lvGrundbuchverweis.getId());
+                         } else {
+                             //continue; - auch eine Moeglichkeit - CT 06.07.2017
+                             return new StringBuffer();
                          }
                          ////else
                          ////{
                          ////    lvShve.setVenr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvLast.getRegisternummer());
                          ////}
                      }
-                      
-                     if (lvShve.getVenr().length() > 40)
-                     {
+
+                     if (lvShve.getVenr().length() > 40) {
                          lvShve.setVenr(lvShve.getVenr().substring(0, 39));
                      }
-                   
+
                      //if (ivSAPCMS.getVorlaufsatz().getInstitut().equals("009"))
                      //{
                      //    if (lvVerweisVorhanden && lvGrundbuchverweis != null)
@@ -767,27 +811,70 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                      //}                   
 
                      lvShve.setOrg(ValueMapping.changeMandant(pvInstitutsnummer));
+                     // Deutsche Hypo - CT 21.07.2021
+                     lvShve.setOrg("25010600");
                      lvShve.setQuelle(pvQuellsystem);
                      lvHelpStringGrundbuchblatt.append(lvShve.printTXSTransaktionStart());
                      lvHelpStringGrundbuchblatt.append(lvShve.printTXSTransaktionDaten());
                      // TXSVerzeichnisDaten
                      lvVedaten = new TXSVerzeichnisDaten();
                      lvVedaten.setAbt("3");
-                     lvVedaten.setGbart("1"); 
+                     lvVedaten.setGbart("1");
                      lvVedaten.setKat("1");
                      // Nr. Abteilung 3 - CT 16.03.2015
-                     if (lvVerweisVorhanden && lvGrundbuchverweis != null)
-                     {
+                     if (lvVerweisVorhanden && lvGrundbuchverweis != null) {
                          lvVedaten.setNrabt(lvGrundbuchverweis.getLaufendeNrAbt3());
-                         ivLogger.info("NrAbt3" + ";" + pvKontonummer + ";" + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ";"  + lvLast.getRegisternummer() + ";" + lvGrundbuchverweis.getLaufendeNrAbt3());
+                         ivLogger.info(
+                             "NrAbt3" + ";" + pvKontonummer + ";" + lvSicherheitenvereinbarung
+                                 .getSicherheitenvereinbarungsId() + ";" + lvLast
+                                 .getRegisternummer() + ";" + lvGrundbuchverweis
+                                 .getLaufendeNrAbt3());
+                     } else {
+                         lvVedaten.setNrabt(lvLast.getRegisternummer());
                      }
-                     else
-                     {
-                         lvVedaten.setNrabt(lvLast.getRegisternummer());                         
+
+                     // VVS Sonderregel: Anzahl der Grundbuchblaetter > 1, dann ist es eine Gesamtgrundschuld
+                     // CT 29.01.2021
+                     if (ivSicherheitenDaten.getQuelle() == SicherheitenDaten.VVS) {
+                         /* if (lvCollectionGrundbuchblatt.size() > 1) //&& lvCollectionImmobilie.size() == 1)
+                         //if (lvHelpListeGrundstueck.size() > 1)
+                         {
+                             int lvAnzahl = 0;
+                             for (Grundbuchblatt lvHelpGrundbuchblatt:lvCollectionGrundbuchblatt)
+                             {
+                                 ivLogger.info(lvHelpGrundbuchblatt.toString());
+                                 if (lvHelpGrundbuchblatt.getId().equals(lvGrundbuchverweis.getGrundbuchblattId()))
+                                 {
+                                     lvAnzahl++;
+                                 }
+                             }
+
+                             if (lvAnzahl > 1)
+                             {
+                               lvSicherheitenvereinbarung.setGesamtgrundschuldKennzeichen("X");
+                               lvShdaten.setArt(ValueMapping.mapSicherheitenArt(lvImmobilie.getLaenderschluessel(), lvSicherheitenvereinbarung.getSicherheitenvereinbarungsart(), lvSicherheitenvereinbarung.getGesamtgrundschuldKennzeichen()));
+                               ivLogger.info("VVS - Gesamtgrundschuld: " + pvKontonummer + ";" + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ";" + lvAnzahl);
+                             }
+                             //ivLogger.info("Grundbuchverweis: " + lvGrundbuchverweis.toString());
+                         } */
+                         if (lvAnzahlGrundbuchblaetter > 1) {
+                             lvSicherheitenvereinbarung.setGesamtgrundschuldKennzeichen("X");
+                             lvShdaten.setArt(ValueMapping
+                                 .mapSicherheitenArt(lvImmobilie.getLaenderschluessel(),
+                                     lvSicherheitenvereinbarung.getSicherheitenvereinbarungsart(),
+                                     lvSicherheitenvereinbarung.getGesamtgrundschuldKennzeichen()));
+                             if (lvShdaten.getArt().length() == 0) // Wenn leer, dann Buchgrundschuld - CT 23.04.2021
+                             {
+                                 lvShdaten.setArt("12");
+                             }
+                             ivLogger.info("VVS - Gesamtgrundschuld: " + pvKontonummer + ";"
+                                 + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ";"
+                                 + lvAnzahlGrundbuchblaetter);
+                         }
                      }
-                     
-                     if (lvSicherheitenvereinbarung.getGesamtgrundschuldKennzeichen().equals("X"))
-                     {
+                     // CT 29.01.2021
+
+                     if (lvSicherheitenvereinbarung.getGesamtgrundschuldKennzeichen().equals("X")) {
                          ivLogger.info("Gesamtgrundschuld");
                          //System.out.println("Last - Verfuegungsbetrag: " + lvLast.getVerfuegungsbetrag());
                          //System.out.println("Anzahl - Grundbuchblaetter: " + lvCollectionGrundbuchblatt.size());
@@ -795,84 +882,94 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                          //{
                          //	 System.out.println(helpGblatt.getBand() + " " + helpGblatt.getBlatt() + " " + helpGblatt.getGrundbuchVon() + " " + helpGblatt.getId());
                          //}
-                         if (lvCollectionGrundbuchblatt.size() > 1)
-                         {
+                         if (lvCollectionGrundbuchblatt.size() > 1) {
                              lvAnzahlErledigterGrundbuchblaetter++;
                              BigDecimal lvHelpBetrag = new BigDecimal("0.0");
-                             if (lvAnzahlGrundbuchblaetter == 0)
-                             {
-                            	lvAnzahlGrundbuchblaetter = lvCollectionGrundbuchblatt.size();
-                            	ivLogger.info("Keine passenden Grundbuchverweise gepflegt: " + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId());
+                             if (lvAnzahlGrundbuchblaetter == 0) {
+                                 lvAnzahlGrundbuchblaetter = lvCollectionGrundbuchblatt.size();
+                                 ivLogger.info("Keine passenden Grundbuchverweise gepflegt: "
+                                     + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId());
                              }
                              if (lvAnzahlErledigterGrundbuchblaetter == lvAnzahlGrundbuchblaetter)
                              //if (lvAnzahlErledigterGrundbuchblaetter == lvCollectionGrundbuchblatt.size())
                              {
-                               lvHelpBetrag = (new BigDecimal(lvLast.getVerfuegungsbetrag())).subtract(lvSummeZuweisungsbetragPO); 
-                             }
-                             else
-                             {
-                               lvHelpBetrag = (new BigDecimal(lvLast.getVerfuegungsbetrag())).divide(new BigDecimal(lvAnzahlGrundbuchblaetter), 2, RoundingMode.HALF_UP);	 
-                               //lvHelpBetrag = (new BigDecimal(lvLast.getVerfuegungsbetrag())).divide(new BigDecimal(lvCollectionGrundbuchblatt.size()), 2, RoundingMode.HALF_UP); 
+                                 lvHelpBetrag = (new BigDecimal(lvLast.getVerfuegungsbetrag()))
+                                     .subtract(lvSummeZuweisungsbetragPO);
+                             } else {
+                                 lvHelpBetrag = (new BigDecimal(lvLast.getVerfuegungsbetrag()))
+                                     .divide(new BigDecimal(lvAnzahlGrundbuchblaetter), 2,
+                                         RoundingMode.HALF_UP);
+                                 //lvHelpBetrag = (new BigDecimal(lvLast.getVerfuegungsbetrag())).divide(new BigDecimal(lvCollectionGrundbuchblatt.size()), 2, RoundingMode.HALF_UP);
                              }
 
-                             if (lvVerweisVorhanden && lvGrundbuchverweis != null)
-                             {
-                                 ivLogger.info("ZuweisungsbetragPO-GBverweis;" + lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvGrundbuchverweis.getLaufendeNrAbt3() + ";" + lvHelpBetrag.toString());
-                     
-                             }
-                             else
-                             {
-                                 ivLogger.info("ZuweisungsbetragPO-Last;" + lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvLast.getRegisternummer() + ";" + lvHelpBetrag.toString());
+                             if (lvVerweisVorhanden && lvGrundbuchverweis != null) {
+                                 ivLogger.info(
+                                     "ZuweisungsbetragPO-GBverweis;" + lvImmobilie.getObjektId()
+                                         + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt()
+                                         + lvGrundbuchverweis.getLaufendeNrAbt3() + ";"
+                                         + lvHelpBetrag.toString());
+
+                             } else {
+                                 ivLogger.info(
+                                     "ZuweisungsbetragPO-Last;" + lvImmobilie.getObjektId()
+                                         + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt()
+                                         + lvLast.getRegisternummer() + ";" + lvHelpBetrag
+                                         .toString());
                              }
                              lvVedaten.setBetrag(lvHelpBetrag.toString());
                              ////// CT 08.12.2015 Spaeter wieder entfernen - Ausgebaut CT 15.12.2015
                              ////lvVedaten.setBetrag(lvLast.getVerfuegungsbetrag());
-                             
-                             lvSummeZuweisungsbetragPO = lvSummeZuweisungsbetragPO.add(lvHelpBetrag);
+
+                             lvSummeZuweisungsbetragPO = lvSummeZuweisungsbetragPO
+                                 .add(lvHelpBetrag);
+                         } else {
+                             lvVedaten.setBetrag(lvLast.getVerfuegungsbetrag());
                          }
-                         else
-                         {
-                           lvVedaten.setBetrag(lvLast.getVerfuegungsbetrag());
-                         }
-                     }
-                     else
-                     {
-                         ObjektZuweisungsbetrag lvOzw = ivSicherheitenDaten.getObjektZuweisungsbetragListe().getObjektZuweisungsbetrag(pvShum.getSicherheitenvereinbarungId());
-                         if (lvOzw != null)
-                         {
+                     } else {
+                         ObjektZuweisungsbetrag lvOzw = ivSicherheitenDaten
+                             .getObjektZuweisungsbetragListe()
+                             .getObjektZuweisungsbetrag(pvShum.getSicherheitenvereinbarungId());
+                         if (lvOzw != null) {
                              //ivLogger.info("Out: " + pvShum.getSicherheitenvereinbarungId() + " Betrag: " + lvOzw.getZuweisungsbetrag().toString());
 
                              lvVedaten.setBetrag(lvOzw.getZuweisungsbetrag().toString());
                          }
                      }
-                                  
+
                      lvVedaten.setWhrg(pvShum.getZuweisungsbetragWaehrung());
+                     // DH 29.06.2021
+                     lvHelpWert = StringKonverter.convertString2BigDecimal(lvImmobilie.getBeleihungswert()).multiply(new BigDecimal("0.6"));
+                     if (StringKonverter.convertString2Double(lvHelpWert.toString()) < StringKonverter.convertString2Double(lvShdaten.getNbetrag()))
+                     {
+                         lvVedaten.setBetrag(lvHelpWert.toPlainString());
+                     }
+                     else
+                     {
+                         lvVedaten.setBetrag(lvShdaten.getNbetrag());
+                     }
+                     lvVedaten.setWhrg(lvImmobilie.getBeleihungswertWaehrung());
+                     // DH 29.06.2021
 
                      lvHelpStringGrundbuchblatt.append(lvVedaten.printTXSTransaktionStart());
                      lvHelpStringGrundbuchblatt.append(lvVedaten.printTXSTransaktionDaten());
                      lvHelpStringGrundbuchblatt.append(lvVedaten.printTXSTransaktionEnde());
-                     
+
                      // TXSVerzeichnisVBlatt
                      lvVevb = new TXSVerzeichnisVBlatt();
                      // BLB verwendet die ID des Grundbuchverweis
-                     if (pvInstitutsnummer.equals("004") || pvInstitutsnummer.equals("BLB"))
-                     {
-                         if (lvVerweisVorhanden && lvGrundbuchverweis != null)
-                         {    
-                           lvVevb.setVbnr(lvGrundbuchverweis.getId());    
-                         }
-                         else
-                         {
-                             lvVevb.setVbnr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvLast.getRegisternummer());                             
+                     if (pvInstitutsnummer.equals("004") || pvInstitutsnummer.equals("BLB")) {
+                         if (lvVerweisVorhanden && lvGrundbuchverweis != null) {
+                             lvVevb.setVbnr(lvGrundbuchverweis.getId());
+                         } else {
+                             lvVevb.setVbnr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand()
+                                 + lvGrundbuchblatt.getBlatt() + lvLast.getRegisternummer());
                          }
                      }
                      // NLB verwendet einen zusammengesetzten Schluessel
-                     if (pvInstitutsnummer.equals("009") || pvInstitutsnummer.equals("NLB"))
-                     {
-                         if (lvVerweisVorhanden && lvGrundbuchverweis != null)
-                         {
-                         ////    lvVevb.setVbnr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvGrundbuchverweis.getLaufendeNrAbt3());
-                        	 lvVevb.setVbnr(lvGrundbuchverweis.getId());
+                     if (pvInstitutsnummer.equals("009") || pvInstitutsnummer.equals("NLB")) {
+                         if (lvVerweisVorhanden && lvGrundbuchverweis != null) {
+                             ////    lvVevb.setVbnr(lvImmobilie.getObjektId() + lvGrundbuchblatt.getBand() + lvGrundbuchblatt.getBlatt() + lvGrundbuchverweis.getLaufendeNrAbt3());
+                             lvVevb.setVbnr(lvGrundbuchverweis.getId());
                          }
                          ////else
                          ////{
@@ -880,11 +977,10 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                          ////}
                      }
 
-                     if (lvVevb.getVbnr().length() > 40)
-                     {
+                     if (lvVevb.getVbnr().length() > 40) {
                          lvVevb.setVbnr(lvVevb.getVbnr().substring(0, 39));
                      }
-                     
+
                      //if (ivSAPCMS.getVorlaufsatz().getInstitut().equals("009"))
                      //{
                      //    if (lvVerweisVorhanden && lvGrundbuchverweis != null)
@@ -900,54 +996,51 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                      //    }
                      //}
 
-
-                     //lvVevb.setOrg(ValueMapping.changeMandant(ivSAPCMS.getVorlaufsatz().getInstitut()));
                      lvVevb.setOrg(ValueMapping.changeMandant(pvInstitutsnummer));
+                     // Deutsche Hypo - CT 21.07.2021
+                     lvVevb.setOrg("25010600");
                      lvVevb.setQuelle(pvQuellsystem);
-                     
+
                      lvHelpStringGrundbuchblatt.append(lvVevb.printTXSTransaktionStart());
                      lvHelpStringGrundbuchblatt.append(lvVevb.printTXSTransaktionDaten());
-                 
+
                      // TXSVerzeichnisblattDaten
                      lvVbdaten = new TXSVerzeichnisblattDaten();
                      lvVbdaten.setBand(lvGrundbuchblatt.getBand());
-                     if (lvGrundbuchblatt.getBlatt().isEmpty())
-                     {
+                     if (lvGrundbuchblatt.getBlatt().isEmpty()) {
                          lvVbdaten.setBlatt("0000");
-                     }
-                     else
-                     {
+                     } else {
                          lvVbdaten.setBlatt(lvGrundbuchblatt.getBlatt());
                      }
                      lvVbdaten.setGbvon(lvGrundbuchblatt.getGrundbuchVon());
-                     if (lvGrundbuchblatt.getGrundbuchVon().isEmpty() && !lvGrundbuchblatt.getAmtsgericht().isEmpty())
-                     {
+                     if (lvGrundbuchblatt.getGrundbuchVon().isEmpty() && !lvGrundbuchblatt
+                         .getAmtsgericht().isEmpty()) {
                          lvVbdaten.setGbvon(lvGrundbuchblatt.getAmtsgericht());
                      }
                      lvVbdaten.setKat("1");
                      lvHelpStringGrundbuchblatt.append(lvVbdaten.printTXSTransaktionStart());
                      lvHelpStringGrundbuchblatt.append(lvVbdaten.printTXSTransaktionDaten());
                      lvHelpStringGrundbuchblatt.append(lvVbdaten.printTXSTransaktionEnde());
-                 
+
                      lvHelpStringGrundbuchblatt.append(lvVevb.printTXSTransaktionEnde());
-                 
+
                      // TXSVerzeichnisBestandsverz                 
-                     Collection<Grundstueck> lvCollectionGrundstueck = lvHelpListeGrundstueck.values();
-                     Iterator<Grundstueck> lvIteratorGrundstueck = lvCollectionGrundstueck.iterator();
-                     while (lvIteratorGrundstueck.hasNext())
-                     {
+                     Collection<Grundstueck> lvCollectionGrundstueck = lvHelpListeGrundstueck
+                         .values();
+                     Iterator<Grundstueck> lvIteratorGrundstueck = lvCollectionGrundstueck
+                         .iterator();
+                     while (lvIteratorGrundstueck.hasNext()) {
                          Grundstueck lvGrundstueck = lvIteratorGrundstueck.next();
 
-                         if (lvGrundstueck.getGrundbuchblattId().equals(lvGrundbuchblatt.getId()))
-                         {
+                         if (lvGrundstueck.getGrundbuchblattId().equals(lvGrundbuchblatt.getId())) {
+                             //ivLogger.info("CT - Grundbuchblatt-ID - Grundstueck == Grundbuchblatt - " + lvGrundstueck.getGrundbuchblattId() + " == " + lvGrundbuchblatt.getId());
                              lvVebv = new TXSVerzeichnisBestandsverz();
-                             lvVebv.setBvnr(lvGrundstueck.getId());                                 
-                             
-                             if (lvVebv.getBvnr().length() > 40)
-                             {
+                             lvVebv.setBvnr(lvGrundstueck.getId());
+
+                             if (lvVebv.getBvnr().length() > 40) {
                                  lvVebv.setBvnr(lvVebv.getBvnr().substring(0, 39));
                              }
-                             
+
                              //if (ivSAPCMS.getVorlaufsatz().getInstitut().equals("009"))
                              //{
                              //    if (lvVerweisVorhanden && lvGrundbuchverweis != null)
@@ -962,10 +1055,10 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                              //                                   + lvGrundstueck.getLaufendeNummer() + ";" + lvGrundstueck.getId());
                              //    }
                              //}
-                     
-                             // alte: vebv.setBvnr(gbe.getGrundbuchID());
-                             //lvVebv.setOrg(ValueMapping.changeMandant(ivSAPCMS.getVorlaufsatz().getInstitut()));
+
                              lvVebv.setOrg(ValueMapping.changeMandant(pvInstitutsnummer));
+                             // Deutsche Hypo - CT 21.07.2021
+                             lvVebv.setOrg("25010600");
                              lvVebv.setQuelle(pvQuellsystem);
                              lvHelpStringGrundbuchblatt.append(lvVebv.printTXSTransaktionStart());
                              lvHelpStringGrundbuchblatt.append(lvVebv.printTXSTransaktionDaten());
@@ -974,37 +1067,43 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                              lvBvdaten.setFlur(lvGrundstueck.getFlur());
                              lvBvdaten.setFlurst(lvGrundstueck.getFlurstueck());
                              lvBvdaten.setLfdnr(lvGrundstueck.getLaufendeNummer());
-                             if (lvGrundbuchblatt.getBlatt().isEmpty() && !lvGrundstueck.getFlur().isEmpty())
-                             {
+                             if (lvGrundbuchblatt.getBlatt().isEmpty() && !lvGrundstueck.getFlur()
+                                 .isEmpty()) {
                                  lvBvdaten.setGem(lvGrundstueck.getGemarkung());
                              }
-                                              
-                             lvHelpStringGrundbuchblatt.append(lvBvdaten.printTXSTransaktionStart());
-                             lvHelpStringGrundbuchblatt.append(lvBvdaten.printTXSTransaktionDaten());
+
+                             lvHelpStringGrundbuchblatt
+                                 .append(lvBvdaten.printTXSTransaktionStart());
+                             lvHelpStringGrundbuchblatt
+                                 .append(lvBvdaten.printTXSTransaktionDaten());
                              lvHelpStringGrundbuchblatt.append(lvBvdaten.printTXSTransaktionEnde());
-                 
+
                              lvHelpStringGrundbuchblatt.append(lvVebv.printTXSTransaktionEnde());
                          }
                      }
-                 
+
                      // TXSVerzeichnisPfandobjekt
                      lvVepo = new TXSVerzeichnisPfandobjekt();
                      lvVepo.setObjnr(lvImmobilie.getObjektId());
-                     //lvVepo.setOrg(ValueMapping.changeMandant(ivSAPCMS.getVorlaufsatz().getInstitut()));
                      lvVepo.setOrg(ValueMapping.changeMandant(pvInstitutsnummer));
+                     // Deutsche Hypo - CT 21.07.2021
+                     lvVepo.setOrg("25010600");
                      lvVepo.setQuelle(pvQuellsystem);
                      lvHelpStringGrundbuchblatt.append(lvVepo.printTXSTransaktionStart());
                      lvHelpStringGrundbuchblatt.append(lvVepo.printTXSTransaktionDaten());
-                     if (pvMappingRueckmeldungListe != null)
-                     {
-                       pvMappingRueckmeldungListe.put(lvImmobilie.getObjektId(), lvImmobilie.getId());
+                     if (pvMappingRueckmeldungListe != null) {
+                         pvMappingRueckmeldungListe.put(lvImmobilie.getObjektId(), lvImmobilie.getId());
+                         // Wurde zum Testen benoetigt!
+                         //pvMappingRueckmeldungListe.put(lvImmobilie.getId(),
+                         //    lvImmobilie.getObjektId() + ";D;" + lvSicherheitenvereinbarung.getId()
+                         //        + ";" + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId()
+                         //        + ";D;;" + pvKontonummer + ";D;");
                      }
                      // TXSPfandobjektDaten
                      lvPodaten = new TXSPfandobjektDaten();
-                 
+
                      // Bestueckung von Pfandobjekten etc... 
-                     if (lvImmobilie != null)
-                     { // Es ist etwas da .... 
+                     if (lvImmobilie != null) { // Es ist etwas da ....
                          // Eigentumstyp aktuell gar nicht zu mappen !! 
                          //String lvPfGruppe = new String();
                          //String lvPfArt = new String();
@@ -1012,7 +1111,7 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                          //lvPfGruppe = ValueMapping.mapPfandObjektGruppe(lvImmobilie.getNutzungsart(), lvImmobilie.getProzentanteil());
                          //lvPfArt = ValueMapping.mapNutzungsart(lvImmobilie.getObjektartId(), lvImmobilie.getProzentanteil(), lvImmobilie.getGradBaufertigstellung());
 
-                        //String lvErtragsKz = "3";
+                         //String lvErtragsKz = "3";
                          // Bauplatz
                          //if (lvPfArt.startsWith("4"))
                          //{
@@ -1023,105 +1122,123 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                          //{
                          //    lvErtragsKz = "1";
                          //}
-                               
+
                          // CT 26.03.2012 - Altes Mapping 
                          //podaten.setEigtyp(ValueMapping.changeEigentumstyp(sEigentumsTyp));
-                         lvPodaten.setEigtyp(ValueMapping.mapEigentumstyp(lvImmobilie.getNutzung()));
-                         // Bei SPOT: lvPodaten.setEigtyp(ValueMapping.mapEigentumstypSPOT(lvImmobilie.getNutzung()));
-
+                         // Bei CMS/direkt: lvPodaten.setEigtyp(ValueMapping.mapEigentumstyp(lvImmobilie.getNutzung()));
+                         lvPodaten
+                             .setEigtyp(ValueMapping.mapEigentumstypSPOT(lvImmobilie.getNutzung()));
 
                          // Ertragsfaehigkeit - CT 09.07.2012
                          // Defaultmaessig '3' - voll ertragsfaehig
                          lvPodaten.setErtragsf("3");
                          //alte Version: podaten.setGebiet(ValueMapping.changeGebiet(sLand));
                          // CT - 09.07.2012
-                         if (!lvImmobilie.getRegion().isEmpty())
-                         {
-                             lvPodaten.setGebiet(lvImmobilie.getLaenderschluessel() + "_" + lvImmobilie.getRegion());
+                         if (!lvImmobilie.getRegion().isEmpty()) {
+                             lvPodaten.setGebiet(
+                                 lvImmobilie.getLaenderschluessel() + "_" + lvImmobilie
+                                     .getRegion());
                          }
-                
+
                          if (lvImmobilie.getFertigstellungsdatum().length() > 4)
-                             lvPodaten.setJahr(ValueMapping.changeBaujahr(lvImmobilie.getFertigstellungsdatum()));
-                 
+                             lvPodaten.setJahr(
+                                 ValueMapping.changeBaujahr(lvImmobilie.getFertigstellungsdatum()));
+
                          lvPodaten.setKat("1");
                          //alte Version: podaten.setLand(ValueMapping.changeLand(sStaat));
                          lvPodaten.setLand(lvImmobilie.getLaenderschluessel());
-                         
+
                          lvPodaten.setSwert(lvImmobilie.getSachwert());
                          lvPodaten.setEwert(lvImmobilie.getErtragswert());
-                   
+
                          lvPodaten.setBwert(lvImmobilie.getBeleihungswert());
-                         lvPodaten.setBwertdat(DatumUtilities.changeDate(lvImmobilie.getFestsetzungsdatum()));
-                         
+                         lvPodaten.setBwertdat(
+                             DatumUtilities.changeDate(lvImmobilie.getFestsetzungsdatum()));
+
                          // Nutzungsart
                          String lvNutzungsart;
-                         if (StringKonverter.convertString2Double(lvImmobilie.getProzentanteil()) <= 33.0)
-                         {
+                         if (StringKonverter.convertString2Double(lvImmobilie.getProzentanteil())
+                             <= 33.0) {
                              lvNutzungsart = "1";
-                         }
-                         else
-                         {
+                         } else {
                              lvNutzungsart = "2";
                          }
                          lvPodaten.setNart(lvNutzungsart);
-                 
+
                          // CT 07.12.2015 - Mapping Objektgruppe erst einmal ausgebaut
                          //lvPodaten.setOgrp(ValueMapping.mapPfandObjektGruppe(lvImmobilie.getNutzungsart(), lvImmobilie.getProzentanteil()));
- 
+
                          // CT 08.10.2015 - SAP CMS Auspraegungen verwenden
                          // CT 07.12.2015 - Mapping Objektgruppe erst einmal ausgebaut
 
                          String lvHelpObjektgruppe = lvImmobilie.getNutzungsart();
-                         if (lvHelpObjektgruppe.equals("100008"))
-                         {
-                               lvHelpObjektgruppe = "100007";
+                         if (lvHelpObjektgruppe.equals("100008")) {
+                             lvHelpObjektgruppe = "100007";
                          }
-                         if (lvHelpObjektgruppe.equals("100020"))
-                         {
-                               lvHelpObjektgruppe = "100019";
+                         if (lvHelpObjektgruppe.equals("100020")) {
+                             lvHelpObjektgruppe = "100019";
                          }
-                         if (lvHelpObjektgruppe.equals("100023"))
-                         {
-                               lvHelpObjektgruppe = "100022";
+                         if (lvHelpObjektgruppe.equals("100023")) {
+                             lvHelpObjektgruppe = "100022";
                          }
                          lvPodaten.setOgrp(lvHelpObjektgruppe);
 
-
-                         ivLogger.info("AZ6;" + lvImmobilie.getDeckungskennzeichen() + ";" + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ";" +
-                                       lvImmobilie.getObjektId() + ";" + lvImmobilie.getNutzungsart() + ";" + lvImmobilie.getObjektartId() + ";");
+                         ivLogger.info("AZ6;" + lvImmobilie.getDeckungskennzeichen() + ";"
+                             + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ";" +
+                             lvImmobilie.getObjektId() + ";" + lvImmobilie.getNutzungsart() + ";"
+                             + lvImmobilie.getObjektartId() + ";");
                          lvPodaten.setOrt(lvImmobilie.getOrt());
                          lvPodaten.setPlz(lvImmobilie.getPostleitzahl());
 
                          String sSP_EigentumsTyp = new String();
-                         ivLogger.info(lvImmobilie.getObjektartId() + " " + lvImmobilie.getGradBaufertigstellung() + " " + lvImmobilie.getNutzung() + " " + lvImmobilie.getNutzungsart() + " " + lvImmobilie.getProzentanteil());
-                         sSP_EigentumsTyp = ValueMapping.mapSP_Eigentumstyp(lvImmobilie.getObjektartId(), lvImmobilie.getGradBaufertigstellung(), lvImmobilie.getNutzung(), lvImmobilie.getNutzungsart(), lvImmobilie.getProzentanteil());
+                         ivLogger.info(lvImmobilie.getObjektartId() + " " + lvImmobilie
+                             .getGradBaufertigstellung() + " " + lvImmobilie.getNutzung() + " "
+                             + lvImmobilie.getNutzungsart() + " " + lvImmobilie.getProzentanteil());
+                         sSP_EigentumsTyp = ValueMapping
+                             .mapSP_Eigentumstyp(lvImmobilie.getObjektartId(),
+                                 lvImmobilie.getGradBaufertigstellung(), lvImmobilie.getNutzung(),
+                                 lvImmobilie.getNutzungsart(), lvImmobilie.getProzentanteil());
                          lvPodaten.setSpeigtyp(sSP_EigentumsTyp);
-                 
+
                          lvPodaten.setStr(lvImmobilie.getStrasse());
                          // Hausnummer in ein eigenes Feld - CT 25.11.2011
                          lvPodaten.setHausnr(lvImmobilie.getHausnummer());
                          lvPodaten.setZusatz(lvImmobilie.getErgaenzungHausnummer());
                          lvPodaten.setWhrg(lvImmobilie.getBeleihungswertWaehrung());
-                                          
+
                          lvHelpStringGrundbuchblatt.append(lvPodaten.printTXSTransaktionStart());
                          lvHelpStringGrundbuchblatt.append(lvPodaten.printTXSTransaktionDaten());
                          lvHelpStringGrundbuchblatt.append(lvPodaten.printTXSTransaktionEnde());
-                 
+
                          lvHelpStringGrundbuchblatt.append(lvVepo.printTXSTransaktionEnde());
-                 
+
                          lvHelpStringGrundbuchblatt.append(lvShve.printTXSTransaktionEnde());
                      }
-                  
-                     if (lvVerweisVorhanden && lvGrundbuchverweis != null)
-                     {
-                         lvHelpString.append(lvHelpStringGrundbuchblatt);
-                     }
-                     else
-                     {
-                         lvHelpString.append(lvHelpStringGrundbuchblatt);
-                     }
-                   
                  }
+
+                 lvHelpString.append(lvKredsh.printTXSTransaktionStart());
+                 lvHelpString.append(lvKredsh.printTXSTransaktionDaten());
+
+                 lvHelpString.append(lvShdaten.printTXSTransaktionStart());
+                 lvHelpString.append(lvShdaten.printTXSTransaktionDaten());
+                 lvHelpString.append(lvShdaten.printTXSTransaktionEnde());
+
+                 // Grundpfandr. Auslandsimmo -> Kein Grundbucheintrag
+                 if (lvShdaten.getArt().equalsIgnoreCase("19"))
+                 {
+                     ivLogger.info("Auslandsimmo: " + pvKontonummer + " - " + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId());
+                     lvHelpString.append(importGrundpfandrechtAuslandsimmo(pvShum, lvSicherheitenvereinbarung, lvImmobilie, lvLast, lvBuergeFakt, pvQuellsystem, pvInstitutsnummer));
+                 }
+
+                 //if (lvVerweisVorhanden && lvGrundbuchverweis != null)
+                 //{
+                 //    lvHelpString.append(lvHelpStringGrundbuchblatt);
+                 //}
+                 else
+                     {
+                         lvHelpString.append(lvHelpStringGrundbuchblatt);
+                     }
+
                  if (lvKredsh != null)
                  {
                      lvHelpString.append(lvKredsh.printTXSTransaktionEnde());
@@ -2104,13 +2221,13 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
     
     /**
      * Importiert eine KreditSicherheit Buerge
-     * @param pvShum
-     * @param pvKontonummer 
-     * @param pvQuellsystem
-     * @param pvRestkapital
-     * @param pvBuergschaftprozent
-     * @param pvAusplatzierungsmerkmal
-     * @param pvInstitutsnummer
+     * @param pvShum Sicherungsumfang
+     * @param pvKontonummer Kontonummer
+     * @param pvQuellsystem Quellsystem
+     * @param pvRestkapital Restkapital vom Finanzgeschaeft
+     * @param pvBuergschaftprozent Buergschaftprozent vom Finanzgeschaeft
+     * @param pvAusplatzierungsmerkmal Ausplatzierungsmerkmal vom Finanzgeschaeft
+     * @param pvInstitutsnummer Institutsnummer
      */
     private StringBuffer import2TXSKreditSicherheitBuerge(Sicherungsumfang pvShum, String pvKontonummer, String pvQuellsystem, String pvRestkapital, String pvBuergschaftprozent, String pvAusplatzierungsmerkmal, String pvNominalbetrag, String pvKundennummer, String pvBuergennummer, String pvInstitutsnummer)
     {
@@ -2118,7 +2235,7 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
         ivLogger.info("import2TXSKreditSicherheitBuerge - " + pvKontonummer);
 
         Sicherheitenvereinbarung lvSicherheitenvereinbarung = ivSicherheitenDaten.getListeSicherheitenvereinbarung().get(pvShum.getSicherheitenvereinbarungId());
-        ivLogger.info("Sicherheitenvereinbarung-ID: " + lvSicherheitenvereinbarung.getId() + " - " + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ": " + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsart());
+        //ivLogger.info("Sicherheitenvereinbarung-ID: " + lvSicherheitenvereinbarung.getId() + " - " + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ": " + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsart());
         // Buergschaft
         if (lvSicherheitenvereinbarung.getSicherheitenvereinbarungsart().startsWith("03"))
         {
@@ -2143,15 +2260,28 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                 	{
                         BigDecimal lvHelpFaktor = new BigDecimal("100.0");
                         BigDecimal lvHelpRestkapital = StringKonverter.convertString2BigDecimal(pvRestkapital);
-                        //System.out.println("Buergschaftprozent: " + pvBuergschaftprozent);
+                        //ivLogger.info("AZ6 Buergschaftprozent: " + pvBuergschaftprozent);
+                        //ivLogger.info("VVS Verbuergungssatz: " + lvSicherheitenvereinbarung.getVerbuergungssatz());
+                        //ivLogger.info("AZ6 Restkapital: " + pvRestkapital);
                         BigDecimal lvHelpBuergschaftprozent = (StringKonverter.convertString2BigDecimal(pvBuergschaftprozent)).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
-                        //System.out.println("Zuweisungsbetrag errechnet: " + (lvHelpRestkapital.multiply(lvHelpBuergschaftprozent)).toString());
-                		//ivLogger.info("MIDAS;MIDAS;" + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ";" +  lvGeschaeftspartner.getKundennummer() + ";" + pvKontonummer + ";");
-                        // TXSKreditSicherheit
+                        //ivLogger.info("Quellesystem: " + pvQuellsystem);
+                        if (pvQuellsystem.contains("AZ6"))
+                        {
+                          lvHelpBuergschaftprozent = (StringKonverter.convertString2BigDecimal(lvSicherheitenvereinbarung.getVerbuergungssatz())).divide(lvHelpFaktor, 9, RoundingMode.HALF_UP);
+                        }
+                        //ivLogger.info("HelpBuergschaftprozent: " + lvHelpBuergschaftprozent);
+                        //ivLogger.info("Zuweisungsbetrag errechnet: " + (lvHelpRestkapital.multiply(lvHelpBuergschaftprozent)).toString());
+                		    //ivLogger.info("MIDAS;MIDAS;" + lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId() + ";" +  lvGeschaeftspartner.getKundennummer() + ";" + pvKontonummer + ";");
+                      // TXSKreditSicherheit
                 		TXSKreditSicherheit lvKredsh = new TXSKreditSicherheit();
                 		lvKredsh.setKey(lvSicherheitenvereinbarung.getSicherheitenvereinbarungsId());
                 		lvKredsh.setOrg(ValueMapping.changeMandant(pvInstitutsnummer));
                 		lvKredsh.setQuelle(pvQuellsystem);
+                		if (pvQuellsystem.contains("AZ6"))
+                    {
+                        lvKredsh.setZuwbetrag((lvHelpRestkapital.multiply(lvHelpBuergschaftprozent)).toString());
+                        lvKredsh.setWhrg(pvShum.getZuweisungsbetragWaehrung());
+                    }
                 		if (pvQuellsystem.contains("MID"))
                 		{
                 			if (pvAusplatzierungsmerkmal.endsWith("0"))
@@ -2179,8 +2309,14 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
                         // Umstellung auf Wunsch von Kharashevich - CT 29.11.2017
                         lvShdaten.setNbetrag(lvSicherheitenvereinbarung.getAnzusetzenderWert());
                         lvShdaten.setWhrg(lvSicherheitenvereinbarung.getAnzusetzenderWertWaehrung());
-                        
-                        lvShdaten.setProbsatz(pvBuergschaftprozent);
+
+                        if (pvQuellsystem.contains("AZ6"))
+                        {
+                            lvShdaten.setProbsatz(lvSicherheitenvereinbarung.getVerbuergungssatz());
+                         }
+                        else {
+                            lvShdaten.setProbsatz(pvBuergschaftprozent);
+                        }
 
                         // Verfuegungsbetrag soll gleich Nennbetrag sein - CT 30.11.2017
                         lvShdaten.setVbetrag(lvShdaten.getNbetrag());
@@ -2204,8 +2340,8 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
 
                         // Logging der Buergschaften aus SAP CMS
                         StringBuffer lvHelpCSV = new StringBuffer();
-                        lvHelpCSV.append("Buergschaft SAP CMS;" + pvKontonummer + ";" + lvKredsh.getKey() + ";" + lvGeschaeftspartner.getKundennummer() + ";" + lvGeschaeftspartner.getGeschaeftspartnerfunktion() + ";" + pvKundennummer + ";" + pvBuergennummer + ";" + lvKredsh.getQuelle() + ";" + lvKredsh.getZuwbetrag().replace(".", ",") + ";" + lvKredsh.getWhrg());
-                        lvHelpCSV.append(";" + lvShdaten.getArt() + ";" + lvShdaten.getNbetrag().replace(".", ",") + ";" + lvShdaten.getVbetrag().replace(".", ",") + ";" + lvShdaten.getWhrg() + ";" + pvBuergschaftprozent.replace(".", ","));
+                        lvHelpCSV.append("Buergschaft SAP CMS;" + pvKontonummer + ";" + lvKredsh.getKey() + ";" + lvGeschaeftspartner.getKundennummer() + ";" + lvGeschaeftspartner.getGeschaeftspartnerfunktion() + ";" + pvKundennummer + ";" + pvBuergennummer + ";" + lvKredsh.getQuelle() + ";" + lvKredsh.getZuwbetrag().replace(".", "") + ";" + lvKredsh.getWhrg());
+                        lvHelpCSV.append(";" + lvShdaten.getArt() + ";" + lvShdaten.getNbetrag().replace(".", "") + ";" + lvShdaten.getVbetrag().replace(".", "") + ";" + lvShdaten.getWhrg() + ";" + pvBuergschaftprozent.replace(".", ","));
                         lvHelpCSV.append(";" + lvSicherheitenvereinbarung.getVerbuergungssatz().replace(".", ","));
                         lvHelpCSV.append(";" + pvShum.getDeckungsregisterRelevant());
                         lvHelpCSV.append(";" + pvNominalbetrag.replace(".", ",") + ";" + pvRestkapital.replace(".", ","));
@@ -2223,4 +2359,11 @@ public class Sicherheiten2Pfandbrief implements Sicherheiten2Register
     	return lvHelpString;
     }
 
+    /**
+     * Liefert die Sicherheiten-Daten
+     */
+    public SicherheitenDaten getSicherheitenDaten()
+    {
+        return this.ivSicherheitenDaten;
+    }
 }

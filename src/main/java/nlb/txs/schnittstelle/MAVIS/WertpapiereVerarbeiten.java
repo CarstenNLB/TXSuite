@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  */
 public class WertpapiereVerarbeiten 
 {
-    // Logger fuer LoanIQ
+    // Logger fuer Wertpapiere MAVIS
     private static Logger LOGGER_MAVIS = Logger.getLogger("TXSMAVISLogger");  
    
     /**

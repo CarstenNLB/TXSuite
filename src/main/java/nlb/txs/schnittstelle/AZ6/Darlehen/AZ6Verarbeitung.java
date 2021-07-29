@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 
 public class AZ6Verarbeitung
 {
-  // Logger fuer LoanIQ
+  // Logger fuer AZ6
   private static Logger LOGGER_AZ6 = Logger.getLogger("TXSAZ6Logger");
 
   /**
@@ -33,7 +33,7 @@ public class AZ6Verarbeitung
   private String ivInstitutsnummer;
 
   /**
-   * Import-Verzeichnis der LoanIQ-Datei
+   * Import-Verzeichnis der AZ6-Datei
    */
   private String ivImportVerzeichnis;
 
@@ -108,7 +108,7 @@ public class AZ6Verarbeitung
   private DarlehenBlock ivDarlehenBlock;
 
   /**
-   * Vorlaufsatz der LoanIQ-Datei
+   * Vorlaufsatz der AZ6-Datei (dasselbe Format wie LoanIQ)
    */
   private Vorlaufsatz ivVorlaufsatz;
 
@@ -125,8 +125,6 @@ public class AZ6Verarbeitung
   // Zaehlvariablen für die unterschiedlichen Ausplatzierungsmerkmale
   private int ivAnzahlK = 0;
   private int ivAnzahlH = 0;
-  private int ivAnzahlF = 0;
-  private int ivAnzahlS = 0;
   private int ivAnzahlO = 0;
 
   /**
@@ -149,6 +147,10 @@ public class AZ6Verarbeitung
    */
   private int ivZaehlerFinanzgeschaefteFremd;
 
+  /**
+   * Konstruktor
+   * @param pvReader
+   */
   public AZ6Verarbeitung(IniReader pvReader)
   {
     if (pvReader != null)
@@ -312,7 +314,7 @@ public class AZ6Verarbeitung
   }
         catch (Exception e)
   {
-    LOGGER_LOANIQ.error("Konnte VerbuergtKonsortial-Datei nicht oeffnen!");
+    LOGGER_AZ6.error("Konnte VerbuergtKonsortial-Datei nicht oeffnen!");
   } */
 
   // Cashflow-Quellsystem oeffnen (zum Schreiben)
@@ -380,7 +382,7 @@ public class AZ6Verarbeitung
   }
         catch (Exception e)
   {
-    LOGGER_LOANIQ.error("Fehler beim Schliessen der VerbuergtKonsortial-Datei");
+    LOGGER_AZ6.error("Fehler beim Schliessen der VerbuergtKonsortial-Datei");
   } */
 
     /*
@@ -421,14 +423,14 @@ public class AZ6Verarbeitung
 
     // Oeffnen der Dateien
     FileInputStream lvFis = null;
-    File ivFileLoanIQ = new File(pvDateiname);
+    File ivFileAZ6 = new File(pvDateiname);
     try
     {
-      lvFis = new FileInputStream(ivFileLoanIQ);
+      lvFis = new FileInputStream(ivFileAZ6);
     }
     catch (Exception e)
     {
-      LOGGER_AZ6.error("Konnte LoanIQ-Datei nicht oeffnen!");
+      LOGGER_AZ6.error("Konnte AZ6-Datei nicht oeffnen!");
       return;
     }
 
@@ -437,8 +439,8 @@ public class AZ6Verarbeitung
 
     try
     {
-      while ((lvZeile = lvIn.readLine()) != null)  // Lesen LoanIQ-Datei
-      {
+      while ((lvZeile = lvIn.readLine()) != null)  // Lese Zeile der AZ6-Datei ein
+       {
         if (lvStart)
         {
           ivVorlaufsatz.parseVorlaufsatz(lvZeile);
@@ -453,7 +455,6 @@ public class AZ6Verarbeitung
         }
         else
         {
-          //System.out.println("lvZeile: " + lvZeile);
           if (!ivDarlehenBlock.parseDarlehen(lvZeile, LOGGER_AZ6)) // Parsen der Felder
           {
             // Unterschiedliche Kontonummer -> Darlehen verarbeiten
@@ -461,7 +462,7 @@ public class AZ6Verarbeitung
             {
               ivDarlehenBlock.verarbeiteDarlehenAZ6(ivFosCashflowQuellsystem, ivOutputDarlehenXML, ivMappingRueckmeldungListe);
             }
-            // Neuen LoanIQ-Block anlegen
+            // Neuen Darlehen-Block anlegen
             ivDarlehenBlock = new DarlehenBlock(ivVorlaufsatz, ivSicherheitenDaten.getSicherheiten2Pfandbrief(), LOGGER_AZ6);
             // Zeile mit neuer Kontonummer muss noch verarbeitet werden
             if (ivDarlehenBlock.parseDarlehen(lvZeile, LOGGER_AZ6)) // Parsen der Felder
@@ -518,8 +519,6 @@ public class AZ6Verarbeitung
     lvOut.append(ivZaehlerFinanzgeschaefteFremd + " Fremd-Finanzgeschaefte gelesen..." + StringKonverter.lineSeparator);
     lvOut.append(ivAnzahlK + " mit Ausplatzierungsmerkmal Kx" + StringKonverter.lineSeparator);
     lvOut.append(ivAnzahlH + " mit Ausplatzierungsmerkmal Hx" + StringKonverter.lineSeparator);
-    lvOut.append(ivAnzahlF + " mit Ausplatzierungsmerkmal Fx" + StringKonverter.lineSeparator);
-    lvOut.append(ivAnzahlS + " mit Ausplatzierungsmerkmal Sx" + StringKonverter.lineSeparator);
     lvOut.append(ivAnzahlO + " mit Ausplatzierungsmerkmal Ox" + StringKonverter.lineSeparator);
 
     return lvOut.toString();
@@ -545,7 +544,7 @@ public class AZ6Verarbeitung
         /*
         try
         {
-          ivFosAusplatzierungsmerkmal.write((ivDarlehenBlock.getKontonummer() + ";" + ivDarlehenBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal() + StringKonverter.lineSeparator).getBytes());
+          ivFosAusplatzierungsmerkmal.write((ivDarlehenBlock.getKontonummer() + ";" + ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal() + StringKonverter.lineSeparator).getBytes());
         }
         catch (Exception e)
         {
@@ -560,14 +559,12 @@ public class AZ6Verarbeitung
       {
         if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("K") ||
             ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("H") ||
-            ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("F") ||
-            ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("S") ||
             ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("O"))
         {
           /*
           try
           {
-            ivFosAusplatzierungsmerkmal.write((ivDarlehenBlock.getKontonummer() + ";" + ivDarlehenBlock.getDarlehenLoanIQNetto().getAusplatzierungsmerkmal() + StringKonverter.lineSeparator).getBytes());
+            ivFosAusplatzierungsmerkmal.write((ivDarlehenBlock.getKontonummer() + ";" + ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal() + StringKonverter.lineSeparator).getBytes());
           }
           catch (Exception e)
           {
@@ -590,8 +587,6 @@ public class AZ6Verarbeitung
 
           if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("K")) ivAnzahlK++;
           if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("H")) ivAnzahlH++;
-          if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("F")) ivAnzahlF++;
-          if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("S")) ivAnzahlS++;
           if (ivDarlehenBlock.getDarlehenNetto().getAusplatzierungsmerkmal().startsWith("O")) ivAnzahlO++;
         }
       }

@@ -223,7 +223,7 @@ public class LoanIQVerarbeitungKEV
     ////ivSapcms = new SAPCMS_Neu(ivImportVerzeichnisSAPCMS + "\\" + ivSapcmsDatei, LOGGER_LOANIQ_KEV);
 
     // Darlehen XML-Datei im TXS-Format
-    System.out.println(ivExportVerzeichnis + "\\" + ivKEVOutputDatei);
+    //System.out.println(ivExportVerzeichnis + "\\" + ivKEVOutputDatei);
     ivOutputDarlehenXML = new OutputDarlehenXML(ivExportVerzeichnis + "\\" + ivKEVOutputDatei, LOGGER_LOANIQ_KEV);
     ivOutputDarlehenXML.openXML();
     ivOutputDarlehenXML.printXMLStart();
@@ -245,8 +245,8 @@ public class LoanIQVerarbeitungKEV
   }
 
   /**
-   * Liest die LoanIQKEV-Datei/-Daten ein
-   * @param pvDateiname Dateiname der LoanIQKEV-Datei
+   * Liest die LoanIQ-Datei/-Daten ein
+   * @param pvDateiname Dateiname der LoanIQ-Datei
    */
   private void readKEVLoanIQ(String pvDateiname)
   {
@@ -264,7 +264,7 @@ public class LoanIQVerarbeitungKEV
     }
     catch (Exception e)
     {
-      LOGGER_LOANIQ_KEV.error("Konnte LoanIQKEV-Datei nicht oeffnen!");
+      LOGGER_LOANIQ_KEV.error("Konnte LoanIQ-Datei nicht oeffnen!");
       return;
     }
 
@@ -273,7 +273,7 @@ public class LoanIQVerarbeitungKEV
 
     try
     {
-      while ((lvZeile = lvIn.readLine()) != null)  // Lesen MIDAS-Datei
+      while ((lvZeile = lvIn.readLine()) != null)  // Lesen LoanIQ-Datei
       {
         if (lvStart)
         {
@@ -320,7 +320,7 @@ public class LoanIQVerarbeitungKEV
     }
     catch (Exception e)
     {
-      LOGGER_LOANIQ_KEV.error("Konnte LoanIQKEV-Datei nicht schliessen!");
+      LOGGER_LOANIQ_KEV.error("Konnte LoanIQ-Datei nicht schliessen!");
     }
   }
 

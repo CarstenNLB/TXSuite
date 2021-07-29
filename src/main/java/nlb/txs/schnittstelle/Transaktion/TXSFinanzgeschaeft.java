@@ -493,6 +493,24 @@ public class TXSFinanzgeschaeft implements TXSTransaktion
   }
 
   /**
+   * Importiert die Darlehensinformationen aus AZ6 fuer KEV
+   * @param pvDarlehen
+   * @param pvVorlaufsatz
+   * @return
+   */
+  public boolean importKEVAZ6(Darlehen pvDarlehen, Vorlaufsatz pvVorlaufsatz)
+  {
+    // LoanIQ-Daten(Key und Quelle) setzen
+    this.ivKey = pvDarlehen.getKontonummer();
+    this.ivQuelle = "AAZ6KEV";
+
+    // Originator per Institutsnummer setzen
+    this.ivOriginator = ValueMapping.changeMandant(pvVorlaufsatz.getInstitutsnummer());
+
+    return true;
+  }
+
+  /**
    * Importiert die Termingeldinformationen
    * @param pvTermingeld Termingeld
    * @param pvVorlaufsatz Vorlaufsatz

@@ -18,7 +18,7 @@ public class Termingelder
       if (!argv[argv.length - 1].endsWith(".ini"))
       {
         System.out.println("Starten:");
-        System.out.println("Termingeld <ini-Datei>");
+        System.out.println("Termingelder <ini-Datei>");
         System.exit(1);
       }
       else
@@ -34,7 +34,7 @@ public class Termingelder
           System.exit(1);
         }
 
-        String lvLoggingXML = lvReader.getPropertyString("Termingeld", "log4jconfig", "Fehler");
+        String lvLoggingXML = lvReader.getPropertyString("Termingelder", "log4jconfig", "Fehler");
         if (lvLoggingXML.equals("Fehler"))
         {
           System.out.println("Keine log4j-Konfiguration in der ini-Datei...");

@@ -2063,6 +2063,42 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
     }
 
     /**
+     *
+     * @param pvGd160
+     */
+    public void setGd160(String pvGd160)
+    {
+        this.ivGd160 = pvGd160;
+    }
+
+    /**
+     *
+     * @param pvGd260
+     */
+    public void setGd260(String pvGd260)
+    {
+        this.ivGd260 = pvGd260;
+    }
+
+    /**
+     *
+     * @param pvGd776
+     */
+    public void setGd776(String pvGd776)
+    {
+        this.ivGd776 = pvGd776;
+    }
+
+    /**
+     *
+     * @param pvGd776B
+     */
+    public void setGd776B(String pvGd776B)
+    {
+        this.ivGd776B = pvGd776B;
+    }
+
+    /**
      * Liefert den Start der TXSFinanzgeschaeftDaten als String
      * @return
      */
@@ -2098,6 +2134,11 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
 
         if (this.ivBank.length() > 0)
             lvHelpXML.append("bank=\"" + this.ivBank + "\" ");
+
+        if (this.ivBsform.length() > 0)
+        {
+            lvHelpXML.append("bsform=\"" + String2XML.change2XML(this.ivBsform) + "\" ");
+        }
 
         if (this.ivDepotnummer.length() > 0)
         	lvHelpXML.append("depotnummer=\"" + this.ivDepotnummer + "\" ");
@@ -2734,8 +2775,16 @@ public class TXSFinanzgeschaeftDaten implements TXSTransaktion
        this.ivPoe = lvHelpDarlehen.getPOE();
        // Hinzugefuegte Felder - 15.11.2012
 
-        // Anwendungsnummer LoanIQ == 33 - CT 12.08.2019
-        this.ivAnwendungsnummer = "33";
+        // Anwendungsnummer LoanIQ = 33 - CT 12.08.2019
+        // Anwendungsnummer AZ6 = 30 - CT 18.01.2021
+        if (pvDarlehenBlock.getQuellsystem().equals("IWHS"))
+        {
+            this.ivAnwendungsnummer = "30";
+        }
+        if (pvDarlehenBlock.getQuellsystem().equals("LOANIQ"))
+        {
+            this.ivAnwendungsnummer = "33";
+        }
 
         return true;
     }

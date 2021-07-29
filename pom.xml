@@ -59,6 +59,12 @@
       <version>1.4.4</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.oracle.database.jdbc</groupId>
+      <artifactId>ojdbc</artifactId>
+      <version>6</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -127,6 +133,46 @@
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
               <finalName>VorgangView</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>ProstView</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>de.nordlbit.prost.gui.ProstView</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>ProstView</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>Vorgang</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>de.nordlbit.prost.bd.Vorgang</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>Vorgang</finalName>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
@@ -213,7 +259,7 @@
           </execution>
 
           <execution>
-            <id>WertpaiereKEV</id>
+            <id>WertpapiereKEV</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -228,6 +274,46 @@
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
               <finalName>WertpapiereKEV</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>AZ6KEV</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>nlb.txs.schnittstelle.KEV.AZ6.AZ6KEV</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>AZ6KEV</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>KundennummernUmstellungAZ6</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>nlb.txs.schnittstelle.Kunde.KundennummernUmstellungAZ6</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>KundennummernUmstellungAZ6</finalName>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>
@@ -293,6 +379,26 @@
             </configuration>
           </execution>
 
+          <execution>
+            <id>RefiRegisterDeutscheHypo</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>nlb.txs.schnittstelle.DeutscheHypo.RefiRegister.RefiRegisterDH</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>RefiRegisterDeutscheHypo</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
           <!-- Pfandbrief - JAR-Files -->
           <execution>
             <id>AZ6</id>
@@ -303,7 +409,7 @@
             <configuration>
               <archive>
                 <manifest>
-                  <mainClass>nlb.txs.schnittstelle.AZ6.AZ6</mainClass>
+                  <mainClass>nlb.txs.schnittstelle.AZ6.Darlehen.AZ6</mainClass>
                 </manifest>
               </archive>
               <descriptorRefs>
@@ -770,6 +876,66 @@
                 <descriptorRef>jar-with-dependencies</descriptorRef>
               </descriptorRefs>
               <finalName>WertpapiereMAVIS</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>DeutscheHypo</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>nlb.txs.schnittstelle.DeutscheHypo.Darlehen.DeutscheHypo</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>DeutscheHypo</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>CashflowsDeutscheHypo</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>nlb.txs.schnittstelle.DeutscheHypo.Cashflows.CashflowsDeutscheHypo</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>CashflowsDeutscheHypo</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>WertpapiereDeutscheHypo</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>nlb.txs.schnittstelle.DeutscheHypo.Wertpapiere.WertpapiereDH</mainClass>
+                </manifest>
+              </archive>
+              <descriptorRefs>
+                <descriptorRef>jar-with-dependencies</descriptorRef>
+              </descriptorRefs>
+              <finalName>WertpapiereDeutscheHypo</finalName>
               <appendAssemblyId>false</appendAssemblyId>
             </configuration>
           </execution>

@@ -1276,16 +1276,16 @@ public class Immobilie
                     this.setReferenzId(pvWert);
                     break;
                 case 3:
-                    pvWert = pvWert.replace(".", "");
-                    pvWert = pvWert.replace(",", ".");
+                    //pvWert = pvWert.replace(".", "");
+                    //pvWert = pvWert.replace(",", ".");
                     this.setNominalwert(pvWert.trim());
                     break;
                 case 4:
                     this.setNominalwertWaehrung(pvWert);
                     break;
                 case 5:
-                    pvWert = pvWert.replace(".", "");
-                    pvWert = pvWert.replace(",", ".");
+                    //pvWert = pvWert.replace(".", "");
+                    //pvWert = pvWert.replace(",", ".");
                     this.setBeleihungswert(pvWert.trim());
                     break;
                 case 6:
@@ -1327,13 +1327,13 @@ public class Immobilie
                     this.setNutzung(pvWert);
                     break;
                 case 17:
-                    pvWert = pvWert.replace(".", "");
-                    pvWert = pvWert.replace(",", ".");
+                    //pvWert = pvWert.replace(".", "");
+                    //pvWert = pvWert.replace(",", ".");
                     this.setProzentanteil(pvWert.trim());
                     break;
                 case 18:
-                    pvWert = pvWert.replace(".", "");
-                    pvWert = pvWert.replace(",", ".");
+                    //pvWert = pvWert.replace(".", "");
+                    //pvWert = pvWert.replace(",", ".");
                     this.setGradBaufertigstellung(pvWert.trim());
                     break;
                 case 19:
@@ -1413,16 +1413,16 @@ public class Immobilie
                     this.setGebaeude(pvWert);
                     break;
                 case 43:
-                    pvWert = pvWert.replace(".", "");
-                    pvWert = pvWert.replace(",", ".");
+                    //pvWert = pvWert.replace(".", "");
+                    //pvWert = pvWert.replace(",", ".");
                     this.setSachwert(pvWert.trim());
                     break;
                 case 44:
                     this.setSachwertWaehrung(pvWert);
                     break;
                 case 45:
-                    pvWert = pvWert.replace(".", "");
-                    pvWert = pvWert.replace(",", ".");
+                    //pvWert = pvWert.replace(".", "");
+                    //pvWert = pvWert.replace(",", ".");
                     this.setErtragswert(pvWert.trim());
                     break;
                 case 46:

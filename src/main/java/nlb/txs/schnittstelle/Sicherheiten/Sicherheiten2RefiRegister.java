@@ -23,7 +23,6 @@ import nlb.txs.schnittstelle.Transaktion.TXSKreditSicherheit;
 import nlb.txs.schnittstelle.Transaktion.TXSPfandobjektDaten;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheit;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheitDaten;
-import nlb.txs.schnittstelle.Transaktion.TXSSicherheitPerson2;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheitVerzeichnis;
 import nlb.txs.schnittstelle.Transaktion.TXSSicherheitZuSicherheit;
 import nlb.txs.schnittstelle.Transaktion.TXSVerzeichnisBestandsverz;
@@ -275,6 +274,7 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
                     
                  Geschaeftspartner lvGeschaeftspartner = null;
 
+                 /*
                  TXSSicherheitPerson2 lvHelpPerson = new TXSSicherheitPerson2();
                  // Geschaeftspartner suchen
                  Collection<Geschaeftspartner> lvCollectionGeschaeftspartner = ivSicherheitenDaten.getListeGeschaeftspartner().values();
@@ -294,7 +294,8 @@ public class Sicherheiten2RefiRegister implements Sicherheiten2Register
                  lvHelpString.append(lvHelpPerson.printTXSTransaktionStart());
                  lvHelpString.append(lvHelpPerson.printTXSTransaktionDaten());
                  lvHelpString.append(lvHelpPerson.printTXSTransaktionEnde());
-                 
+                 */
+
                  // Grundpfandr. Auslandsimmo -> Kein Grundbucheintrag
                  if (lvShdaten.getArt().equalsIgnoreCase("19"))
                  {

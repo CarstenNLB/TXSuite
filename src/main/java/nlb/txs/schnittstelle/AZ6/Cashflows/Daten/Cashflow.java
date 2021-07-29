@@ -81,9 +81,9 @@ public class Cashflow implements Comparable<Cashflow>
     }
     
     /**
-     * @param pvZeile 
-     * @return 
-     *       
+     * Zerlegt eine Cashflow-Zeile in die einzelnen Felder
+     * @param pvZeile Cashflow-Zeile
+     * @return Immer 'true'
      */
    public boolean parseCashflow(String pvZeile)
    {                 
@@ -117,7 +117,7 @@ public class Cashflow implements Comparable<Cashflow>
 
     /**
      * Setzt einen Wert des Cashflows
-     * @param pvPos Position
+     * @param pvPos Feldposition
      * @param pvWert Wert
 
      */
@@ -165,6 +165,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
     
     /**
+     * Liefert das Quellsystem
      * @return the quellsystem
      */
     public String getQuellsystem() {
@@ -172,13 +173,15 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
-     * @param pvQuellsystem the quellsystem to set
+     * Setzt das Quellsystem
+     * @param pvQuellsystem das zu setzende Quellsystem
      */
     public void setQuellsystem(String pvQuellsystem) {
         this.ivQuellsystem = pvQuellsystem;
     }
 
     /**
+     * Liefert die Kontonummer
      * @return the kontonummer
      */
     public String getKontonummer() {
@@ -186,13 +189,15 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
-     * @param pvKontonummer the kontonummer to set
+     * Setzt die Kontonummer
+     * @param pvKontonummer die zu setzende Kontonummer
      */
     public void setKontonummer(String pvKontonummer) {
         this.ivKontonummer = pvKontonummer;
     }
 
     /**
+     * Liefert die ISIN
      * @return the iSIN
      */
     public String getISIN() {
@@ -200,6 +205,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt die ISIN
      * @param pvISIN the iSIN to set
      */
     public void setISIN(String pvISIN) {
@@ -207,6 +213,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Liefert die Institutsnummer
      * @return the institutsnummer
      */
     public String getInstitutsnummer() {
@@ -214,6 +221,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt die Institutsnummer
      * @param pvInstitutsnummer the institutsnummer to set
      */
     public void setInstitutsnummer(String pvInstitutsnummer) {
@@ -221,6 +229,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Liefert die Ablaufart-Nummer
      * @return the artNummer
      */
     public String getArtNummer() {
@@ -228,6 +237,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt die Ablaufart-Nummer
      * @param pvArtNummer the artNummer to set
      */
     public void setArtNummer(String pvArtNummer) {
@@ -235,6 +245,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Liefert das Wertstellungsdatum
      * @return the wertstellungsdatum
      */
     public String getWertstellungsdatum() {
@@ -242,6 +253,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt das Wertstellungsdatum
      * @param pvWertstellungsdatum the wertstellungsdatum to set
      */
     public void setWertstellungsdatum(String pvWertstellungsdatum) {
@@ -249,6 +261,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Liefert das Buchungsdatum
      * @return the buchungsdatum
      */
     public String getBuchungsdatum() {
@@ -256,6 +269,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt das Buchungsdatum
      * @param pvBuchungsdatum the buchungsdatum to set
      */
     public void setBuchungsdatum(String pvBuchungsdatum) {
@@ -263,6 +277,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Liefert die Waehrung
      * @return the waehrung
      */
     public String getWaehrung() {
@@ -270,6 +285,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt die Waehrung
      * @param pvWaehrung the waehrung to set
      */
     public void setWaehrung(String pvWaehrung) {
@@ -277,6 +293,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Liefert den Wert
      * @return the wert
      */
     public String getWert() {
@@ -284,6 +301,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt den Wert
      * @param pvWert the wert to set
      */
     public void setWert(String pvWert) {
@@ -291,6 +309,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Liefert das BruttoNetto-Kennzeichen
      * @return the bruttoNetto
      */
     public String getBruttoNetto() {
@@ -298,6 +317,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Setzt das BruttoNetto-Kennzeichen
      * @param pvBruttoNetto the bruttoNetto to set
      */
     public void setBruttoNetto(String pvBruttoNetto) {
@@ -305,6 +325,7 @@ public class Cashflow implements Comparable<Cashflow>
     }
 
     /**
+     * Vergleicht das Buchungsdatum auf die Reihenfolge
      * @see Comparable#compareTo(Object)
      */
     public int compareTo(Cashflow pvCashflow)

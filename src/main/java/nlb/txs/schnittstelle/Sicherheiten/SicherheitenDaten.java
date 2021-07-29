@@ -139,6 +139,11 @@ public class SicherheitenDaten {
   private Logger ivLogger;
 
   /**
+   * Quelle der Daten (SAP CMS oder VVS)
+   */
+  private int ivQuelle;
+
+  /**
    * Konstruktor
    * @param pvFilename
    * @param pvQuelle
@@ -147,6 +152,7 @@ public class SicherheitenDaten {
   public SicherheitenDaten(String pvFilename, int pvQuelle, Logger pvLogger)
   {
     this.ivLogger = pvLogger;
+    this.ivQuelle = pvQuelle;
 
     // Initialisierung der Liste Zuweisungsbetraege
     ivOzwListe = new ObjektZuweisungsbetragListe();
@@ -242,9 +248,24 @@ public class SicherheitenDaten {
         {
           ivLast = new Last(ivLogger);
           ivLast.parseLast(lvZeile, pvQuelle);
-          ivListeLast.put(ivLast.getId(), ivLast);
-          ivZaehlerLast++;
-        }
+          if (pvQuelle == SicherheitenDaten.VVS)
+          {
+            if (ivLast.getId().contains("-"))
+            { // Keine GUID -> einfuegen - CT 22.04.2021
+              ivListeLast.put(ivLast.getId(), ivLast);
+              //ivListeLast.put(new Integer(ivZaehlerLast).toString(), ivLast);
+              ivZaehlerLast++;
+            }
+            else
+            {
+              ivLogger.info("GUID;" + ivListeSicherheitenvereinbarung.get(ivLast.getSicherheitenvereinbarungId()).getSicherheitenvereinbarungsId());
+            }
+          }
+          else {
+            ivListeLast.put(ivLast.getId(), ivLast);
+            ivZaehlerLast++;
+          }
+         }
         if (lvZeile.startsWith(GRUNDBUCHVERWEIS))
         {
           ivGrundbuchverweis = new Grundbuchverweis(ivLogger);
@@ -310,13 +331,23 @@ public class SicherheitenDaten {
           ivGrundbuchblatt = new Grundbuchblatt(ivLogger);
           ivGrundbuchblatt.parseGrundbuchblatt(lvZeile, pvQuelle);
           ivListeGrundbuchblatt.put(ivGrundbuchblatt.getId(), ivGrundbuchblatt);
+          //ivListeGrundbuchblatt.put(new Integer(ivZaehlerGrundbuchblatt).toString(), ivGrundbuchblatt);
           ivZaehlerGrundbuchblatt++;
         }
         if (lvZeile.startsWith(GRUNDSTUECK))
         {
           ivGrundstueck = new Grundstueck(ivLogger);
           ivGrundstueck.parseGrundstueck(lvZeile, pvQuelle);
-          ivListeGrundstueck.put(ivGrundstueck.getId(), ivGrundstueck);
+          //if (ivQuelle == VVS)
+          //{
+          //  ivListeGrundstueck.put(ivGrundstueck.getId() + ivGrundstueck.getLaufendeNummer(), ivGrundstueck);
+          //}
+          //else
+          //{
+            ivListeGrundstueck.put(ivGrundstueck.getId(), ivGrundstueck);
+          //ivListeGrundstueck.put(new Integer(ivZaehlerGrundstueck).toString(), ivGrundstueck);
+
+          //}
           ivZaehlerGrundstueck++;
         }
       }
@@ -524,5 +555,50 @@ public class SicherheitenDaten {
   public Sicherheiten2Register getSicherheiten2RefiRegister()
   {
     return this.ivSicherheiten2RefiRegister;
+  }
+
+  /**
+   * Liefert die Quelle der Daten
+   * @return 1 -> SAP CMS; 2 -> VVS
+   */
+  public int getQuelle()
+  {
+    return this.ivQuelle;
+  }
+
+  /**
+   * Liefert den Buergschaftprozentsatz
+   * @param pvKontonummer Kontonummer
+   */
+  public String getBuergschaftprozent(String pvKontonummer)
+  {
+    String lvBuergschaftprozent = "0.0";
+    Sicherungsumfang lvShum = null;
+
+    // Passende Liste der Sicherungsumfaenge zur Kontonummer ermitteln
+    LinkedList<Sicherungsumfang> lvHelpListe = this.getListeSicherungsumfang().get(pvKontonummer);
+
+    // Nur Sicherheiten verwenden, wenn ZW > 0 ist
+    if (lvHelpListe != null)
+    {
+      for (int x = 0; x < lvHelpListe.size(); x++)
+      {
+        lvShum = lvHelpListe.get(x);
+        ivLogger.info("SicherungsumfangId: " + lvShum.getId() + " Zuweisungsbetrag: " + lvShum.getZuweisungsbetrag());
+        ivLogger.info("DeckungsregisterRelevant: " + lvShum.getDeckungsregisterRelevant());
+
+        if (lvShum.getDeckungsregisterRelevant().equals("01")) // Buergschaft relevant
+        {
+          Sicherheitenvereinbarung lvSicherheitenvereinbarung = this.getListeSicherheitenvereinbarung().get(lvShum.getSicherheitenvereinbarungId());
+          lvBuergschaftprozent = lvSicherheitenvereinbarung.getVerbuergungssatz();
+          ivLogger.info("Verbuergungssatz: " + lvBuergschaftprozent);
+        }
+      }
+    }
+    else
+    {
+      ivLogger.info("Keine passende Buergschaft in den Sicherheiten-Daten gefunden!");
+    }
+    return lvBuergschaftprozent;
   }
 }

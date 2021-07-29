@@ -1858,8 +1858,7 @@ public class DarlehenVerarbeiten
             if (ivZielDarlehen.getKredittyp().equals("2") || ivZielDarlehen.getKredittyp().equals("4"))
              {
             	// CT 14.03.2016 - Herausgenommen
-            	//LOGGER_DARKA.info("Buerge in Sicherheiten: " + ivZielDarlehen.getKontonummer() + ";" + ivSapcms.getSicherheitId(ivZielDarlehen.getKontonummer()));
-                //ivOutputDarlehenXML.printTransaktion(ivSapcms.importSicherheitBuergschaft(ivZielDarlehen.getKontonummer(), "ADARLPFBG", ivZielDarlehen.getRestkapital(), ivZielDarlehen.getBuergschaftProzent()));
+                 // ivOutputDarlehenXML.printTransaktion(ivSapcms.getSicherheitenDaten().getSicherheiten2Pfandbrief().importSicherheitBuergschaft(ivZielDarlehen.getKontonummer(), "ADARLPFBG", ivZielDarlehen.getRestkapital(), ivZielDarlehen.getBuergschaftProzent(), ivZielDarlehen.getAusplatzierungsmerkmal(), ivZielDarlehen.getUrsprungsKapital(), ivZielDarlehen.getKundennummer(), ivZielDarlehen.getBuergennummer(), ivInstitutsnummer));
             	// CT 14.03.2016 - Herausgenommen
             	if (lvKredsh.importDarlehen(ivModus, ivZielDarlehen, LOGGER_DARKA))
                 {

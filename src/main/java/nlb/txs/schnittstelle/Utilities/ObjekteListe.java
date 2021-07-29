@@ -76,21 +76,21 @@ public class ObjekteListe extends HashMap<String, String>
             		if (pvValueFilterListe == null)
             		{
             			this.put(lvKey, lvValue);
-            			ivLogger.info("Key: " + lvKey + " - Value: " + lvValue);
+            			//ivLogger.info("Key: " + lvKey + " - Value: " + lvValue);
             		}
             		else
             		{
             			if (pvValueFilterListe.contains(lvValue))
             			{
             				this.put(lvKey, lvValue);
-            				ivLogger.info("Key: " + lvKey + " - Value: " + lvValue);
+            				//ivLogger.info("Key: " + lvKey + " - Value: " + lvValue);
             			}
             		}
             	}
             	else
             	{
     				    this.put(lvZeile, new String());
-    				    ivLogger.info("Key: " + lvZeile);
+    				    //ivLogger.info("Key: " + lvZeile);
             	}
             }
         }

@@ -6,6 +6,7 @@
 
 package nlb.txs.schnittstelle.Sicherheiten;
 
+import nlb.txs.schnittstelle.OutputXML.OutputDarlehenXML;
 import nlb.txs.schnittstelle.Utilities.IniReader;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
@@ -56,10 +57,17 @@ public class SAPCMS_Neu
         //ivListeGrundbuchblatt = new HashMap<String, Grundbuchblatt>();
         //ivListeGrundstueck = new HashMap<String, Grundstueck>();
 
+      // CT - 18.06.2021 - Kann alles wieder auskommentiert werden
         //ivSAPCMS2Pfandbrief = new Sicherheiten2Pfandbrief(ivSicherheitenDaten, pvLogger);
-        //ivSAPCMS2RefiRegister = new Sicherheiten2RefiRegister(ivSicherheitenDaten, pvLogger);
+      OutputDarlehenXML ivOutputDarlehenXML = new OutputDarlehenXML("C:\\Users\\n1117412\\Test_DIC.xml" , pvLogger);
+      ivOutputDarlehenXML.openXML();
+
+      Sicherheiten2RefiRegister lvSicherheiten2RefiRegister = new Sicherheiten2RefiRegister(ivSicherheitenDaten, pvLogger);
         //readSAPCMS(pvFilename);
-    }
+      ivOutputDarlehenXML.printTransaktion(lvSicherheiten2RefiRegister.importSicherheitHypotheken("7100010234", "7100010234", "80101699", "1", new String(), "ADHYREFI", "009", null));//pvDarlehen.getKredittyp(), pvDarlehen.getBuergschaftProzent()));
+      ivOutputDarlehenXML.closeXML();
+      // CT - 18.06.2021 - Kann alles wieder auskommentiert werden
+}
 
     /**
      * Existiert eine Sicherheit zur Kontonummer
@@ -110,7 +118,7 @@ public class SAPCMS_Neu
      * @param args Uebergabeparameter
      */
     public static void main(String args[])
-    { 
+    {
          if (!args[args.length - 1].endsWith(".ini"))
          {
             System.out.println("Starten:");
@@ -118,9 +126,9 @@ public class SAPCMS_Neu
             System.exit(1);
          }
          else
-         {       
+         {
             IniReader lvReader = null;
-            try 
+            try
             {
                 lvReader = new IniReader(args[args.length - 1]);
             }
@@ -129,7 +137,7 @@ public class SAPCMS_Neu
                 System.out.println("Fehler beim Laden der ini-Datei...");
                 System.exit(1);
             }
-        	
+
             String lvLoggingXML = lvReader.getPropertyString("SAPCMS", "log4jconfig", "Fehler");
             if (lvLoggingXML.equals("Fehler"))
             {
@@ -138,8 +146,8 @@ public class SAPCMS_Neu
             else
             {
                 DOMConfigurator.configure(lvLoggingXML);
-            }     
-            
+            }
+
             String lvImportVerzeichnisSAPCMS = lvReader.getPropertyString("SAPCMS", "ImportVerzeichnis", "Fehler");
             if (lvImportVerzeichnisSAPCMS.equals("Fehler"))
             {
@@ -156,7 +164,5 @@ public class SAPCMS_Neu
 
             SAPCMS_Neu lvSAPCMS = new SAPCMS_Neu(lvImportVerzeichnisSAPCMS + "\\" + lvSapcmsDatei, LOGGER_SAPCMS);
         }
-        System.exit(0);
     }
-
 }

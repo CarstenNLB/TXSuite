@@ -398,8 +398,12 @@ public class Darlehen
      * Deal Nominal
      */
     private String ivDealNominal;
-    
-    
+
+    /**
+     * PricingFormula
+     */
+    private String ivPricingFormula;
+
     /**
      * Konstruktor - Initialisiert alle Variablen mit einem leeren String
      */
@@ -472,6 +476,7 @@ public class Darlehen
         this.ivGegenkontoPassiv = new String();
         this.ivFacilityNominal = new String();
         this.ivDealNominal = new String();
+        this.ivPricingFormula = new String();
     }
 
     /**
@@ -1406,6 +1411,14 @@ public class Darlehen
 		this.ivDealNominal = pvDealNominal;
 	}
 
+    /**
+     * Liefert die PricingFormula
+     */
+    public String getPricingFormula(String pvPricingFormula)
+    {
+        return ivPricingFormula;
+    }
+
 	/**
 	 * Zerlegt eine Darlehenszeile in die einzelnen Felder/Werte
      * @param pvZeile
@@ -1694,6 +1707,40 @@ public class Darlehen
               }
               this.ivDealNominal = pvWert;
               break;
+            case 67:
+                // 1. Neues Datenfeld
+                break;
+            case 68:
+                // 2. Neues Datenfeld
+                break;
+            case 69:
+                this.ivPricingFormula = pvWert;
+                //if (ivKennzeichenBruttoNettoFremd.equals("N"))
+                //{
+                //    ivLogger.info("PricingFormula;" + this.ivKontonummer + ";" + ivAusplatzierungsmerkmal + ";" + this.ivPricingFormula);
+                //}
+                break;
+            case 70:
+                // 4. Neues Datenfeld
+                break;
+            case 71:
+                // 5. Neues Datenfeld
+                break;
+            case 72:
+                // 6. Neues Datenfeld
+                break;
+            case 73:
+                // 7. Neues Datenfeld
+                break;
+            case 74:
+                // 8. Neues Datenfeld
+                break;
+            case 75:
+                // 9. Neues Datenfeld
+                break;
+            case 76:
+                // 10. Neues Datenfeld
+                break;
           default:
               ivLogger.error("Darlehen: Feld " + pvPos + " undefiniert - Wert: " + pvWert);
         }

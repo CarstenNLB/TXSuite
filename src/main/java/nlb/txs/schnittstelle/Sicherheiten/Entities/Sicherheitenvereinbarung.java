@@ -97,7 +97,7 @@ public class Sicherheitenvereinbarung
     private String ivHinderungsgrund;
     
     /**
-     * Verbuergungssatz
+     * Verbuergungssatz in Prozent
      */
     private String ivVerbuergungssatz;
     
@@ -816,11 +816,7 @@ public class Sicherheitenvereinbarung
             case 11:
                 this.setGueltigkeitsende(pvWert);
                 break;
-             /* case 17:
-                pvWert = pvWert.replace(",", ".");
-                this.setVerbuergungssatz(pvWert.trim());
-                break; */
-            case 12:
+             case 12:
                 this.setAnwendbaresRecht(pvWert);
                 break;
             case 13:
@@ -865,6 +861,10 @@ public class Sicherheitenvereinbarung
             case 25:
                 //pvWert = pvWert.replace(",", ".");
                 this.setAusfallbuergschaft(pvWert.trim());
+                break;
+                case 26:
+                //pvWert  = pvWert.replace(",", ".");
+                this.setVerbuergungssatz(pvWert.trim());
                 break;
             default:
                 ivLogger.info("Sicherheitenvereinbarung: undefiniert - Feld: " + pvPos + " Wert: " + pvWert);

@@ -56,6 +56,12 @@ public abstract class String2XML
 		pvText = pvText.replace("û", "&#251;");
 		pvText = pvText.replace("ú", "&#250;");
 		pvText = pvText.replace("ù", "&#249;");
+
+		pvText = pvText.replace("ô", "&#244;");
+		pvText = pvText.replace("É", "&Eacute;");
+		pvText = pvText.replace("ó", "&oacute;");
+		pvText = pvText.replace("ñ", "n");
+		pvText = pvText.replace("À", "&Agrave;");
 		
 		return pvText;
 	}

@@ -1241,7 +1241,7 @@ public class ProstView extends javax.swing.JFrame {
 
         jLabel3.setText("Qualifier:");
 
-        jComboBoxDateisucheQualifier.setModel(new javax.swing.DefaultComboBoxModel(new String[] { ".Djjmmdd", "_jjjjmmdd.csv", "_jjjjmmdd.xml" }));
+        jComboBoxDateisucheQualifier.setModel(new javax.swing.DefaultComboBoxModel(new String[] { ".Djjmmdd", "_jjjjmmdd.csv", "_jjjjmmdd.xml", "jjjjmmdd_" }));
         jComboBoxDateisucheQualifier.setEnabled(false);
         jComboBoxDateisucheQualifier.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

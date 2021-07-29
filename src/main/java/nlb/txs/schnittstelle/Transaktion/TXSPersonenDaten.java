@@ -309,7 +309,42 @@ public class TXSPersonenDaten implements TXSTransaktion
      */
     private String ivWhrg;
 
-    /**
+  /**
+   *
+   */
+  private String ivKusyma;
+
+  /**
+   *
+   */
+  private String ivKugr;
+
+  /**
+   *
+   */
+  private String ivRatingID;
+
+  /**
+   *
+   */
+  private String ivRatingMaster;
+
+  /**
+   *
+   */
+  private String ivRatingDatum;
+
+  /**
+   *
+   */
+  private String ivRatingToolID;
+
+  /**
+   *
+   */
+  private String ivRatingTool;
+
+  /**
      *
      */
     public TXSPersonenDaten()
@@ -381,6 +416,13 @@ public class TXSPersonenDaten implements TXSTransaktion
       this.ivUmsatz = new String();
       this.ivVname = new String();
       this.ivWhrg = new String();
+      this.ivKusyma = new String();
+      this.ivKugr = new String();
+      this.ivRatingID = new String();
+      this.ivRatingMaster = new String();
+      this.ivRatingDatum = new String();
+      this.ivRatingToolID = new String();
+      this.ivRatingTool = new String();
     }
 
     /**
@@ -1209,7 +1251,63 @@ public class TXSPersonenDaten implements TXSTransaktion
         this.ivWhrg = pvWhrg;
     }
 
-    /**
+  public String getKusyma() {
+    return ivKusyma;
+  }
+
+  public void setKusyma(String ivKusyma) {
+    this.ivKusyma = ivKusyma;
+  }
+
+  public String getKugr() {
+    return ivKugr;
+  }
+
+  public void setKugr(String ivKugr) {
+    this.ivKugr = ivKugr;
+  }
+
+  public String getRatingID() {
+    return ivRatingID;
+  }
+
+  public void setRatingID(String ivRatingID) {
+    this.ivRatingID = ivRatingID;
+  }
+
+  public String getRatingMaster() {
+    return ivRatingMaster;
+  }
+
+  public void setRatingMaster(String ivRatingMaster) {
+    this.ivRatingMaster = ivRatingMaster;
+  }
+
+  public String getRatingDatum() {
+    return ivRatingDatum;
+  }
+
+  public void setRatingDatum(String ivRatingDatum) {
+    this.ivRatingDatum = ivRatingDatum;
+  }
+
+  public String getRatingToolID() {
+    return ivRatingToolID;
+  }
+
+  public void setRatingToolID(String ivRatingToolID) {
+    this.ivRatingToolID = ivRatingToolID;
+  }
+
+  public String getRatingTool() {
+    return ivRatingTool;
+  }
+
+  public void setRatingTool(String ivRatingTool) {
+    this.ivRatingTool = ivRatingTool;
+  }
+
+  /**
      * TXSPersonDatenStart in die XML-Datei schreiben
      * @return 
      */
@@ -1249,6 +1347,38 @@ public class TXSPersonenDaten implements TXSTransaktion
         {
           lvHelpXML.append("\" str=\"" + this.ivStr);
         }
+      if (this.ivHausnr.length() > 0)
+      {
+        lvHelpXML.append("\" hausnr=\"" + this.ivHausnr);
+      }
+      if (this.ivKusyma.length() > 0)
+      {
+        lvHelpXML.append("\" kusyma=\"" + this.ivKusyma);
+      }
+      if (this.ivKugr.length() > 0)
+      {
+        lvHelpXML.append("\" kugr=\"" + this.ivKugr);
+      }
+      if (this.ivRatingID.length() > 0)
+      {
+        lvHelpXML.append("\" rating_id=\"" + this.ivRatingID);
+      }
+      if (this.ivRatingMaster.length() > 0)
+      {
+        lvHelpXML.append("\" rating_master=\"" + this.ivRatingMaster);
+      }
+      if (this.ivRatingDatum.length() > 0)
+      {
+        lvHelpXML.append("\" rating_datum=\"" + this.ivRatingDatum);
+      }
+      if (this.ivRatingToolID.length() > 0)
+      {
+        lvHelpXML.append("\" rating_tool_id=\"" + this.ivRatingToolID);
+      }
+      if (this.ivRatingTool.length() > 0)
+      {
+        lvHelpXML.append("\" rating_tool=\"" + this.ivRatingTool);
+      }
         lvHelpXML.append("\">");
 
         return lvHelpXML;
