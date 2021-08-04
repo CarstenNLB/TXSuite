@@ -1147,6 +1147,52 @@ public class Rueckmeldung
       int lvZaehler_NLB = 0;
       int lvZaehler_BLB = 0;
 
+      for (RueckmeldungSicherheiten lvHelpRueckmeldungSicherheiten: lvListeRueckmeldungSicherheiten.values())
+      {
+        if (lvHelpRueckmeldungSicherheiten.getQuelle().equals("AAZ6PFBG")) {
+          lvRueckmeldeZeile = new StringBuilder();
+          //Immobilie
+          if (lvMappingListe.get(lvHelpRueckmeldungSicherheiten.getPfandObjektNr()) != null) {
+            lvRueckmeldeZeile
+                .append(lvMappingListe.get(lvHelpRueckmeldungSicherheiten.getPfandObjektNr()));
+          }
+          lvRueckmeldeZeile.append(";");
+          lvRueckmeldeZeile.append(lvHelpRueckmeldungSicherheiten.getPfandObjektNr());
+          lvRueckmeldeZeile.append(";");
+          lvRueckmeldeZeile.append(lvHelpRueckmeldungSicherheiten.getIsInDeckung());
+          lvRueckmeldeZeile.append(";");
+
+          // Sicherheit
+          if (lvMappingListe.get(lvHelpRueckmeldungSicherheiten.getSiExternerShKey()) != null) {
+            lvRueckmeldeZeile
+                .append(lvMappingListe.get(lvHelpRueckmeldungSicherheiten.getSiExternerShKey()));
+          }
+          lvRueckmeldeZeile.append(";");
+          lvRueckmeldeZeile.append(lvHelpRueckmeldungSicherheiten.getSiExternerShKey());
+          lvRueckmeldeZeile.append(";");
+          lvRueckmeldeZeile.append(lvHelpRueckmeldungSicherheiten.getIsInDeckung());
+          lvRueckmeldeZeile.append(";");
+
+          // Finanzgeschaeft
+          // Technische ID Finanzgeschaeft nicht vorhanden -> Leerfeld liefern
+          lvRueckmeldeZeile.append(";");
+          lvRueckmeldeZeile.append(lvHelpRueckmeldungSicherheiten.getAktenzeichen());
+          lvRueckmeldeZeile.append(";");
+          lvRueckmeldeZeile.append(lvHelpRueckmeldungSicherheiten.getAssigned());
+          lvRueckmeldeZeile.append(";");
+
+          // Zeilenumbruch
+          lvRueckmeldeZeile.append(StringKonverter.lineSeparator);
+          if (lvHelpRueckmeldungSicherheiten.getOriginatorEnum().equals("Bremer Landesbank")) {
+            lvOutRueck_BLB.printRueckmeldezeile(lvRueckmeldeZeile.toString());
+            lvZaehler_BLB++;
+          } else {
+            lvOutRueck_NLB.printRueckmeldezeile(lvRueckmeldeZeile.toString());
+            lvZaehler_NLB++;
+          }
+        }
+      }
+
       lvOutRueck_NLB.close();
       lvOutRueck_BLB.close();
       LOGGER.info("Anzahl Rueckmeldungen an VVS_NLB: " + lvZaehler_NLB);

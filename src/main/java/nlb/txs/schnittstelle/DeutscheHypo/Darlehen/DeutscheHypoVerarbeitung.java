@@ -959,6 +959,15 @@ public class DeutscheHypoVerarbeitung
                         // Objektgruppe
                         lvPodaten.setOgrp(MappingDH
                             .changeObjektgruppe(lvPfandobjektDH.getWirtschaftlich(), LOGGER_DH));
+                        if (lvFinanzgeschaeftDH.getDeckungsschluessel().equals("12"))
+                        {
+                          lvPodaten.setOgrp("100099");
+                        }
+
+                        if (lvFinanzgeschaeftDH.getDeckungsschluessel().equals("13"))
+                        {
+                          lvPodaten.setOgrp("100022");
+                        }
 
                         lvPodaten.setOrt(lvPfandobjektDH.getOrt());
                         lvPodaten.setPlz(lvPfandobjektDH.getPlz());
@@ -1502,6 +1511,16 @@ public class DeutscheHypoVerarbeitung
 
       // Objektgruppe
       lvPodaten.setOgrp(MappingDH.changeObjektgruppe(lvPfandobjektDH.getWirtschaftlich(), LOGGER_DH));
+      if (pvFinanzgeschaeftDH.getDeckungsschluessel().equals("12"))
+      {
+        lvPodaten.setOgrp("100099");
+      }
+
+      if (pvFinanzgeschaeftDH.getDeckungsschluessel().equals("13"))
+      {
+        lvPodaten.setOgrp("100022");
+      }
+
       lvPodaten.setOrt(lvPfandobjektDH.getOrt());
       lvPodaten.setPlz(lvPfandobjektDH.getPlz());
       lvPodaten.setStr(lvPfandobjektDH.getStrhn());
